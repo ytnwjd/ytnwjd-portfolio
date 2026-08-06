@@ -7,13 +7,16 @@ function scrollToTarget(linkTo) {
 </script>
 
 <template>
-  <div class="hero">
-    <button v-for="card in kpiCards" :key="card.linkTo" type="button" class="kpi-card"
-      @click="scrollToTarget(card.linkTo)">
-      <span class="kpi-value">{{ card.value }}</span>
-      <span class="kpi-label">[{{ card.label }}]</span>
-      <span class="kpi-description">{{ card.description }}</span>
-    </button>
+  <div class="hero-section">
+    <h2 class="subsection-title">🏆 Best Accomplishment</h2>
+    <div class="hero">
+      <button v-for="card in kpiCards" :key="card.linkTo" type="button" class="kpi-card"
+        @click="scrollToTarget(card.linkTo)">
+        <span class="kpi-value">{{ card.value }}</span>
+        <span class="kpi-label">[{{ card.label }}]</span>
+        <span class="kpi-description">{{ card.description }}</span>
+      </button>
+    </div>
   </div>
 </template>
 
