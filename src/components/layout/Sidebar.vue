@@ -3,7 +3,7 @@ import { ref, computed, watch, nextTick, onMounted } from 'vue'
 import { IconUser, IconTools, IconFolder, IconAward, IconFileCv } from '@tabler/icons-vue'
 import { useScrollSpy } from '@/composables/useScrollSpy'
 import { profile } from '@/data/profile'
-import skills from '@/data/skills'
+import { skillCategories } from '@/data/skills'
 import projects from '@/data/projects'
 import activities from '@/data/activities'
 
@@ -18,7 +18,8 @@ const navItems = [
     labelKo: '기술 스택',
     labelEn: 'Tech Skills',
     icon: IconTools,
-    count: skills.length,
+    count: skillCategories.reduce((sum, category) => sum + category.skills.length, 0),
+    legend: '많이 해봤어요 · 해본 적 있어요 · 알아가고 있어요',
   },
   {
     id: 'projects',

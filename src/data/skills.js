@@ -67,11 +67,3 @@ export const skillCategories = [
     ],
   },
 ]
-
-export function findSkillIconSlug(name) {
-  for (const category of skillCategories) {
-    const skill = category.skills.find((item) => item.name === name)
-    if (skill) return skill.iconSlug
-  }
-  return undefined
-}
