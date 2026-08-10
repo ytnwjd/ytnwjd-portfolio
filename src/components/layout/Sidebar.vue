@@ -104,9 +104,15 @@ watch(activeIndex, async () => {
 // 홈으로 이동한 뒤 해시로 그 위치까지 스크롤 (router의 scrollBehavior가 처리)
 function scrollToSection(id) {
   const el = document.getElementById(id)
+
   if (el) {
+    // 화면 스크롤 이동
     el.scrollIntoView({ behavior: 'smooth' })
+
+    // URL 해시(#id) 변경 (페이지 재로딩 없이 URL 업데이트)
+    router.push({ path: route.path, hash: `#${id}` })
   } else {
+    // 다른 페이지에 있을 경우 메인페이지의 해시 위치로 이동
     router.push({ path: '/', hash: `#${id}` })
   }
 }
