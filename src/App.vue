@@ -1,19 +1,13 @@
 <script setup>
+import { RouterView } from 'vue-router'
 import Sidebar from '@/components/layout/Sidebar.vue'
-import AboutSection from '@/components/sections/AboutSection.vue'
-import SkillsSection from '@/components/sections/SkillsSection.vue'
-import ProjectsSection from '@/components/sections/ProjectsSection.vue'
-import ActivitiesSection from '@/components/sections/ActivitiesSection.vue'
 </script>
 
 <template>
   <div class="layout">
     <Sidebar />
     <main class="content">
-      <AboutSection />
-      <SkillsSection />
-      <ProjectsSection />
-      <ActivitiesSection />
+      <RouterView />
     </main>
   </div>
 </template>

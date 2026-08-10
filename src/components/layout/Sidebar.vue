@@ -1,5 +1,6 @@
 <script setup>
 import { ref, computed, watch, nextTick, onMounted } from 'vue'
+import { useRoute, useRouter } from 'vue-router'
 import { IconUser, IconTools, IconFolder, IconAward, IconFileCv } from '@tabler/icons-vue'
 import { useScrollSpy } from '@/composables/useScrollSpy'
 import { profile } from '@/data/profile'
@@ -40,9 +41,14 @@ const navItems = [
   },
 ]
 
+const route = useRoute()
+const router = useRouter()
+
 const TOP_LEVEL_IDS = navItems.map((item) => item.id)
 const SUB_IDS = navItems.flatMap((item) => item.children?.map((child) => child.id) ?? [])
 
+// 상세 페이지에서는 이 id들이 DOM에 없으니 ratio가 전부 0으로 잡히는데,
+// 그건 아래 activeId 계산에서 isProjectDetail로 따로 처리하므로 문제 없음
 const { ratios } = useScrollSpy([...TOP_LEVEL_IDS, ...SUB_IDS])
 
 function pickMostVisible(ids) {
@@ -58,10 +64,16 @@ function pickMostVisible(ids) {
   return maxId
 }
 
-// "04"는 교내/교외 두 하위 섹션을 감싸고 있어 자기 자신도 ratio를 갖기 때문에,
-// 상위 활성 항목은 상위 id들끼리만, 하위 활성 항목은 하위 id들끼리만 비교해야 함
-const activeId = computed(() => pickMostVisible(TOP_LEVEL_IDS) ?? TOP_LEVEL_IDS[0])
-const activeSubId = computed(() => pickMostVisible(SUB_IDS))
+// 상세 페이지(/projects/:slug)에 있을 땐 스크롤 대상 섹션이 DOM에 없으니
+// "프로젝트" 메뉴를 강제로 활성 표시
+const isProjectDetail = computed(() => route.name === 'project-detail')
+
+const activeId = computed(() => {
+  if (isProjectDetail.value) return 'projects'
+  return pickMostVisible(TOP_LEVEL_IDS) ?? TOP_LEVEL_IDS[0]
+})
+
+const activeSubId = computed(() => (isProjectDetail.value ? null : pickMostVisible(SUB_IDS)))
 
 const activeIndex = computed(() => navItems.findIndex((item) => item.id === activeId.value))
 
@@ -82,13 +94,25 @@ onMounted(async () => {
   updateIndicatorPosition()
 })
 
+// activeIndex는 스크롤뿐 아니라 상세 페이지 진입 시에도 바뀌므로 여전히 watch로 인디케이터 갱신
 watch(activeIndex, async () => {
   await nextTick()
   updateIndicatorPosition()
 })
 
+// 홈에 있으면 그냥 스크롤, 상세 페이지처럼 해당 id가 DOM에 없으면
+// 홈으로 이동한 뒤 해시로 그 위치까지 스크롤 (router의 scrollBehavior가 처리)
 function scrollToSection(id) {
-  document.getElementById(id)?.scrollIntoView({ behavior: 'smooth' })
+  const el = document.getElementById(id)
+  if (el) {
+    el.scrollIntoView({ behavior: 'smooth' })
+  } else {
+    router.push({ path: '/', hash: `#${id}` })
+  }
+}
+
+function goToChild(child) {
+  scrollToSection(child.id)
 }
 </script>
 
