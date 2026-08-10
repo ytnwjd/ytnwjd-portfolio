@@ -1,3 +1,24 @@
+export const levelLegend = [
+  {
+    level: 'high',
+    label: '많이 해봤어요',
+    desc: '핵심 동작 원리를 이해하고 있으며, 요구사항에 맞춰 독립적으로 기능을 구현하고 트러블슈팅이 가능한 수준',
+    levelNum: 3,
+  },
+  {
+    level: 'mid',
+    label: '해본 적 있어요',
+    desc: '프로젝트의 특정 기능 구현을 위해 활용해본 경험이 있으며, 공식 문서·레퍼런스를 참고해 필요한 기능을 적절히 적용할 수 있는 수준',
+    levelNum: 2,
+  },
+  {
+    level: 'learning',
+    label: '알아가고 있어요',
+    desc: '개념과 도입 목적을 학습 중이며, 기존 코드 분석이나 튜토리얼 수준의 실습이 가능한 단계',
+    levelNum: 1,
+  },
+]
+
 export const skillCategories = [
   {
     category: 'Language',
