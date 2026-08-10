@@ -19,7 +19,6 @@ const navItems = [
     labelEn: 'Tech Skills',
     icon: IconTools,
     count: skillCategories.reduce((sum, category) => sum + category.skills.length, 0),
-    legend: '많이 해봤어요 · 해본 적 있어요 · 알아가고 있어요',
   },
   {
     id: 'projects',
