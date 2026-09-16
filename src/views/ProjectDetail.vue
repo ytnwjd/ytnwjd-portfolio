@@ -1,86 +1,161 @@
 <!-- src/views/ProjectDetail.vue -->
 <script setup>
 import { useRoute, RouterLink } from 'vue-router'
-import { computed } from 'vue'
+import { computed, nextTick, onMounted, watch } from 'vue'
+import { IconStar } from '@tabler/icons-vue'
 import projects from '@/data/projects'
+import { getTechColor } from '@/data/techColors'
 
 const route = useRoute()
 const project = computed(() => projects.find((p) => p.slug === route.params.slug))
+
+// 라우터의 scrollBehavior와 별개로, 이 페이지 자체에서도 맨 위로 스크롤을 강제한다.
+// (다른 프로젝트 상세로 바로 이동할 땐 같은 컴포넌트가 재사용되어 onMounted가 다시
+// 안 불리므로 slug 변경을 watch로 따로 잡는다. nextTick·rAF·지연 호출을 겹쳐서,
+// 다른 스크롤 보정 로직보다 항상 "마지막에" 맨 위로 고정되도록 한다.)
+function resetScroll() {
+    window.scrollTo(0, 0)
+    requestAnimationFrame(() => {
+        window.scrollTo(0, 0)
+        setTimeout(() => window.scrollTo(0, 0), 100)
+    })
+}
+
+onMounted(async () => {
+    await nextTick()
+    resetScroll()
+})
+
+watch(
+    () => route.params.slug,
+    async () => {
+        await nextTick()
+        resetScroll()
+    },
+)
+
+// result 항목 중 숫자/퍼센트가 들어간 정량적 성과만 뽑아 상단 스탯 카드로 승격.
+// "2년간 단독 운영..." 같은 정성적 문장은 제외하고 기존 하단 불릿에만 남긴다.
+const statCards = computed(() => {
+    const result = project.value?.result
+    if (!result) return []
+    return result
+        .map((text) => {
+            const match = text.match(/\d+(\.\d+)?%/)
+            return match ? { value: match[0], description: text } : null
+        })
+        .filter(Boolean)
+        .slice(0, 3)
+})
+
+function tagStyle(tech) {
+    const match = getTechColor(tech)
+    return {
+        backgroundColor: match.color,
+        borderColor: match.color,
+        color: match.light ? '#1a1a1a' : '#ffffff',
+    }
+}
 </script>
 
 <template>
     <section v-if="project" class="section project-detail">
-        <RouterLink :to="{ path: '/', hash: '#projects' }" replace class="back-link">
-            ← 프로젝트 목록으로 돌아가기
-        </RouterLink>
+        <div class="detail-layout">
+            <!-- 사이드바 — 돌아가기 링크를 맨 위에 두어 제목과 시작 높이를 맞추고,
+                 그 아래 기간·소속·유형 메타와 기술 스택. 데스크탑에서는 sticky -->
+            <aside class="detail-sidebar">
+                <RouterLink :to="{ path: '/', hash: '#projects' }" replace class="back-link">
+                    ← 프로젝트 목록으로 돌아가기
+                </RouterLink>
 
-        <!-- Header Section -->
-        <header class="detail-header">
-            <div class="meta-badges">
-                <span v-if="project.type" class="badge type-badge">{{ project.type }}</span>
-                <span v-if="project.organization" class="badge org-badge">{{ project.organization }}</span>
-            </div>
-            <h1 class="project-title">{{ project.title }}</h1>
-            <p class="project-period">{{ project.period }}</p>
-        </header>
+                <ul class="sidebar-meta">
+                    <li class="sidebar-meta-row">
+                        <span class="sidebar-meta-label">Period</span>
+                        <span class="sidebar-meta-value">{{ project.period }}</span>
+                    </li>
+                    <li v-if="project.organization" class="sidebar-meta-row">
+                        <span class="sidebar-meta-label">Org.</span>
+                        <span class="sidebar-meta-value">{{ project.organization }}</span>
+                    </li>
+                    <li v-if="project.type" class="sidebar-meta-row">
+                        <span class="sidebar-meta-label">Type</span>
+                        <span class="sidebar-meta-value">{{ project.type }}</span>
+                    </li>
+                </ul>
 
-        <!-- Project Summary -->
-        <div v-if="project.summary" class="content-block summary-box">
-            <h2 class="block-title">📌 프로젝트 개요</h2>
-            <p class="summary-text">{{ project.summary }}</p>
-        </div>
-
-        <!-- Tech Stack -->
-        <div v-if="project.techStack && project.techStack.length" class="content-block">
-            <h2 class="block-title">⚒️ 사용 기술 스택</h2>
-            <div class="tech-tags">
-                <span v-for="tech in project.techStack" :key="tech" class="tech-tag">
-                    {{ tech }}
-                </span>
-            </div>
-        </div>
-
-        <!-- Key Responsibilities -->
-        <div v-if="project.responsibilities && project.responsibilities.length" class="content-block">
-            <h2 class="block-title">📋 주요 담당 역할 및 성과</h2>
-            <ul class="detail-list">
-                <li v-for="(item, idx) in project.responsibilities" :key="idx" class="detail-item">
-                    <span class="bullet">✓</span>
-                    <span class="text">{{ item }}</span>
-                </li>
-            </ul>
-        </div>
-
-        <!-- Problem Solving & Troubleshooting -->
-        <div v-if="project.troubleshooting && project.troubleshooting.length" class="content-block">
-            <h2 class="block-title">💡 문제 해결 및 트러블슈팅</h2>
-            <div class="trouble-list">
-                <div v-for="(item, idx) in project.troubleshooting" :key="idx" class="trouble-card">
-                    <div class="trouble-section problem">
-                        <span class="trouble-label">문제 상황</span>
-                        <p class="trouble-text">{{ item.problem }}</p>
-                    </div>
-                    <div v-if="item.cause" class="trouble-section cause">
-                        <span class="trouble-label">원인 분석</span>
-                        <p class="trouble-text">{{ item.cause }}</p>
-                    </div>
-                    <div class="trouble-section solution">
-                        <span class="trouble-label">해결 및 결과</span>
-                        <p class="trouble-text">{{ item.solution }}</p>
+                <div v-if="project.techStack?.length" class="sidebar-tech">
+                    <span class="sidebar-tech-title">Tech Stack</span>
+                    <div class="tech-tags">
+                        <span v-for="tech in project.techStack" :key="tech" class="tech-tag" :style="tagStyle(tech)">
+                            {{ tech }}
+                        </span>
                     </div>
                 </div>
-            </div>
-        </div>
+            </aside>
 
-        <!-- Key Results / Output -->
-        <div v-if="project.result && project.result.length" class="content-block">
-            <h2 class="block-title">🎯 주요 성과 및 결과</h2>
-            <ul class="detail-list result-list">
-                <li v-for="(res, idx) in project.result" :key="idx" class="detail-item">
-                    <span class="bullet">🏆</span>
-                    <span class="text">{{ res }}</span>
-                </li>
-            </ul>
+            <!-- 메인 컬럼 — 제목부터 트러블슈팅까지 -->
+            <div class="detail-main">
+                <h1 class="project-title">{{ project.title }}</h1>
+
+                <!-- Best Accomplishment 스타일 스탯 카드 -->
+                <div v-if="statCards.length" class="stat-cards">
+                    <div v-for="(stat, idx) in statCards" :key="idx" class="stat-card">
+                        <span class="stat-value">{{ stat.value }}</span>
+                        <span class="stat-description">{{ stat.description }}</span>
+                    </div>
+                </div>
+
+                <!-- Project Summary -->
+                <div v-if="project.summary" class="content-block summary-box">
+                    <h2 class="block-title">프로젝트 개요</h2>
+                    <p class="summary-text">{{ project.summary }}</p>
+                </div>
+
+                <!-- Key Responsibilities -->
+                <div v-if="project.responsibilities && project.responsibilities.length" class="content-block">
+                    <h2 class="block-title">주요 담당 역할 및 성과</h2>
+                    <ul class="detail-list">
+                        <li v-for="(item, idx) in project.responsibilities" :key="idx" class="detail-item">
+                            <span class="bullet">✓</span>
+                            <span class="text">{{ item }}</span>
+                        </li>
+                    </ul>
+                </div>
+
+                <!-- Problem Solving & Troubleshooting -->
+                <div v-if="project.troubleshooting && project.troubleshooting.length" class="content-block">
+                    <h2 class="block-title">문제 해결 및 트러블슈팅</h2>
+                    <div class="trouble-list">
+                        <div v-for="(item, idx) in project.troubleshooting" :key="idx" class="trouble-card">
+                            <span v-if="project.troubleshooting.length > 1" class="trouble-index">이슈 {{ idx + 1
+                            }}</span>
+                            <div class="trouble-section">
+                                <span class="trouble-label">문제 상황</span>
+                                <p class="trouble-text">{{ item.problem }}</p>
+                            </div>
+                            <div v-if="item.cause" class="trouble-section">
+                                <span class="trouble-label">원인 분석</span>
+                                <p class="trouble-text">{{ item.cause }}</p>
+                            </div>
+                            <div class="trouble-section">
+                                <span class="trouble-label">해결 및 결과</span>
+                                <p class="trouble-text">{{ item.solution }}</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Key Results / Output -->
+                <div v-if="project.result && project.result.length" class="content-block">
+                    <h2 class="block-title">주요 성과 및 결과</h2>
+                    <ul class="detail-list result-list">
+                        <li v-for="(res, idx) in project.result" :key="idx" class="detail-item">
+                            <IconStar class="bullet bullet-icon" :size="17" :stroke-width="2" />
+                            <span class="text">{{ res }}</span>
+                        </li>
+                    </ul>
+                </div>
+            </div>
         </div>
     </section>
 
@@ -94,122 +169,193 @@ const project = computed(() => projects.find((p) => p.slug === route.params.slug
 
 <style scoped>
 .project-detail {
-    max-width: 860px;
-    margin: 0 auto;
-    padding: 40px 20px;
-    color: #f8fafc;
+    max-width: 980px;
 }
 
 .back-link {
     display: inline-block;
-    margin-bottom: 24px;
+    margin-bottom: 32px;
     font-size: 14px;
     font-weight: 500;
-    color: #94a3b8;
-    text-decoration: none;
+    color: var(--color-text-muted);
     transition: color 0.2s ease;
 }
 
 .back-link:hover {
-    color: #3b82f6;
+    color: var(--color-ink);
 }
 
-/* Header */
-.detail-header {
-    margin-bottom: 32px;
+/* 사이드바 안에서는 flex gap이 간격을 이미 만들어주고, 사이드바 첫 줄이 제목과
+   같은 높이(grid row start)에서 시작하도록 별도 margin 없이 맞춘다 */
+.detail-sidebar .back-link {
+    margin-bottom: 0;
 }
 
-.meta-badges {
+/* 2단 레이아웃 — 사이드바(기간·소속·유형·스택) + 메인(제목~트러블슈팅) */
+.detail-layout {
+    display: grid;
+    grid-template-columns: 260px 1fr;
+    gap: 56px;
+    align-items: start;
+}
+
+.detail-sidebar {
+    position: sticky;
+    top: calc(var(--nav-height) + 32px);
     display: flex;
-    flex-wrap: wrap;
-    gap: 8px;
+    flex-direction: column;
+    gap: 28px;
+}
+
+.sidebar-meta {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    padding-bottom: 20px;
+    border-bottom: 1px solid var(--color-border);
+}
+
+.sidebar-meta-row {
+    display: flex;
+    flex-direction: column;
+    gap: 3px;
+}
+
+.sidebar-meta-label {
+    font-family: var(--font-mono);
+    font-size: 10.5px;
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--color-text-faint);
+}
+
+.sidebar-meta-value {
+    font-size: 14.5px;
+    color: var(--color-text);
+    word-break: keep-all;
+}
+
+.sidebar-tech-title {
+    display: block;
     margin-bottom: 12px;
+    font-family: var(--font-mono);
+    font-size: 10.5px;
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--color-text-faint);
 }
 
-.badge {
-    font-size: 13px;
-    font-weight: 600;
-    padding: 4px 10px;
-    border-radius: 6px;
+.detail-main {
+    min-width: 0;
+    max-width: 680px;
 }
 
-.type-badge {
-    background: rgba(59, 130, 246, 0.15);
-    color: #60a5fa;
-    border: 1px solid rgba(59, 130, 246, 0.3);
-}
+@media (max-width: 860px) {
+    .detail-layout {
+        grid-template-columns: 1fr;
+        gap: 40px;
+    }
 
-.org-badge {
-    background: rgba(16, 185, 129, 0.15);
-    color: #34d399;
-    border: 1px solid rgba(16, 185, 129, 0.3);
+    .detail-sidebar {
+        position: static;
+    }
+
+    .detail-main {
+        max-width: none;
+    }
 }
 
 .project-title {
-    font-size: 32px;
-    font-weight: 800;
+    font-size: 34px;
+    font-weight: 700;
     line-height: 1.3;
-    margin-bottom: 8px;
-    color: #f8fafc;
+    letter-spacing: -0.01em;
+    margin-bottom: 28px;
+    color: var(--color-ink);
 }
 
-.project-period {
-    font-size: 15px;
-    color: #94a3b8;
+/* Best Accomplishment와 동일한 룩앤필의 정량 성과 스탯 카드 */
+.stat-cards {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+    gap: 1px;
+    margin-bottom: 32px;
+    background: var(--color-border);
+    border: 1px solid var(--color-border);
+}
+
+.stat-card {
+    display: flex;
+    flex-direction: column;
+    padding: 20px 18px;
+    background: var(--color-bg-alt);
+}
+
+.stat-value {
+    color: var(--color-accent);
+    font-size: 24px;
+    font-weight: 700;
+    letter-spacing: -0.01em;
+}
+
+.stat-description {
+    margin-top: 6px;
+    color: var(--color-text-muted);
+    font-size: 13px;
+    line-height: 1.5;
 }
 
 /* Content Block */
 .content-block {
-    margin-bottom: 36px;
+    margin-bottom: 40px;
 }
 
 .block-title {
-    font-size: 20px;
+    font-size: 14px;
     font-weight: 700;
-    margin-bottom: 16px;
-    color: #f8fafc;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    margin-bottom: 18px;
+    color: var(--color-ink);
+    font-family: var(--font-mono);
 }
 
 /* Summary Box */
 .summary-box {
-    background: #0f172a;
-    border: 1px solid rgba(255, 255, 255, 0.1);
+    padding: 24px 28px;
+    background: var(--color-bg-alt);
     border-radius: 12px;
-    padding: 20px 24px;
 }
 
 .summary-text {
-    font-size: 15px;
-    line-height: 1.7;
-    color: #cbd5e1;
-    margin: 0;
+    font-size: 15.5px;
+    line-height: 1.75;
+    color: var(--color-text);
 }
 
-/* Tech Tags */
+/* Tech Tags (사이드바) */
 .tech-tags {
     display: flex;
     flex-wrap: wrap;
-    gap: 10px;
+    gap: 6px;
 }
 
 .tech-tag {
-    font-size: 14px;
-    font-weight: 500;
-    padding: 6px 12px;
-    background: #1e293b;
-    border: 1px solid rgba(255, 255, 255, 0.08);
-    border-radius: 8px;
-    color: #e2e8f0;
+    font-size: 12px;
+    font-weight: 600;
+    padding: 5px 11px;
+    border: 1px solid transparent;
+    border-radius: 999px;
+    white-space: nowrap;
 }
 
 /* Responsibilities & Results List */
 .detail-list {
-    list-style: none;
-    padding: 0;
-    margin: 0;
     display: flex;
     flex-direction: column;
-    gap: 12px;
+    gap: 14px;
 }
 
 .detail-item {
@@ -217,78 +363,81 @@ const project = computed(() => projects.find((p) => p.slug === route.params.slug
     align-items: flex-start;
     gap: 12px;
     font-size: 15px;
-    line-height: 1.6;
-    color: #e2e8f0;
+    line-height: 1.65;
+    color: var(--color-text);
 }
 
 .bullet {
-    color: #10b981;
-    font-weight: 700;
     flex-shrink: 0;
 }
 
-.result-list .bullet {
-    color: #f59e0b;
+/* 아웃라인 별 아이콘 — 텍스트 첫 줄과 눈높이가 맞도록 살짝 내리고,
+   채움 없이 포인트 컬러 선만 둘러 다른 UI 요소들과 톤을 맞춘다 */
+.bullet-icon {
+    margin-top: 2px;
+    color: var(--color-accent);
 }
 
 /* Troubleshooting Cards */
 .trouble-list {
     display: flex;
     flex-direction: column;
-    gap: 20px;
+    gap: 24px;
 }
 
 .trouble-card {
-    background: #0f172a;
-    border: 1px solid rgba(255, 255, 255, 0.1);
+    position: relative;
+    padding: 24px 28px;
+    background: var(--color-bg-alt);
     border-radius: 12px;
-    padding: 20px 24px;
     display: flex;
     flex-direction: column;
-    gap: 16px;
+    gap: 18px;
+}
+
+/* 트러블슈팅이 2건 이상일 때만 "이슈 N" 배지로 항목을 구분 */
+.trouble-index {
+    align-self: flex-start;
+    font-family: var(--font-mono);
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 0.04em;
+    padding: 3px 11px;
+    border: 1px solid var(--color-accent);
+    border-radius: 999px;
+    color: var(--color-accent);
 }
 
 .trouble-section {
     display: flex;
     flex-direction: column;
-    gap: 4px;
+    gap: 6px;
 }
 
 .trouble-label {
-    font-size: 13px;
+    font-family: var(--font-mono);
+    font-size: 11.5px;
     font-weight: 700;
     text-transform: uppercase;
-    letter-spacing: 0.5px;
-}
-
-.problem .trouble-label {
-    color: #f87171;
-}
-
-.cause .trouble-label {
-    color: #fbbf24;
-}
-
-.solution .trouble-label {
-    color: #34d399;
+    letter-spacing: 0.08em;
+    color: var(--color-text-faint);
 }
 
 .trouble-text {
     font-size: 15px;
-    line-height: 1.6;
-    color: #cbd5e1;
-    margin: 0;
+    line-height: 1.65;
+    color: var(--color-text);
 }
 
 /* Empty State */
 .empty-state {
     text-align: center;
-    padding: 80px 20px;
+    padding: 120px 20px;
 }
 
 .empty-text {
     font-size: 16px;
-    color: #94a3b8;
+    color: var(--color-text-muted);
     margin-bottom: 16px;
 }
 </style>
