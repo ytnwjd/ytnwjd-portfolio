@@ -1,19 +1,49 @@
 export default [
   {
+    slug: 'chongchongchong',
+    title: '총총총 (총학생회 홈페이지 개편 프로젝트)',
+    period: '2024.08 ~ 2024.12',
+    type: '팀 프로젝트 (5명)',
+    organization: '다학제 캡스톤 디자인',
+    featured: true,
+    techStack: ['React', 'Java', 'Spring Boot', 'PostgreSQL', 'AWS S3', 'Cloudflare', 'Vercel', 'GitHub Actions'],
+    summary:
+      '레거시 Django 시스템의 비용·유지보수 문제를 해결하고 브랜드 아이덴티티를 반영하기 위해 Spring Boot 기반으로 전면 재설계·런칭한 총학생회 공식 홈페이지 개편 프로젝트',
+    responsibilities: [
+      '프론트엔드 개발자 2명 영입 및 팀 빌딩, 프로젝트 개발 표준 정립',
+      'Django → Java/Spring Boot 아키텍처 전면 재설계 주도',
+      'docker-compose 기반 팀 로컬 개발환경 통일 및 OAuth·JWT 인증 파이프라인 Spring Security 모듈화',
+      'AOLDA 클라우드 및 자체 도메인(ajouchong.com) 연결 실서비스 배포, GitHub Actions+Vercel CI/CD 파이프라인 구축',
+    ],
+    troubleshooting: [
+      {
+        problem:
+          '팀원 다수가 참여하는 개발·배포 환경에 표준이 없어 프론트엔드 개발자들이 백엔드·DB 연동에 어려움을 겪었고, OAuth·JWT 인증 로직의 복잡도도 높았습니다.',
+        cause: '초기 단계에서 개발 환경과 인증 파이프라인에 대한 표준이 마련되지 않았습니다.',
+        solution:
+          'docker-compose로 팀원 로컬 개발환경을 통일하고, OAuth로 전달받은 정보로 자체 JWT를 발행하는 인증 파이프라인을 Spring Security로 모듈화해 팀원 모두가 동일한 환경에서 개발할 수 있도록 정리했습니다.',
+      },
+    ],
+    result: [
+      'Spring Boot + React 기반 신규 홈페이지를 기한 내 성공적으로 런칭',
+      '개발환경·CI/CD 표준화로 팀 전체의 협업 생산성 향상에 기여',
+    ],
+  },
+  {
     slug: 'ajouchong',
-    title: '총학생회 홈페이지 개발·운영',
+    title: '총학생회 홈페이지 단독 운영·고도화',
     period: '2024.01 ~ 2026.03',
     type: '개인 프로젝트',
     organization: '아주대학교 총학생회',
+    featured: true,
     techStack: ['React', 'Java', 'Spring Boot', 'PostgreSQL', 'AWS EC2', 'AWS S3', 'Cloudflare', 'GitHub Actions', 'Vercel'],
     summary:
-      '총학생회 홈페이지 런칭, 실서비스를 2년간 단독으로 유지보수하며 Admin 페이지 신규 구축',
+      '총총총 개편 이후, 실서비스로 전환된 총학생회 홈페이지를 2년간 단독으로 운영하며 인프라 안정화와 Admin 페이지 신규 구축까지 책임진 풀사이클 운영 경험',
     responsibilities: [
-      'Django → Java/SpringBoot 아키텍처 전면 재설계 주도',
-      'AOLDA 클라우드 서비스와 자체 도메인(ajouchong.com)을 연결한 실서비스 배포',
-      'GitHub Actions + Vercel 기반 배포 자동화(CI/CD) 파이프라인 구축',
+      'AOLDA 클라우드 서비스와 자체 도메인(ajouchong.com)을 연결한 실서비스를 2년간 단독 운영',
       '관리자(Admin) 페이지 기획 및 구현',
-      'AWS 인프라 마이그레이션 및 2년간 서비스 단독 유지보수',
+      'AWS 인프라 마이그레이션 및 운영 중 발생한 비용·장애 이슈 단독 대응',
+      '서비스 운영 데이터를 기반으로 한 지속적인 개선 및 유지보수',
     ],
     troubleshooting: [
       {
@@ -21,14 +51,7 @@ export default [
           'AWS RDS+EC2 설정 오류로 운영비가 월 10만 원에서 50만 원으로 급증했고, 이후 기존 클라우드의 불안정성으로 DB 데이터가 유실되는 장애까지 발생했습니다.',
         cause: '인프라 설정 자체의 비효율성과, 데이터 가용성이 보장되지 않는 클라우드 환경이 근본 원인이었습니다.',
         solution:
-          '모니터링으로 비용 원인을 분석해 SpringBoot 기반으로 아키텍처를 전환하고, AWS EC2 환경 설정을 독학해 서버를 직접 이전했습니다. 관리자 페이지를 단독 구현하고 Vercel+GitHub Actions로 CI/CD를 자동화해 데이터 손실 리스크 없는 안정적인 운영 환경을 확보했습니다.',
-      },
-      {
-        problem:
-          'OAuth·JWT 연동의 보안 토큰 관리 로직이 복잡했고, 다수가 사용하는 배포/개발 환경을 통일하는 표준이 없어 수동 빌드-배포 과정이 반복됐습니다.',
-        cause: '팀 프로젝트 초기 단계에서 개발 환경과 인증 파이프라인에 대한 표준이 마련되지 않았습니다.',
-        solution:
-          'docker-compose로 팀원 로컬 개발환경을 통일하고, OAuth로 전달받은 정보로 자체 JWT를 발행하는 인증 파이프라인을 Spring Security로 모듈화했습니다.',
+          '모니터링으로 비용 원인을 분석하고 AWS EC2 환경 설정을 독학해 서버를 직접 이전했습니다. 이후 Vercel+GitHub Actions로 CI/CD를 자동화하고 관리자 페이지를 단독 구현해, 데이터 손실 리스크 없는 안정적인 운영 환경을 확보했습니다.',
       },
     ],
     result: [
@@ -43,6 +66,7 @@ export default [
     period: '2026.02 ~ 2026.04',
     type: '개인 프로젝트',
     organization: '래브라도랩스 인턴 (AI분석엔진팀)',
+    featured: true,
     techStack: ['Python', 'FastAPI', 'Streamlit', 'SQLite', 'Docker'],
     summary:
       '취약점 감지 현황·크롤링 데이터 통계·운영 설정을 하나의 화면에서 확인·조작할 수 있는 통합 Back-Office 대시보드',
@@ -75,6 +99,7 @@ export default [
     period: '2026.05 ~ 2026.06',
     type: '개인 프로젝트',
     organization: '래브라도랩스 인턴 (AI분석엔진팀)',
+    featured: true,
     techStack: ['FastAPI', 'Docker', 'SQLite', 'Slack Webhook'],
     summary:
       '다수의 데이터 크롤러들의 로그 실시간 모니터링으로 이상 탐지 자동화, 탐지 건 수 일/월 별 report 생성 시스템',
@@ -96,7 +121,7 @@ export default [
       },
     ],
     result: [
-      '다중 크롤러 로그 실시간 통합 모니터링 및 이상 탐지 자동화 달성',
+      '다중 크롤러 로그를 무중단으로 실시간 통합 모니터링하며 이상 탐지 자동화 달성',
       'DB lock 경합 및 deadlock 해결로 멀티스레드 로그 수집 환경의 안정성 확보',
     ],
   },
@@ -106,6 +131,7 @@ export default [
     period: '2025.12 ~ 2026.02',
     type: '개인 프로젝트',
     organization: '래브라도랩스 인턴 (AI분석엔진팀)',
+    featured: true,
     techStack: ['FastAPI', 'Docker', 'MySQL', 'Slack Webhook', 'KakaoWork Bot API'],
     summary:
       '담당자의 임계치 설정 조건에 따른 데이터 자동 감지·알림 시스템',
@@ -132,8 +158,8 @@ export default [
       },
     ],
     result: [
-      '크롤링 데이터 조건 기반 자동 감지 및 multi-channel 알림 자동화 달성',
-      'Docker 컨테이너 상태 감시 및 Heartbeat 기반 장애 탐지 체계 구축',
+      '규칙 변경만으로 다양한 조건의 데이터 이상을 감지하는 multi-channel 알림 자동화 달성',
+      'Docker 컨테이너 상태 감시 및 Heartbeat 기반 장애 탐지 체계 구축으로 운영 안정성 강화',
     ],
   },
   {
@@ -142,34 +168,36 @@ export default [
     period: '2025.10 ~ 2025.12',
     type: '팀 프로젝트 (3명)',
     organization: '교내 데이터베이스 수업',
+    featured: true,
     techStack: ['React.js', 'Spring Boot', 'MySQL', 'Git'],
     summary:
       '여러 미술관 사이트에 파편화된 소장품 정보를 통합 조회할 수 있는 미술품 정보 플랫폼',
     responsibilities: [
-      '기관별 데이터 통합 분석을 통한 5개 핵심 엔티티 대상 제3정규화(3NF) 적용 및 FK·Cascade 제약조건 설계',
-      'Spring Boot 기반 Controller–Service–Repository 계층 분리 아키텍처 구축 및 개발 표준 제시',
-      '좋아요 기반 관심 작품 저장 및 사용자 맞춤 마이컬렉션 조회·관리 API 개발',
-      'Cursor AI 도구를 활용한 React 기반 UI 신속 구축 및 백엔드 REST API 안정적 연동',
+      '팀원들과 함께 기관별 데이터 통합 분석 및 5개 핵심 엔티티 대상 제3정규화(3NF) 적용, FK·Cascade 제약조건 설계',
+      'Cursor AI 도구를 활용한 React 기반 UI 신속 구축 (프론트엔드 메인 담당)',
+      '좋아요 기반 관심 작품 저장 및 사용자 맞춤 마이컬렉션 조회·관리 기능 개발',
+      '프론트엔드 개발 완료 후 여유 시간을 활용해 N+1 쿼리 문제 최적화 진행',
     ],
     troubleshooting: [
       {
         problem:
-          '미술관별 데이터 규격 불일치 및 작품-작가-갤러리 간 복잡한 1:N / N:M 관계로 인한 데이터 중복·검색 성능 저하 문제가 존재했습니다.',
-        cause: '이종 데이터 원천 통합 시 표준 스키마 및 관계 정의 미비가 원인이었습니다.',
+          '프론트엔드 개발을 마친 이후 연관 엔티티(작가, 갤러리 등)를 조회할 때마다 개별 쿼리가 반복 발생하며 N+1 문제로 인한 응답 지연이 발생했습니다.',
+        cause:
+          '작품-작가-갤러리 간 1:N/N:M 관계를 조회하는 과정에서 연관 데이터를 그때그때 개별 쿼리로 불러오는 구조가 원인이었습니다.',
         solution:
-          '3NF 정규화 및 주요 검색 컬럼(작품명, 작가명 등) 인덱싱 처리를 수행하여 데이터 정합성 확보 및 검색 속도를 개선했습니다.',
+          '남는 시간을 활용해 연관 데이터를 한 번에 조회하도록 쿼리 구조를 개선하여 N+1 문제를 해결했습니다.',
       },
       {
         problem:
           '팀원들의 개발 경험 부족으로 인한 아키텍처 공백 및 코드 병합 난항으로 프로젝트 마감 일정 지연 위험이 발생했습니다.',
         cause: '초기 기술 표준 부재 및 개발 인력 보완책 미비가 원인이었습니다.',
         solution:
-          'Controller-Service-Repository 레이어드 아키텍처 전파로 팀 개발 진입장벽을 낮추고, Cursor AI를 적극 활용해 프론트엔드 개발 공수를 보완함으로써 기한 내 개발을 완료했습니다.',
+          'Controller-Service-Repository 레이어드 아키텍처를 팀에 전파해 개발 진입장벽을 낮추고, Cursor AI를 적극 활용해 프론트엔드 개발 공수를 보완함으로써 기한 내 개발을 완료했습니다.',
       },
     ],
     result: [
-      '3NF 정규화 및 인덱싱을 통한 데이터 정합성 확보 및 검색 성능 개선',
-      '표준 아키텍처 제시 및 AI 기반 개발 프로세스 도입으로 팀 생산성 극대화',
+      'N+1 쿼리 최적화로 연관 데이터 조회 시 응답 속도 개선',
+      '표준 아키텍처 제시 및 AI 기반 개발 프로세스 도입으로 팀 생산성 향상에 기여',
     ],
   },
   {
@@ -178,6 +206,7 @@ export default [
     period: '2025.08 ~ 2025.12',
     type: '개인 프로젝트',
     organization: '교내 자기주도 프로젝트',
+    featured: true,
     techStack: ['React.js', 'MUI', 'FastAPI', 'MongoDB', 'Git', 'Figma'],
     summary:
       '교내 유휴 GPU 리소스를 효율적으로 활용하고 CLI 설정 부담을 줄이기 위한 GUI 기반 실시간 Job 관리 대시보드',
@@ -203,40 +232,12 @@ export default [
     ],
   },
   {
-    slug: 'chongchongchong',
-    title: '총총총 (총학생회 홈페이지 개편 프로젝트)',
-    period: '2024.08 ~ 2024.12',
-    type: '팀 프로젝트 (5명)',
-    organization: '다학제 캡스톤 디자인',
-    techStack: ['React', 'Java', 'Spring Boot', 'PostgreSQL', 'AWS S3', 'Cloudflare', 'Vercel', 'GitHub Actions'],
-    summary:
-      '레거시 시스템의 비용 및 유지보수 문제를 해결하고 브랜드 아이덴티티를 반영하기 위해 Spring Boot 기반으로 전면 재설계한 총학생회 공식 홈페이지 개편 프로젝트',
-    responsibilities: [
-      '프론트엔드 개발자 2명 영입 및 팀 빌딩, 프로젝트 개발 표준 정립',
-      'Django → Java/Spring Boot 아키텍처 전면 재설계 주도',
-      'GitHub Actions + Vercel 연동 자동 빌드·배포(CI/CD) 파이프라인 구축',
-      'AOLDA 클라우드 및 자체 도메인(ajouchong.com) 연결 실서비스 무료 배포 및 AWS 운영 비용 최적화',
-    ],
-    troubleshooting: [
-      {
-        problem:
-          '초기 클라우드 배포 직접 핸들링, 로컬 개발 환경 통일 미비로 인한 프론트엔드 개발자의 백엔드·DB 연동 난항, OAuth·JWT 복잡도 문제가 발생했습니다.',
-        cause: '다수가 참여하는 개발/배포 환경 표준의 부재와 수동 빌드·배포 반복 구조가 원인이었습니다.',
-        solution:
-          'AOLDA 클라우드를 통한 무료 배포 환경 마련, docker-compose 개발환경 통일, CI/CD 구축을 완수했습니다. 또한 OAuth 정보 기반 자체 JWT 발행 파이프라인을 Spring Security로 모듈화하여 성공적으로 런칭했습니다.',
-      },
-    ],
-    result: [
-      'Spring Boot + React 기반 신규 총학생회 홈페이지 성공적 런칭 및 실서비스 운영',
-      'CI/CD 도입 및 docker-compose 표준화로 팀 개발·배포 생산성 대폭 향상',
-    ],
-  },
-  {
     slug: 'aks',
     title: 'AKS (AOLDA K8s managed Service)',
     period: '2024.03 ~ 2024.06',
     type: '팀 프로젝트 (3명)',
     organization: '파란학기(아주도전)',
+    featured: true,
     techStack: ['Kubernetes', 'Docker', 'Grafana', 'Prometheus', 'AlertManager', 'Git'],
     summary:
       'OpenStack 기반 클라우드 환경에서 Kubernetes 클러스터를 효율적으로 배포 및 관리하는 Managed Service(PaaS)와 모니터링 시스템 설계',
@@ -247,8 +248,7 @@ export default [
     ],
     troubleshooting: [
       {
-        problem:
-          '수집된 원시 메트릭 데이터를 운영자가 직관적으로 파악하고 해석하기 어려웠습니다.',
+        problem: '수집된 원시 메트릭 데이터를 운영자가 직관적으로 파악하고 해석하기 어려웠습니다.',
         cause: '가공되지 않은 원시 메트릭 지표를 단순 노출하는 방식이 원인이었습니다.',
         solution:
           'Grafana 쿼리 및 시각화 방식을 개선하여 직관적인 대시보드를 구성함으로써, 실시간 시스템 모니터링·분석 환경을 구축하고 클라우드 인프라 운영 가시성을 확보했습니다.',
@@ -259,13 +259,13 @@ export default [
       '교내 프로젝트 최종 평가 A+ 달성',
     ],
   },
-
   {
     slug: 'oss-video-project',
     title: 'OSS 강의 동영상 제작',
     period: '2023.10 ~ 2023.12',
     type: '개인 프로젝트',
     organization: '교내 오픈소스소프트웨어 수업',
+    featured: false,
     techStack: ['Docker', 'Prometheus', 'Grafana', 'Linux'],
     summary:
       '<Docker 기반 3-Tier 아키텍처 배포 및 Prometheus·Grafana를 활용한 메트릭 데이터 분석>을 주제로 기획·제작한 실습 중심의 오픈소스 강의 동영상 제작',
@@ -283,9 +283,7 @@ export default [
           'Docker 3-Tier 배포부터 Prometheus/Grafana 메트릭 연동까지의 실습 과정을 단계별 시각 자료와 실행 예제로 재구성하여 전달력을 극대화했습니다.',
       },
     ],
-    result: [
-      'Docker 기반 3-Tier 배포 및 메트릭 분석 실습 강의 영상 제작 완료',
-    ],
+    result: ['Docker 기반 3-Tier 배포 및 메트릭 분석 실습 강의 영상 제작 완료'],
   },
   {
     slug: 'aju-berry-fighting',
@@ -293,6 +291,7 @@ export default [
     period: '2023.08 ~ 2023.12',
     type: '팀 프로젝트 (4명)',
     organization: '교내 시스템 프로그래밍 수업',
+    featured: false,
     techStack: ['C', 'Raspberry Pi', 'TCP/IP Socket', 'POSIX Threads'],
     summary:
       '라즈베리파이 4대와 다양한 임베디드 센서를 연동하여 골목길 내 화재, 흡연, 무단투기 등 위험 상황을 실시간 감지하고 대응하는 통합 안전 시스템 구축',
