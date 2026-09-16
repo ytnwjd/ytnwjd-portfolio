@@ -1,337 +1,119 @@
 <!-- src/components/sections/ProjectsSection.vue -->
 <script setup>
-import { RouterLink } from 'vue-router'
+import { computed, ref } from 'vue'
 import projects from '@/data/projects'
+import ProjectCard from './ProjectCard.vue'
 
-// keyResult가 없으면 result 배열의 첫 항목(가장 핵심적인 성과)을 대신 노출
-function resultLine(project) {
-  return project.keyResult || project.result?.[0]
-}
+const filters = [
+  { key: 'all', label: '전체', test: () => true },
+  { key: 'featured', label: '주요 프로젝트', test: (p) => p.featured },
+  { key: 'solo', label: '개인 프로젝트', test: (p) => p.type === '개인 프로젝트' },
+  { key: 'team', label: '팀 프로젝트', test: (p) => p.type.includes('팀 프로젝트') },
+]
+
+const activeFilterKey = ref('all')
+
+const filteredProjects = computed(() => {
+  const filter = filters.find((f) => f.key === activeFilterKey.value)
+  return projects.filter(filter.test)
+})
+
+// 3열 그리드에서 마지막 줄에 카드 1개만 덩그러니 남는 경우(개수를 3으로 나눈 나머지가 1)에만
+// 그 카드를 전체 폭으로 넓혀 어색한 여백을 없앤다. 나머지가 0이거나 2면 그대로 둔다.
+const isLastCardWide = computed(() => filteredProjects.value.length % 3 === 1)
 </script>
 
 <template>
   <section id="projects" class="section">
-    <div class="section-header">
-      <h2 class="section-title">Projects</h2>
+    <span class="eyebrow">Selected Work</span>
+    <h2 class="giant-title">PROJECTS</h2>
+    <p class="section-intro">실서비스 운영부터 팀 프로젝트까지, 직접 설계하고 완성해낸 결과물입니다.</p>
+
+    <!-- 필터 탭 — URL 이동 없이 로컬 state로 즉시 필터링 -->
+    <div class="filter-tabs" role="tablist" aria-label="프로젝트 필터">
+      <button v-for="filter in filters" :key="filter.key" type="button" class="filter-tab"
+        :class="{ active: activeFilterKey === filter.key }" role="tab" :aria-selected="activeFilterKey === filter.key"
+        @click="activeFilterKey = filter.key">
+        {{ filter.label }}
+      </button>
     </div>
 
-    <!-- 목록은 "제목 + 핵심 성과 한 줄"만 남겨 스캔 속도를 우선한다.
-         나머지 상세 내용(개요, 담당 역할, 트러블슈팅)은 상세 페이지에서 확인 -->
-    <ul class="project-grid">
-      <li v-for="project in projects" :key="project.slug" class="project-item"
-        :class="{ 'is-featured': project.featured }">
-        <RouterLink :to="{ name: 'project-detail', params: { slug: project.slug } }" class="project-card">
-          <span class="card-accent" aria-hidden="true"></span>
+    <p v-if="filteredProjects.length === 0" class="filter-empty">해당하는 프로젝트가 없습니다.</p>
 
-          <div class="card-meta">
-            <span class="status-dot" :class="{ 'is-featured': project.featured }" aria-hidden="true"></span>
-            <span class="meta-text">{{ project.period }} · {{ project.organization }}</span>
-          </div>
-
-          <h3 class="project-title">{{ project.title }}</h3>
-
-          <div v-if="project.summary || project.description" class="summary-highlight">
-            <span class="summary-tag">Summary</span>
-            <span class="summary-text">{{ project.summary || project.description }}</span>
-          </div>
-
-          <div v-if="resultLine(project)" class="result-highlight">
-            <span class="result-tag">Result</span>
-            <span class="result-text">{{ resultLine(project) }}</span>
-          </div>
-
-          <div class="card-footer">
-            <ul v-if="project.techStack?.length" class="tech-tags">
-              <li v-for="tech in project.techStack.slice(0, 3)" :key="tech" class="tech-tag">
-                {{ tech }}
-              </li>
-              <li v-if="project.techStack.length > 3" class="tech-tag more">+{{ project.techStack.length - 3 }}</li>
-            </ul>
-
-            <span class="more-link"><span class="prompt"></span>자세히 보기<span class="arrow">›</span></span>
-          </div>
-        </RouterLink>
+    <!-- 3열 그리드 — 모든 카드는 동일한 크기, 마지막 줄에 혼자 남는 카드만 전체 폭으로 확장 -->
+    <ul v-else class="project-grid">
+      <li v-for="(project, i) in filteredProjects" :key="project.slug" class="project-item"
+        :class="{ 'is-wide': isLastCardWide && i === filteredProjects.length - 1 }">
+        <ProjectCard :project="project" :index="i" :wide="isLastCardWide && i === filteredProjects.length - 1" />
       </li>
     </ul>
   </section>
 </template>
 
 <style scoped>
-/* 섹션 헤더 */
-.section-header {
-  margin-bottom: 32px;
-}
-
-.section-title {
-  font-size: 28px;
-  font-weight: 800;
-  color: #f8fafc;
-  letter-spacing: -0.02em;
-}
-
-/* 프로젝트 그리드 — 여유 있게 2열 위주로 배치해 카드 하나하나가 화면을 채우도록 함 */
-.project-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(420px, 1fr));
-  gap: 24px;
-  list-style: none;
-  padding: 0;
-  margin: 0;
-}
-
-@media (min-width: 1024px) {
-  .project-item.is-featured {
-    grid-column: span 2;
-  }
-}
-
-/* 카드 — 제목과 핵심 성과 한 줄에만 시선이 가도록 절제.
-   좌측 액센트 바 하나로만 상태를 표시하고 나머지 장식은 제거 */
-.project-card {
-  display: flex;
-  flex-direction: column;
-  height: 100%;
-  padding: 32px 30px 26px 34px;
-  background: #28374f;
-  border: 1px solid var(--color-border);
-  border-radius: 10px;
-  text-decoration: none;
-  position: relative;
-  overflow: hidden;
-  transition:
-    transform 0.2s ease,
-    border-color 0.2s ease,
-    background-color 0.2s ease;
-}
-
-.card-accent {
-  position: absolute;
-  top: 0;
-  left: 0;
-  bottom: 0;
-  width: 3px;
-  background: var(--color-border);
-  transition:
-    background-color 0.2s ease,
-    width 0.2s ease;
-}
-
-.project-item.is-featured .card-accent {
-  background: var(--color-point-2);
-}
-
-.project-card:hover {
-  transform: translateY(-3px);
-  background: #2f4059;
-  border-color: rgba(148, 163, 184, 0.3);
-}
-
-.project-card:hover .card-accent {
-  width: 4px;
-  background: var(--color-point-1);
-}
-
-.project-item.is-featured .project-card:hover .card-accent {
-  background: var(--color-point-2);
-}
-
-.project-card:focus-visible {
-  outline: 2px solid var(--color-point-1);
-  outline-offset: 2px;
-}
-
-.project-card:hover .arrow {
-  transform: translateX(3px);
-}
-
-/* 메타 한 줄 — 기간 · 기관을 한 줄로 압축, 넘치면 말줄임 처리해 카드 높이를 지킴 */
-.card-meta {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  margin-bottom: 16px;
-  min-width: 0;
-}
-
-.status-dot {
-  flex-shrink: 0;
-  width: 7px;
-  height: 7px;
-  border-radius: 50%;
-  background: var(--color-point-1);
-  box-shadow: 0 0 0 4px var(--color-point-1-soft);
-}
-
-.status-dot.is-featured {
-  background: var(--color-point-2);
-  box-shadow: 0 0 0 3px rgba(251, 191, 36, 0.15);
-}
-
-@media (prefers-reduced-motion: no-preference) {
-  .status-dot {
-    animation: dot-pulse 2.6s ease-in-out infinite;
-  }
-}
-
-@keyframes dot-pulse {
-
-  0%,
-  100% {
-    opacity: 1;
-  }
-
-  50% {
-    opacity: 0.4;
-  }
-}
-
-.meta-text {
-  overflow: hidden;
-  font-family: 'JetBrains Mono', ui-monospace, SFMono-Regular, monospace;
-  font-size: 11.5px;
-  color: var(--color-text-muted);
-  text-overflow: ellipsis;
-  white-space: nowrap;
-}
-
-/* 제목 — 카드에서 가장 먼저 읽히는 요소 */
-.project-title {
-  font-size: 21px;
-  font-weight: 700;
-  color: #ffffff;
-  margin-bottom: 14px;
-  line-height: 1.4;
-  word-break: keep-all;
-}
-
-.summary-highlight {
-  display: flex;
-  align-items: baseline;
-  gap: 10px;
-  margin-bottom: 14px;
-}
-
-.summary-tag {
-  flex-shrink: 0;
-  font-family: 'JetBrains Mono', monospace;
-  font-size: 10.5px;
-  font-weight: 700;
-  line-height: 1.65;
-  letter-spacing: 0.06em;
-  text-transform: uppercase;
-  color: var(--color-point-2);
-}
-
-.summary-text {
-  font-size: 15px;
-  font-weight: 400;
-  line-height: 1.65;
-  color: #cbd5e1;
-  display: -webkit-box;
-  -webkit-line-clamp: 2;
-  -webkit-box-orient: vertical;
-  overflow: hidden;
-  word-break: keep-all;
-}
-
-/* 핵심 성과 한 줄 — Summary와 동일한 라벨 디자인 */
-.result-highlight {
-  display: flex;
-  align-items: baseline;
-  gap: 10px;
-  margin-bottom: 22px;
-  flex-grow: 1;
-}
-
-.result-tag {
-  flex-shrink: 0;
-  font-family: 'JetBrains Mono', monospace;
-  font-size: 10.5px;
-  font-weight: 700;
-  line-height: 1.65;
-  letter-spacing: 0.06em;
-  text-transform: uppercase;
-  color: var(--color-point-2);
-}
-
-.result-text {
-  font-size: 15px;
-  font-weight: 400;
-  line-height: 1.65;
-  color: #cbd5e1;
-  display: -webkit-box;
-  -webkit-line-clamp: 3;
-  -webkit-box-orient: vertical;
-  overflow: hidden;
-  word-break: keep-all;
-}
-
-/* 하단 스택 및 자세히 보기 링크 */
-.card-footer {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 12px;
-  margin-top: auto;
-  padding-top: 18px;
-  border-top: 1px solid var(--color-border);
-}
-
-.tech-tags {
+/* 필터 탭 — 활성 탭은 포인트 컬러로 채워 명확히 구분 */
+.filter-tabs {
   display: flex;
   flex-wrap: wrap;
-  gap: 5px;
-  list-style: none;
-  padding: 0;
-  margin: 0;
-  min-width: 0;
+  gap: 8px;
+  margin-top: 32px;
 }
 
-/* 기술 스택 칩 — sky를 "기술" 전용 색으로 써서 result의 amber("성과")와 역할을 분리,
-   테두리+연한 배경으로 카드 배경 위에서 또렷하게 도드라지게 함 */
-.tech-tag {
-  font-family: 'JetBrains Mono', monospace;
-  font-size: 11.5px;
-  font-weight: 600;
-  padding: 5px 10px;
-  background: var(--color-point-1-soft);
-  border: 1px solid rgba(56, 189, 248, 0.4);
-  border-radius: 5px;
-  color: var(--color-point-1);
-  white-space: nowrap;
-}
-
-.tech-tag.more {
-  color: var(--color-point-2);
-  background: rgba(251, 191, 36, 0.1);
-  border-color: rgba(251, 191, 36, 0.4);
-}
-
-.more-link {
-  display: flex;
-  flex-shrink: 0;
-  align-items: center;
-  gap: 3px;
-  font-size: 13px;
-  font-weight: 600;
+.filter-tab {
+  padding: 9px 18px;
+  border: 1px solid var(--color-border-strong);
+  border-radius: 999px;
   color: var(--color-text-muted);
-  white-space: nowrap;
-  transition: color 0.2s ease;
+  font-size: 13.5px;
+  font-weight: 600;
+  transition:
+    background-color 0.2s ease,
+    color 0.2s ease,
+    border-color 0.2s ease;
 }
 
-.prompt {
-  font-family: 'JetBrains Mono', monospace;
-  font-weight: 700;
-  color: var(--color-point-1);
+.filter-tab:hover {
+  border-color: var(--color-accent);
+  color: var(--color-accent);
 }
 
-.project-card:hover .more-link {
-  color: var(--color-point-1);
+.filter-tab.active {
+  background: var(--color-accent);
+  border-color: var(--color-accent);
+  color: #ffffff;
 }
 
-.arrow {
-  display: inline-block;
-  font-size: 15px;
-  transition: transform 0.2s ease;
+.filter-empty {
+  margin-top: 48px;
+  padding: 48px 0;
+  border-top: 1px solid var(--color-border);
+  border-bottom: 1px solid var(--color-border);
+  color: var(--color-text-muted);
+  font-size: 14px;
+  text-align: center;
+}
+
+/* 프로젝트 그리드 — 카드마다 그림자로 떠 보이도록 실제 간격을 두고 배치 */
+.project-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 24px;
+  margin-top: 32px;
+}
+
+.project-item.is-wide {
+  grid-column: 1 / -1;
+}
+
+@media (max-width: 900px) {
+  .project-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (max-width: 600px) {
+  .project-grid {
+    grid-template-columns: 1fr;
+  }
 }
 </style>
