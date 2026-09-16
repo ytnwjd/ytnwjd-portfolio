@@ -255,27 +255,40 @@ useNetworkCanvas(canvasEl)
 .certification-card {
   display: flex;
   flex-direction: column;
-  gap: 6px;
-  padding: 24px;
+  padding: 28px 24px;
   background: var(--color-bg);
+  transition: background-color 0.2s ease;
+}
+
+.certification-card:hover {
+  background: var(--color-bg-alt);
 }
 
 .certification-name {
-  font-size: 20px;
+  display: block;
+  color: var(--color-accent);
+  font-size: 26px;
   font-weight: 700;
-  margin-bottom: 2px;
+  letter-spacing: -0.01em;
 }
 
 .certification-grade {
-  color: var(--color-text-muted);
-  font-size: 13px;
+  display: block;
+  margin-top: 14px;
+  font-family: var(--font-mono);
+  color: var(--color-text-faint);
+  font-size: 11px;
   font-weight: 600;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
 }
 
 .certification-date {
-  font-family: var(--font-mono);
-  color: var(--color-text-faint);
-  font-size: 12px;
+  display: block;
+  margin-top: 4px;
+  color: var(--color-text-muted);
+  font-size: 14px;
+  line-height: 1.5;
 }
 
 @media (max-width: 900px) {
