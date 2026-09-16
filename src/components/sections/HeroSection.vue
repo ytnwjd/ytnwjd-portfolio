@@ -8,12 +8,12 @@ function scrollToTarget(linkTo) {
 
 <template>
   <div class="hero-section">
-    <h2 class="subsection-title">🏆 Best Accomplishment</h2>
+    <span class="eyebrow">Best Accomplishment</span>
     <div class="hero">
-      <button v-for="card in kpiCards" :key="card.linkTo" type="button" class="kpi-card"
+      <button v-for="card in kpiCards" :key="card.id" type="button" class="kpi-card"
         @click="scrollToTarget(card.linkTo)">
         <span class="kpi-value">{{ card.value }}</span>
-        <span class="kpi-label">[{{ card.label }}]</span>
+        <span class="kpi-label">{{ card.label }}</span>
         <span class="kpi-description">{{ card.description }}</span>
       </button>
     </div>
@@ -22,45 +22,64 @@ function scrollToTarget(linkTo) {
 
 <style scoped>
 .hero {
-  display: flex;
-  gap: 16px;
-  margin-bottom: 48px;
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
+  gap: 1px;
+  margin-top: 24px;
+  background: var(--color-border);
+  border: 1px solid var(--color-border);
 }
 
 .kpi-card {
-  flex: 1;
-  border: 1px solid var(--color-border);
-  border-radius: 8px;
-  padding: 24px;
+  display: flex;
+  flex-direction: column;
+  padding: 28px 24px;
+  background: var(--color-bg);
   text-align: left;
-  transition: border-color 0.2s ease;
+  transition: background-color 0.2s ease;
 }
 
 .kpi-card:hover {
-  border-color: var(--color-point-1);
+  background: var(--color-bg-alt);
 }
 
 .kpi-value {
   display: block;
-  color: var(--color-point-2);
-  font-size: 28px;
+  color: var(--color-accent);
+  font-size: 26px;
   font-weight: 700;
+  letter-spacing: -0.01em;
 }
 
 .kpi-label {
   display: block;
-  margin-top: 10px;
-  color: var(--color-text-muted);
-  font-size: 14px;
+  margin-top: 14px;
+  font-family: var(--font-mono);
+  color: var(--color-text-faint);
+  font-size: 11px;
   font-weight: 600;
-  letter-spacing: 0.02em;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
 }
 
 .kpi-description {
   display: block;
   margin-top: 4px;
-  color: var(--color-text);
-  font-size: 16px;
+  color: var(--color-text-muted);
+  font-size: 14px;
   line-height: 1.5;
+  white-space: pre-line;
+}
+
+@media (max-width: 900px) {
+  .hero {
+    grid-template-columns: repeat(3, 1fr);
+  }
+}
+
+@media (max-width: 520px) {
+  .hero {
+    grid-template-columns: 1fr;
+  }
 }
 </style>
