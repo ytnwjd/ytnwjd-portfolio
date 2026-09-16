@@ -37,6 +37,7 @@ export const skillCategories = [
     skills: [
       { name: 'React.js', level: 'high', iconSlug: 'react', color: '#61DAFB', light: true },
       { name: 'Vue.js', level: 'high', iconSlug: 'vuedotjs', color: '#4FC08D' },
+      { name: 'MUI', level: 'mid' },
       { name: 'Vite', level: 'mid' },
       { name: 'Next.js', level: 'learning', iconSlug: 'nextdotjs' },
       { name: 'TypeScript', level: 'learning' },
@@ -48,6 +49,7 @@ export const skillCategories = [
       { name: 'Spring Boot', level: 'high', color: '#6DB33F' },
       { name: 'FastAPI', level: 'high', color: '#009688' },
       { name: 'Django', level: 'high', color: '#092E20' },
+      { name: 'Streamlit', level: 'high', color: '#FF4B4B' },
       { name: 'JWT', level: 'mid', iconSlug: 'jsonwebtokens' },
       { name: 'JUnit', level: 'learning', iconSlug: 'junit5' },
     ],
@@ -57,6 +59,7 @@ export const skillCategories = [
     skills: [
       { name: 'PostgreSQL', level: 'high', color: '#4169E1' },
       { name: 'MySQL', level: 'high', color: '#4479A1' },
+      { name: 'SQLite', level: 'high', color: '#003B57' },
       { name: 'MongoDB', level: 'mid' },
       { name: 'NoSQL', level: 'mid', iconSlug: null },
     ],
@@ -70,6 +73,7 @@ export const skillCategories = [
       { name: 'Linux', level: 'high', color: '#FCC624', light: true },
       { name: 'GitHub Actions', level: 'high', color: '#2088FF' },
       { name: 'Vercel', level: 'mid' },
+      { name: 'Cloudflare', level: 'mid' },
       { name: 'Nginx', level: 'mid' },
       { name: 'AWS', level: 'mid', iconSlug: null },
       { name: 'Prometheus', level: 'mid' },
