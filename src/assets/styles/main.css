@@ -30,13 +30,19 @@
   padding: 0;
 }
 
-html,
-body {
+/* overflow-x는 body가 아니라 html에만 건다. body에 height:100%가 있는 상태에서
+   overflow-x를 같이 주면, CSS 스펙상 짝이 되는 overflow-y가 visible→auto로 강제
+   승격되면서 body가 window와는 별개인 "자기만의 스크롤 컨테이너"가 되어버린다.
+   그러면 라우터/스크립트의 window.scrollTo가 실제 스크롤에 전혀 먹히지 않고,
+   body 내부 스크롤이 이전 위치(대부분 맨 아래)에 그대로 멈춰있는 것처럼 보인다. */
+html {
   height: 100%;
   overflow-x: hidden;
+  overflow-anchor: none;
 }
 
 body {
+  height: 100%;
   font-family: var(--font-sans);
   color: var(--color-text);
   background: var(--color-bg);
