@@ -219,6 +219,7 @@ export default [
     highlight: true,
     orgInfo: '자기주도 프로젝트 (GPU Job Management Dashboard)',
     role: null,
+    relatedProjects: ['gpu-job-management-dashboard'],
   },
   {
     id: 'activity-labradorlabs-intern',
