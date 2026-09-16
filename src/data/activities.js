@@ -148,7 +148,7 @@ export default [
     endDate: '2024-07-31',
     highlight: false,
     orgInfo: '한국과학창의재단 대학생 교육기부 활동',
-    role: '초등학교 방문 수업 진행',
+    role: '과학 체험 및 언플러그드 활동 기획, 3일간 초등학교 방문 수업 진행',
   },
   {
     id: 'activity-springboot-study',
@@ -158,7 +158,7 @@ export default [
     endDate: '2024-12-31',
     highlight: false,
     orgInfo: '한터(Hantor) 소속 스터디',
-    role: '스프링 부트3 백엔드 입문서 스터디 진행',
+    role: "'스프링 부트3 백엔드 입문서' 책 스터디 진행",
   },
   {
     id: 'activity-ipit',
