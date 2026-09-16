@@ -22,6 +22,7 @@ function toggleLevel(level) {
   <section id="skills" class="section">
     <span class="eyebrow">Tech Stack</span>
     <h2 class="giant-title">SKILLS</h2>
+    <p class="section-intro">프로젝트를 진행하며 실제로 다뤄본 언어와 프레임워크, 도구들입니다.</p>
 
     <!-- 숙련도 범례 — 아이콘 클릭 시 해당 항목 설명만 아코디언으로 펼쳐짐 -->
     <ul class="legend">
