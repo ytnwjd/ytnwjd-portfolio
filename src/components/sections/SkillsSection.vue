@@ -1,57 +1,60 @@
 <script setup>
+import { reactive } from 'vue'
+import { IconInfoCircle } from '@tabler/icons-vue'
 import { skillCategories, levelLegend } from '@/data/skills'
 import SkillIcon from '@/components/ui/SkillIcon.vue'
 
-const LEVEL_MAP = levelLegend.reduce((acc, item) => {
-  acc[item.level] = item
-  return acc
-}, {})
+function chipStyle(skill) {
+  if (skill.level !== 'high') return undefined
+  return { backgroundColor: skill.color, color: skill.light ? '#1a1a1a' : '#ffffff' }
+}
 
-function getSkillMeta(level) {
-  return LEVEL_MAP[level] ?? { label: level, desc: '', levelNum: 0 }
+// 배지별 설명 아코디언 — 여러 개를 동시에 열어 서로 비교할 수 있도록 독립적으로 토글
+const openLevels = reactive(new Set())
+
+function toggleLevel(level) {
+  if (openLevels.has(level)) openLevels.delete(level)
+  else openLevels.add(level)
 }
 </script>
 
 <template>
   <section id="skills" class="section">
-    <h2 class="section-title">Skills</h2>
+    <span class="eyebrow">Tech Stack</span>
+    <h2 class="giant-title">SKILLS</h2>
 
-    <!-- 상단 숙련도 설명 범례 Box -->
-    <div class="legend-box">
-      <div v-for="item in levelLegend" :key="item.level" class="legend-card" :class="`level-${item.level}`">
-        <div class="legend-header">
-          <span class="legend-label">{{ item.label }}</span>
-          <div class="progress-bar">
-            <span v-for="i in 3" :key="i" class="bar-segment" :class="{ filled: i <= item.levelNum }"></span>
-          </div>
+    <!-- 숙련도 범례 — 아이콘 클릭 시 해당 항목 설명만 아코디언으로 펼쳐짐 -->
+    <ul class="legend">
+      <li v-for="item in levelLegend" :key="item.level" class="legend-item">
+        <div class="legend-chip-row">
+          <span class="legend-chip" :class="`level-${item.level}`">{{ item.label }}</span>
+          <button type="button" class="legend-info-btn" :class="{ 'is-open': openLevels.has(item.level) }"
+            :aria-expanded="openLevels.has(item.level)" :aria-controls="`level-desc-${item.level}`"
+            :aria-label="`${item.label} 설명 ${openLevels.has(item.level) ? '닫기' : '보기'}`"
+            @click="toggleLevel(item.level)">
+            <IconInfoCircle :size="15" :stroke-width="1.75" />
+          </button>
         </div>
-        <p class="legend-desc">{{ item.desc }}</p>
-      </div>
-    </div>
 
-    <!-- 스킬 카테고리 그리드 -->
-    <div class="category-grid">
-      <div v-for="cat in skillCategories" :key="cat.category" class="category-card">
-        <h3 class="category-title">{{ cat.category }}</h3>
+        <div class="legend-desc-wrap" :class="{ 'is-open': openLevels.has(item.level) }">
+          <p :id="`level-desc-${item.level}`" class="legend-desc">{{ item.desc }}</p>
+        </div>
+      </li>
+    </ul>
 
-        <ul class="skill-list">
-          <li v-for="skill in cat.skills" :key="skill.name" class="skill-row" :class="`level-${skill.level}`">
-            <div class="skill-info">
-              <SkillIcon :name="skill.name" :icon-slug="skill.iconSlug" />
-              <span class="skill-name">{{ skill.name }}</span>
-            </div>
-
-            <!-- 숙련도 표시 (Progress Bar 만 적용) -->
-            <div class="progress-bar" :aria-label="`숙련도: ${getSkillMeta(skill.level).label}`">
-              <span v-for="i in 3" :key="i" class="bar-segment"
-                :class="{ filled: i <= getSkillMeta(skill.level).levelNum }"></span>
-            </div>
-
-            <!-- 마우스 호버 시 툴팁 -->
-            <div class="skill-tooltip">
-              <strong>{{ getSkillMeta(skill.level).label }}</strong>
-              <p>{{ getSkillMeta(skill.level).desc }}</p>
-            </div>
+    <!-- 카테고리별 한 줄 태그 클라우드 — 스크롤 없이 전체를 한눈에 파악 -->
+    <div class="skill-board">
+      <div v-for="cat in skillCategories" :key="cat.category" class="skill-row">
+        <span class="skill-row-label">{{ cat.category }}</span>
+        <ul class="skill-chips">
+          <li v-for="skill in cat.skills" :key="skill.name">
+            <span class="skill-chip" :class="[`level-${skill.level}`, { 'has-fill': skill.level === 'high' }]"
+              :style="chipStyle(skill)">
+              <span class="skill-chip-icon" :class="{ 'is-badged': skill.level === 'high' }">
+                <SkillIcon :name="skill.name" :icon-slug="skill.iconSlug" />
+              </span>
+              {{ skill.name }}
+            </span>
           </li>
         </ul>
       </div>
@@ -60,197 +63,175 @@ function getSkillMeta(level) {
 </template>
 
 <style scoped>
-.section {
-  --color-high: #10b981;
-  /* Emerald */
-  --color-mid: #3b82f6;
-  /* Blue */
-  --color-learning: #f59e0b;
-  /* Amber */
-  --bg-card: #0f172a;
-  --bg-card-hover: #1e293b;
-  --border-color: rgba(255, 255, 255, 0.1);
+.legend {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-start;
+  gap: 10px 16px;
+  margin: 32px 0 48px;
 }
 
-.section-title {
-  font-size: 28px;
-  font-weight: 700;
-  margin-bottom: 24px;
-}
-
-/* 상단 레전드 카드 */
-.legend-box {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-  gap: 16px;
-  margin-bottom: 32px;
-}
-
-.legend-card {
-  padding: 16px 18px;
-  border-radius: 10px;
-  background: var(--bg-card);
-  border: 1px solid var(--border-color);
+.legend-item {
   display: flex;
   flex-direction: column;
-  gap: 10px;
+  min-width: 0;
 }
 
-.legend-header {
-  display: flex;
+.legend-chip-row {
+  display: inline-flex;
   align-items: center;
-  justify-content: space-between;
+  gap: 6px;
 }
 
-.legend-label {
-  font-size: 16px;
+.legend-chip {
+  padding: 7px 14px;
+  border-radius: 999px;
+  font-size: 12.5px;
   font-weight: 600;
-  color: #f8fafc;
+}
+
+/* 배지 옆 정보 아이콘 — 클릭으로만 토글, 모바일 탭도 동일하게 동작 */
+.legend-info-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 22px;
+  height: 22px;
+  flex-shrink: 0;
+  border: 1px solid var(--color-border-strong);
+  border-radius: 999px;
+  color: var(--color-text-muted);
+  transition:
+    background-color 0.2s ease,
+    color 0.2s ease,
+    border-color 0.2s ease;
+}
+
+.legend-info-btn:hover {
+  border-color: var(--color-accent);
+  color: var(--color-accent);
+}
+
+.legend-info-btn.is-open {
+  background: var(--color-accent);
+  border-color: var(--color-accent);
+  color: #ffffff;
+}
+
+/* 아코디언 — max-height 트랜지션으로 높이를 부드럽게(과하지 않게) 애니메이션 */
+.legend-desc-wrap {
+  max-width: 320px;
+  max-height: 0;
+  overflow: hidden;
+  transition: max-height 0.25s ease;
+}
+
+.legend-desc-wrap.is-open {
+  max-height: 220px;
 }
 
 .legend-desc {
+  padding-top: 10px;
+  color: var(--color-text-muted);
   font-size: 13.5px;
-  line-height: 1.5;
-  color: #94a3b8;
-  margin: 0;
+  line-height: 1.6;
 }
 
-/* -------------------------------------------------- */
-/* [수정] Grid 기반 3열 배치 (가로 순서 배치 & 균등 정렬) */
-/* -------------------------------------------------- */
-.category-grid {
-  display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  gap: 20px;
-  align-items: start;
-}
-
-.category-card {
-  padding: 22px;
-  border: 1px solid var(--border-color);
-  border-radius: 12px;
-  background: var(--bg-card);
-}
-
-/* 반응형 처리 */
-@media (max-width: 1200px) {
-  .category-grid {
-    grid-template-columns: repeat(2, 1fr);
-  }
-}
-
-@media (max-width: 768px) {
-  .category-grid {
-    grid-template-columns: 1fr;
-  }
-}
-
-/* -------------------------------------------------- */
-
-.category-title {
-  margin-bottom: 18px;
-  font-size: 18px;
-  font-weight: 700;
-  color: #f8fafc;
-}
-
-.skill-list {
+/* 태그 클라우드 보드 — 카테고리를 좌측 라벨 + 우측 칩 한 줄로, 세로 공간을 최소화 */
+.skill-board {
   display: flex;
   flex-direction: column;
+  border-top: 1px solid var(--color-border);
+}
+
+.skill-row {
+  display: flex;
+  align-items: baseline;
+  gap: 24px;
+  padding: 18px 0;
+  border-bottom: 1px solid var(--color-border);
+}
+
+.skill-row-label {
+  flex-shrink: 0;
+  width: 96px;
+  font-family: var(--font-mono);
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--color-text-faint);
+}
+
+.skill-chips {
+  display: flex;
+  flex-wrap: wrap;
   gap: 8px;
 }
 
-/* 스킬 행 스타일 */
-.skill-row {
-  position: relative;
-  display: flex;
+.skill-chip {
+  display: inline-flex;
   align-items: center;
-  justify-content: space-between;
-  padding: 9px 12px;
-  border-radius: 8px;
-  transition: background-color 0.2s ease;
-}
-
-.skill-row:hover {
-  background: var(--bg-card-hover);
-}
-
-.skill-info {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-}
-
-/* [수정] 스킬명 글자 크기 상향 (13px -> 15px) */
-.skill-name {
-  font-size: 15px;
+  gap: 6px;
+  padding: 6px 12px 6px 8px;
+  border-radius: 999px;
+  font-size: 13.5px;
   font-weight: 500;
-  color: #e2e8f0;
+  white-space: nowrap;
+  transition:
+    transform 0.15s ease,
+    box-shadow 0.15s ease;
 }
 
-/* Progress Bar 스타일 */
-.progress-bar {
+.skill-chip.has-fill:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 6px 14px rgba(0, 0, 0, 0.18);
+}
+
+/* 많이 해봤어요 — 각 기술의 실제 브랜드 컬러로 채운다(색상은 chipStyle에서 인라인으로 지정) */
+.legend-chip.level-high {
+  background: var(--color-accent);
+  color: #ffffff;
+}
+
+/* 아이콘이 어떤 브랜드 컬러 배경 위에 와도 또렷하게 보이도록 흰 원판을 깔아준다 */
+.skill-chip-icon.is-badged {
   display: flex;
-  gap: 5px;
+  align-items: center;
+  justify-content: center;
+  width: 18px;
+  height: 18px;
+  padding: 2px;
+  border-radius: 999px;
+  background: #ffffff;
 }
 
-.bar-segment {
-  width: 14px;
-  height: 7px;
-  border-radius: 2px;
-  background: rgba(255, 255, 255, 0.1);
-  transition: background-color 0.2s ease;
+.level-mid {
+  border: 1px solid var(--color-accent);
+  color: var(--color-accent);
 }
 
-/* 레벨별 강조 색상 */
-.level-high .bar-segment.filled {
-  background: var(--color-high);
+.legend-chip.level-mid {
+  padding: 6px 13px;
 }
 
-.level-mid .bar-segment.filled {
-  background: var(--color-mid);
+.level-learning {
+  border: 1px dashed var(--color-border-strong);
+  color: var(--color-text-muted);
 }
 
-.level-learning .bar-segment.filled {
-  background: var(--color-learning);
+.legend-chip.level-learning {
+  padding: 6px 13px;
 }
 
-/* 마우스 호버 툴팁 스타일 */
-.skill-tooltip {
-  position: absolute;
-  bottom: 100%;
-  right: 0;
-  transform: translateY(-6px);
-  width: 250px;
-  padding: 12px 14px;
-  background: #020617;
-  border: 1px solid var(--border-color);
-  border-radius: 8px;
-  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.5);
-  pointer-events: none;
-  opacity: 0;
-  visibility: hidden;
-  transition: opacity 0.2s ease, transform 0.2s ease;
-  z-index: 20;
-}
+@media (max-width: 640px) {
+  .skill-row {
+    flex-direction: column;
+    gap: 8px;
+  }
 
-.skill-tooltip strong {
-  display: block;
-  font-size: 13px;
-  margin-bottom: 4px;
-  color: #f8fafc;
-}
-
-.skill-tooltip p {
-  font-size: 12px;
-  line-height: 1.4;
-  color: #94a3b8;
-  margin: 0;
-}
-
-.skill-row:hover .skill-tooltip {
-  opacity: 1;
-  visibility: visible;
-  transform: translateY(-2px);
+  .skill-row-label {
+    width: auto;
+  }
 }
 </style>
