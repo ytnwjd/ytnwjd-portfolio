@@ -4,6 +4,9 @@ import { useRoute, useRouter } from 'vue-router'
 import { IconBrandGithub, IconFileCv, IconMenu2, IconX } from '@tabler/icons-vue'
 import { profile } from '@/data/profile'
 
+// public 자산은 base 경로(`/ytnwjd-portfolio/`)를 붙여야 배포 환경에서도 정상 로드된다
+const resumeHref = `${import.meta.env.BASE_URL}resume.pdf`
+
 const navItems = [
   { id: 'about', labelKo: '소개', labelEn: 'About' },
   { id: 'skills', labelKo: '기술 스택', labelEn: 'Skills' },
@@ -111,7 +114,7 @@ function scrollToTop() {
           <IconBrandGithub :size="16" :stroke-width="1.75" />
           GitHub
         </a>
-        <a class="btn btn--fill" href="/resume.pdf" download aria-label="이력서 PDF 다운로드">
+        <a class="btn btn--fill" :href="resumeHref" download="유수정_이력서.pdf" aria-label="이력서 PDF 다운로드">
           <IconFileCv :size="16" :stroke-width="1.75" />
           이력서
         </a>

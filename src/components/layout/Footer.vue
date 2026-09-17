@@ -3,6 +3,9 @@ import { IconArticle, IconBrandGithub, IconMail } from '@tabler/icons-vue'
 import { profile } from '@/data/profile'
 
 const year = new Date().getFullYear()
+
+// public 자산은 base 경로(`/ytnwjd-portfolio/`)를 붙여야 배포 환경에서도 정상 로드된다
+const resumeHref = `${import.meta.env.BASE_URL}resume.pdf`
 </script>
 
 <template>
@@ -48,7 +51,7 @@ const year = new Date().getFullYear()
 
           <div class="footer-col">
             <p class="footer-col-title">Resume</p>
-            <a href="/resume.pdf" download>PDF 다운로드</a>
+            <a :href="resumeHref" download="유수정_이력서.pdf">PDF 다운로드</a>
           </div>
         </div>
       </div>
