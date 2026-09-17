@@ -1,6 +1,6 @@
 <!-- src/components/sections/ProjectsSection.vue -->
 <script setup>
-import { computed, ref } from 'vue'
+import { computed, onBeforeUnmount, onMounted, ref } from 'vue'
 import projects from '@/data/projects'
 import ProjectCard from './ProjectCard.vue'
 
@@ -18,9 +18,36 @@ const filteredProjects = computed(() => {
   return projects.filter(filter.test)
 })
 
-// 3열 그리드에서 마지막 줄에 카드 1개만 덩그러니 남는 경우(개수를 3으로 나눈 나머지가 1)에만
-// 그 카드를 전체 폭으로 넓혀 어색한 여백을 없앤다. 나머지가 0이거나 2면 그대로 둔다.
-const isLastCardWide = computed(() => filteredProjects.value.length % 3 === 1)
+// .project-grid의 그리드 컬럼 수는 미디어 쿼리로 3 → 2 → 1개로 바뀐다.
+// 현재 컬럼 수를 함께 추적해야 "마지막 줄에 혼자 남는지" 판단이 브레이크포인트마다 정확해진다.
+const mediaQueries = [
+  { query: '(max-width: 600px)', columns: 1 },
+  { query: '(max-width: 900px)', columns: 2 },
+]
+const columns = ref(3)
+
+function updateColumns() {
+  const matched = mediaQueries.find((mq) => window.matchMedia(mq.query).matches)
+  columns.value = matched ? matched.columns : 3
+}
+
+let mqlList = []
+
+onMounted(() => {
+  updateColumns()
+  mqlList = mediaQueries.map((mq) => window.matchMedia(mq.query))
+  mqlList.forEach((mql) => mql.addEventListener('change', updateColumns))
+})
+
+onBeforeUnmount(() => {
+  mqlList.forEach((mql) => mql.removeEventListener('change', updateColumns))
+})
+
+// 현재 컬럼 수 기준으로 마지막 줄에 카드 1개만 덩그러니 남는 경우에만
+// 그 카드를 전체 폭으로 넓혀 어색한 여백을 없앤다. 1열에서는 이미 전체 폭이라 항상 제외한다.
+const isLastCardWide = computed(
+  () => columns.value > 1 && filteredProjects.value.length % columns.value === 1,
+)
 </script>
 
 <template>
