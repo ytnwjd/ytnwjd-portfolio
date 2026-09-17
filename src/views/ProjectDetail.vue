@@ -127,8 +127,7 @@ function tagStyle(tech) {
                     <h2 class="block-title">문제 해결 및 트러블슈팅</h2>
                     <div class="trouble-list">
                         <div v-for="(item, idx) in project.troubleshooting" :key="idx" class="trouble-card">
-                            <span v-if="project.troubleshooting.length > 1" class="trouble-index">이슈 {{ idx + 1
-                            }}</span>
+                            <span class="trouble-index">이슈 {{ idx + 1 }}</span>
                             <div class="trouble-section">
                                 <span class="trouble-label">문제 상황</span>
                                 <p class="trouble-text">{{ item.problem }}</p>
@@ -395,7 +394,7 @@ function tagStyle(tech) {
     gap: 18px;
 }
 
-/* 트러블슈팅이 2건 이상일 때만 "이슈 N" 배지로 항목을 구분 */
+/* "이슈 N" 배지로 트러블슈팅 항목을 구분 */
 .trouble-index {
     align-self: flex-start;
     font-family: var(--font-mono);
