@@ -18,7 +18,7 @@ export const kpiCards = [
     value: '93% 단축',
     label: '래브라도랩스 인턴',
     description: 'Back-Office 개발,\n페이지 로딩 속도 93% 단축',
-    linkTo: '#project-labradorlabs-dashboard',
+    linkTo: '#project-labradorlabs-DBMS',
   },
   {
     id: 'deukgeun',
@@ -32,6 +32,6 @@ export const kpiCards = [
     value: '인기상 수상',
     label: '자기주도 프로젝트',
     description: 'GPU Job Management Dashboard',
-    linkTo: '#project-gpu-dashboard',
+    linkTo: '#project-gpu-job-management-dashboard',
   },
 ]

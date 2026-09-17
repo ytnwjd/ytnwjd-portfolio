@@ -42,8 +42,8 @@ const isLastCardWide = computed(() => filteredProjects.value.length % 3 === 1)
 
     <!-- 3열 그리드 — 모든 카드는 동일한 크기, 마지막 줄에 혼자 남는 카드만 전체 폭으로 확장 -->
     <ul v-else class="project-grid">
-      <li v-for="(project, i) in filteredProjects" :key="project.slug" class="project-item"
-        :class="{ 'is-wide': isLastCardWide && i === filteredProjects.length - 1 }">
+      <li v-for="(project, i) in filteredProjects" :key="project.slug" :id="`project-${project.slug}`"
+        class="project-item" :class="{ 'is-wide': isLastCardWide && i === filteredProjects.length - 1 }">
         <ProjectCard :project="project" :index="i" :wide="isLastCardWide && i === filteredProjects.length - 1" />
       </li>
     </ul>
@@ -99,6 +99,11 @@ const isLastCardWide = computed(() => filteredProjects.value.length % 3 === 1)
   grid-template-columns: repeat(3, 1fr);
   gap: 24px;
   margin-top: 32px;
+}
+
+/* KPI 카드에서 특정 프로젝트로 스크롤 이동 시, sticky 상단 내비게이션에 카드가 가리지 않도록 여백 확보 */
+.project-item {
+  scroll-margin-top: calc(var(--nav-height) + 24px);
 }
 
 .project-item.is-wide {
