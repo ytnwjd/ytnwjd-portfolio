@@ -8,6 +8,9 @@ import { useNetworkCanvas } from '@/composables/useNetworkCanvas'
 
 const canvasEl = ref(null)
 useNetworkCanvas(canvasEl)
+
+const FULL_CYCLE_DEVELOPER_DESC =
+  'Full-cycle Developer란, 기획부터 배포, 운영까지 SDLC 전 과정을 스스로 책임지는 개발자를 뜻합니다.'
 </script>
 
 <template>
@@ -26,6 +29,7 @@ useNetworkCanvas(canvasEl)
         <div class="id-card-header">
           <p class="id-card-name">유수정</p>
           <p class="id-card-role">Full-cycle Developer</p>
+          <p class="id-card-role-desc">{{ FULL_CYCLE_DEVELOPER_DESC }}</p>
 
           <ul class="id-card-info">
             <li class="id-card-row">
@@ -132,7 +136,7 @@ useNetworkCanvas(canvasEl)
 }
 
 .id-card-header {
-  padding-bottom: 24px;
+  padding-bottom: 20px;
   border-bottom: 1px solid var(--color-border);
 }
 
@@ -148,6 +152,13 @@ useNetworkCanvas(canvasEl)
   color: var(--color-accent);
   font-size: 14px;
   font-weight: 600;
+}
+
+.id-card-role-desc {
+  margin: 0px 0 8px 0;
+  color: var(--color-text-muted);
+  font-size: 13px;
+  line-height: 1.6;
 }
 
 .id-card-info {
