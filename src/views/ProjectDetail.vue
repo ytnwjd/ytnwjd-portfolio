@@ -1,8 +1,8 @@
 <!-- src/views/ProjectDetail.vue -->
 <script setup>
 import { useRoute, RouterLink } from 'vue-router'
-import { computed, nextTick, onMounted, watch } from 'vue'
-import { IconCheck, IconStar } from '@tabler/icons-vue'
+import { computed, nextTick, onMounted, onUnmounted, ref, watch } from 'vue'
+import { IconCheck, IconStar, IconX } from '@tabler/icons-vue'
 import projects from '@/data/projects'
 import { getTechColor } from '@/data/techColors'
 
@@ -61,6 +61,24 @@ function tagStyle(tech) {
 function publicAsset(path) {
     return `${import.meta.env.BASE_URL}${path}`
 }
+
+// 다이어그램 클릭 시 원본 크기로 확인할 수 있는 라이트박스
+const lightboxImage = ref(null)
+
+function openLightbox(src, alt) {
+    lightboxImage.value = { src, alt }
+}
+
+function closeLightbox() {
+    lightboxImage.value = null
+}
+
+function handleLightboxKeydown(e) {
+    if (e.key === 'Escape') closeLightbox()
+}
+
+onMounted(() => window.addEventListener('keydown', handleLightboxKeydown))
+onUnmounted(() => window.removeEventListener('keydown', handleLightboxKeydown))
 </script>
 
 <template>
@@ -124,7 +142,8 @@ function publicAsset(path) {
                             <span class="diagram-label">{{ diagram.title }}</span>
                             <div class="architecture-box">
                                 <img :src="publicAsset(diagram.image)" :alt="`${project.title} ${diagram.title}`"
-                                    class="architecture-image" />
+                                    class="architecture-image"
+                                    @click="openLightbox(publicAsset(diagram.image), `${project.title} ${diagram.title}`)" />
                             </div>
                         </div>
                     </div>
@@ -184,6 +203,16 @@ function publicAsset(path) {
             ← 프로젝트 목록으로 돌아가기
         </RouterLink>
     </section>
+
+    <!-- Diagram Lightbox -->
+    <Teleport to="body">
+        <div v-if="lightboxImage" class="lightbox-overlay" @click="closeLightbox">
+            <button class="lightbox-close" @click.stop="closeLightbox" aria-label="닫기">
+                <IconX :size="22" :stroke-width="2" />
+            </button>
+            <img :src="lightboxImage.src" :alt="lightboxImage.alt" class="lightbox-image" @click.stop />
+        </div>
+    </Teleport>
 </template>
 
 <style scoped>
@@ -299,12 +328,8 @@ function publicAsset(path) {
 .stat-cards {
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
-    gap: 1px;
+    gap: 16px;
     margin-bottom: 32px;
-    background: var(--color-border);
-    border: 1px solid var(--color-border);
-    border-radius: 8px;
-    overflow: hidden;
 }
 
 .stat-card {
@@ -312,6 +337,7 @@ function publicAsset(path) {
     flex-direction: column;
     padding: 20px 18px;
     background: #faf6ec;
+    border: 1px solid var(--color-border);
     border-top: 3px solid var(--color-accent);
     border-radius: 8px;
 }
@@ -400,6 +426,50 @@ function publicAsset(path) {
 .architecture-image {
     max-width: 100%;
     height: auto;
+    cursor: zoom-in;
+    transition: opacity 0.2s ease;
+}
+
+.architecture-image:hover {
+    opacity: 0.85;
+}
+
+/* Diagram Lightbox */
+.lightbox-overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.85);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 48px;
+    z-index: 1000;
+}
+
+.lightbox-image {
+    max-width: 100%;
+    max-height: 100%;
+    border-radius: 8px;
+    cursor: default;
+}
+
+.lightbox-close {
+    position: fixed;
+    top: 24px;
+    right: 32px;
+    width: 40px;
+    height: 40px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 999px;
+    background: rgba(255, 255, 255, 0.1);
+    color: #ffffff;
+    transition: background-color 0.2s ease;
+}
+
+.lightbox-close:hover {
+    background: rgba(255, 255, 255, 0.2);
 }
 
 .summary-text {
