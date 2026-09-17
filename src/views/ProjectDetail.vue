@@ -2,7 +2,7 @@
 <script setup>
 import { useRoute, RouterLink } from 'vue-router'
 import { computed, nextTick, onMounted, watch } from 'vue'
-import { IconStar } from '@tabler/icons-vue'
+import { IconCheck, IconStar } from '@tabler/icons-vue'
 import projects from '@/data/projects'
 import { getTechColor } from '@/data/techColors'
 
@@ -116,7 +116,7 @@ function tagStyle(tech) {
                     <h2 class="block-title">주요 담당 역할 및 성과</h2>
                     <ul class="detail-list">
                         <li v-for="(item, idx) in project.responsibilities" :key="idx" class="detail-item">
-                            <span class="bullet">✓</span>
+                            <IconCheck class="bullet bullet-icon" :size="17" :stroke-width="2" />
                             <span class="text">{{ item }}</span>
                         </li>
                     </ul>
@@ -127,7 +127,7 @@ function tagStyle(tech) {
                     <h2 class="block-title">문제 해결 및 트러블슈팅</h2>
                     <div class="trouble-list">
                         <div v-for="(item, idx) in project.troubleshooting" :key="idx" class="trouble-card">
-                            <span class="trouble-index">이슈 {{ idx + 1 }}</span>
+                            <span v-if="project.troubleshooting.length > 1" class="trouble-index">이슈 {{ idx + 1 }}</span>
                             <div class="trouble-section">
                                 <span class="trouble-label">문제 상황</span>
                                 <p class="trouble-text">{{ item.problem }}</p>
@@ -290,6 +290,8 @@ function tagStyle(tech) {
     flex-direction: column;
     padding: 20px 18px;
     background: var(--color-bg-alt);
+    border-top: 3px solid var(--color-accent);
+    border-radius: 8px;
 }
 
 .stat-value {
@@ -312,6 +314,8 @@ function tagStyle(tech) {
 }
 
 .block-title {
+    position: relative;
+    padding-left: 14px;
     font-size: 14px;
     font-weight: 700;
     letter-spacing: 0.1em;
@@ -321,10 +325,22 @@ function tagStyle(tech) {
     font-family: var(--font-mono);
 }
 
+.block-title::before {
+    content: '';
+    position: absolute;
+    left: 0;
+    top: 50%;
+    width: 3px;
+    height: 14px;
+    background: var(--color-accent);
+    border-radius: 2px;
+    transform: translateY(-50%);
+}
+
 /* Summary Box */
 .summary-box {
     padding: 24px 28px;
-    background: var(--color-bg-alt);
+    border: 1px solid var(--color-border);
     border-radius: 12px;
 }
 
@@ -368,6 +384,7 @@ function tagStyle(tech) {
 
 .bullet {
     flex-shrink: 0;
+    color: var(--color-accent);
 }
 
 /* 아웃라인 별 아이콘 — 텍스트 첫 줄과 눈높이가 맞도록 살짝 내리고,
@@ -387,14 +404,16 @@ function tagStyle(tech) {
 .trouble-card {
     position: relative;
     padding: 24px 28px;
-    background: var(--color-bg-alt);
+    background: #faf6ec;
+    border-left: 3px solid var(--color-accent);
     border-radius: 12px;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.06);
     display: flex;
     flex-direction: column;
     gap: 18px;
 }
 
-/* "이슈 N" 배지로 트러블슈팅 항목을 구분 */
+/* 트러블슈팅이 2건 이상일 때만 "이슈 N" 배지로 항목을 구분 */
 .trouble-index {
     align-self: flex-start;
     font-family: var(--font-mono);
@@ -404,6 +423,7 @@ function tagStyle(tech) {
     padding: 3px 11px;
     border: 1px solid var(--color-accent);
     border-radius: 999px;
+    background: var(--color-accent-soft);
     color: var(--color-accent);
 }
 
