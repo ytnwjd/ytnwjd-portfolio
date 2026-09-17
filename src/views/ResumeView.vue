@@ -13,6 +13,8 @@ import { certifications } from '@/data/certifications'
 const INTRO =
   '기획부터 개발, 배포, 운영까지 서비스의 전체 생명주기를 스스로 책임지는 Full-cycle Developer 유수정입니다.'
 
+const photoSrc = `${import.meta.env.BASE_URL}images/ytnwjd.jpg`
+
 const LEVEL_LABEL = {
   high: '다수 사용',
   mid: '사용 경험',
@@ -53,16 +55,19 @@ function periodLabel(item) {
 
 <template>
   <div class="resume-page">
-    <!-- 헤더: 이름 · 한 줄 소개 · 연락처 -->
+    <!-- 헤더: 사진 · 이름 · 한 줄 소개 · 연락처 -->
     <header class="r-header">
-      <h1 class="r-name">유수정</h1>
-      <p class="r-role">Full-cycle Developer</p>
-      <p class="r-intro">{{ INTRO }}</p>
-      <ul class="r-contacts">
-        <li>{{ profile.email }}</li>
-        <li>{{ profile.github }}</li>
-        <li v-if="profile.blog">{{ profile.blog }}</li>
-      </ul>
+      <div class="r-header-main">
+        <h1 class="r-name">유수정</h1>
+        <p class="r-role">Full-cycle Developer</p>
+        <p class="r-intro">{{ INTRO }}</p>
+        <ul class="r-contacts">
+          <li>{{ profile.email }}</li>
+          <li>{{ profile.github }}</li>
+          <li v-if="profile.blog">{{ profile.blog }}</li>
+        </ul>
+      </div>
+      <img class="r-photo" :src="photoSrc" alt="유수정 프로필 사진" />
     </header>
 
     <!-- Skills -->
@@ -138,8 +143,26 @@ function periodLabel(item) {
 }
 
 .r-header {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 24px;
     padding-bottom: 20px;
     border-bottom: 2px solid #111111;
+}
+
+.r-header-main {
+    min-width: 0;
+    flex: 1;
+}
+
+.r-photo {
+    flex-shrink: 0;
+    width: 96px;
+    aspect-ratio: 3 / 4;
+    object-fit: cover;
+    object-position: center 15%;
+    border: 1px solid #cccccc;
 }
 
 .r-name {
