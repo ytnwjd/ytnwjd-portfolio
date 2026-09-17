@@ -166,18 +166,6 @@ function scrollToTop() {
   padding: 0 40px;
 }
 
-.logo {
-  flex-shrink: 0;
-  font-size: 18px;
-  font-weight: 700;
-  letter-spacing: -0.01em;
-  color: #ffffff;
-}
-
-.logo-dot {
-  color: var(--color-text-faint);
-}
-
 .menu {
   display: flex;
   flex: 1;
