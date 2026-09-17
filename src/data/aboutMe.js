@@ -24,10 +24,10 @@ export const aboutMe = [
     ],
   },
   {
-    emoji: '⛓️',
+    emoji: '🧱',
     fragments: [
-      { text: '작은 디테일이 모여, 견고한 시스템을', highlight: true },
-      { text: ' 만든다고 생각합니다!', highlight: false },
+      { text: '꾸준함이 신뢰를 만들고, 신뢰가 결과를 만든다', highlight: true },
+      { text: '고 믿습니다!', highlight: false },
     ],
   },
   {
