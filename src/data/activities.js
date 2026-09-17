@@ -16,6 +16,7 @@ export default [
     date: '2022-09-01',
     endDate: '2025-12-31',
     highlight: false,
+    featured: true,
     orgInfo: '중앙 IT 네트워킹 동아리',
     role: '부원으로 시작해 부회장으로 활동하며 동아리 행사 기획·운영',
   },
@@ -26,6 +27,7 @@ export default [
     date: '2022-09-01',
     endDate: '2024-08-31',
     highlight: false,
+    featured: true,
     orgInfo: '중앙 코딩 교육 봉사 동아리',
     role: '초·중등 학생 대상 강의 자료·실습 콘텐츠 기획·제작 및 방문 강의 진행',
   },
@@ -56,6 +58,7 @@ export default [
     date: '2023-01-04',
     endDate: '2024-07-31',
     highlight: false,
+    featured: true,
     orgInfo: "'맥북 주는 회사에 들어가자' - 실무 중심 백엔드 및 인프라 심화 스터디",
     role: '서버·데이터베이스·클라우드 인프라 관련 지식을 스터디원과 공유',
   },
@@ -86,6 +89,7 @@ export default [
     date: '2023-09-01',
     endDate: '2024-09-30',
     highlight: false,
+    featured: true,
     orgInfo: 'Google Development Student Club',
     role: '교내외 개발자들과 세미나 및 스터디 참여',
   },
@@ -119,6 +123,7 @@ export default [
     orgInfo: null,
     role: '총학생회 SNS 운영 및 공식 홈페이지 개발·운영',
     relatedProjects: ['chongchongchong', 'ajouchong'],
+    featured: true,
   },
   {
     id: 'activity-coding-trainer-2024',
@@ -129,6 +134,7 @@ export default [
     highlight: false,
     orgInfo: null,
     role: 'C언어 실습 질의응답 및 개별 멘토링 진행',
+    featured: true,
   },
   {
     id: 'award-moksso-2023winter',
@@ -139,6 +145,7 @@ export default [
     highlight: true,
     orgInfo: '2023 동계 모각소 알고리즘 스터디',
     role: null,
+    featured: false,
   },
   {
     id: 'activity-ssoksok-camp',
@@ -169,6 +176,7 @@ export default [
     highlight: false,
     orgInfo: '싱가포르 해외 현장 연수 프로그램',
     role: '싱가포르 현지 IT 기업·기관 방문, 해외 법인 운영 및 IP 보호 체계 견학',
+    featured: true,
   },
   {
     id: 'activity-coding-trainer-2025',
@@ -220,6 +228,7 @@ export default [
     orgInfo: '자기주도 프로젝트 (GPU Job Management Dashboard)',
     role: null,
     relatedProjects: ['gpu-job-management-dashboard'],
+    featured: true,
   },
   {
     id: 'activity-labradorlabs-intern',
@@ -231,6 +240,7 @@ export default [
     orgInfo: null,
     role: 'Streamlit 기반 오픈소스 소프트웨어 및 취약점 관리',
     relatedProjects: ['labradorlabs-DBMS', 'crawler-watcher', 'vulnerability-alert-system'],
+    featured: true,
   },
   {
     id: 'activity-ssafy',
@@ -240,6 +250,7 @@ export default [
     endDate: '~',
     highlight: false,
     orgInfo: '삼성 청년 SW·AI 아카데미 16기',
+    featured: true,
     role: '알고리즘 및 AI/LLM 커리큘럼 기반 실전 프로젝트와 팀 협업을 통한 백엔드 개발 및 AI 활용 역량 강화',
   },
 ]
