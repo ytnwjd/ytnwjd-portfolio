@@ -56,6 +56,11 @@ function tagStyle(tech) {
         color: match.light ? '#1a1a1a' : '#ffffff',
     }
 }
+
+// public 자산은 base 경로(`/ytnwjd-portfolio/`)를 붙여야 배포 환경에서도 정상 로드된다
+function publicAsset(path) {
+    return `${import.meta.env.BASE_URL}${path}`
+}
 </script>
 
 <template>
@@ -109,6 +114,23 @@ function tagStyle(tech) {
                 <div v-if="project.summary" class="content-block summary-box">
                     <h2 class="block-title">프로젝트 개요</h2>
                     <p class="summary-text">{{ project.summary }}</p>
+                </div>
+
+                <!-- Architecture / ERD Diagrams -->
+                <div v-if="project.diagrams && project.diagrams.length" class="content-block">
+                    <h2 class="block-title">시스템 다이어그램</h2>
+                    <div class="diagram-list">
+                        <div v-for="(diagram, idx) in project.diagrams" :key="idx" class="diagram-item">
+                            <span class="diagram-label">{{ diagram.title }}</span>
+                            <div class="architecture-box">
+                                <img
+                                    :src="publicAsset(diagram.image)"
+                                    :alt="`${project.title} ${diagram.title}`"
+                                    class="architecture-image"
+                                />
+                            </div>
+                        </div>
+                    </div>
                 </div>
 
                 <!-- Key Responsibilities -->
@@ -342,6 +364,42 @@ function tagStyle(tech) {
     padding: 24px 28px;
     border: 1px solid var(--color-border);
     border-radius: 12px;
+}
+
+/* Architecture / ERD Diagrams */
+.diagram-list {
+    display: flex;
+    flex-direction: column;
+    gap: 24px;
+}
+
+.diagram-item {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.diagram-label {
+    font-family: var(--font-mono);
+    font-size: 11.5px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: var(--color-text-faint);
+}
+
+.architecture-box {
+    padding: 8px;
+    border: 1px solid var(--color-border);
+    background-color: var(--color-surface);
+    border-radius: 12px;
+    display: flex;
+    justify-content: center;
+}
+
+.architecture-image {
+    max-width: 100%;
+    height: auto;
 }
 
 .summary-text {

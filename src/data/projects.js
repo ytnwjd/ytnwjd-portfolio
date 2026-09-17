@@ -110,6 +110,7 @@ export default [
     type: '팀 프로젝트 (3명)',
     organization: '교내 데이터베이스 수업',
     featured: true,
+    diagrams: [{ title: 'ERD', image: 'images/diagram/artifact-erd.svg' }],
     techStack: ['React.js', 'Spring Boot', 'MySQL', 'Git'],
     summary: '여러 미술관 사이트에 파편화된 소장품 정보를 통합 조회할 수 있는 미술품 정보 플랫폼',
     responsibilities: [
@@ -147,6 +148,10 @@ export default [
     type: '개인 프로젝트',
     organization: '교내 자기주도 프로젝트',
     featured: true,
+    diagrams: [
+      { title: '시스템 아키텍처', image: 'images/diagram/gpu-archi.svg' },
+      { title: 'GPU Job 등록 플로우', image: 'images/diagram/gpu_regist-flow.svg' },
+    ],
     techStack: ['React.js', 'MUI', 'FastAPI', 'MongoDB', 'Git', 'Figma'],
     summary:
       '교내 유휴 GPU 리소스를 효율적으로 활용하고 CLI 설정 부담을 줄이기 위한 GUI 기반 실시간 Job 관리 대시보드',
@@ -246,6 +251,7 @@ export default [
     type: '개인 프로젝트',
     organization: '아주대학교 총학생회',
     featured: true,
+    diagrams: [{ title: '시스템 아키텍처', image: 'images/diagram/ajouchong-archi.svg' }],
     techStack: [
       'React',
       'Java',
