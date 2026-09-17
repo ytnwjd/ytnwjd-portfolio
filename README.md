@@ -3,8 +3,7 @@
 Full-cycle 개발자 유수정의 개인 포트폴리오 웹사이트입니다. <br>
 프로젝트, 기술 스택, 활동 이력 등을 확인할 수 있습니다.
 
-🔗 **Live Demo**: [https://ytnwjd.github.io/portfolio](https://ytnwjd.github.io/portfolio)
-<!-- 배포 후 실제 주소로 수정 예정 -->
+🔗 **Live Demo**: [https://ytnwjd.github.io/ytnwjd-portfolio/](https://ytnwjd.github.io/ytnwjd-portfolio/)
 
 ---
 
