@@ -6,6 +6,7 @@ export default [
     type: '개인 프로젝트',
     organization: '래브라도랩스 인턴 (AI분석엔진팀)',
     featured: true,
+    diagrams: [{ title: '시스템 아키텍처', image: 'images/diagram/cw_archi.png' }],
     techStack: ['FastAPI', 'Docker', 'SQLite', 'Slack Webhook'],
     summary:
       '다수의 데이터 크롤러들의 로그 실시간 모니터링으로 이상 탐지 자동화, 탐지 건 수 일/월 별 report 생성 시스템',
@@ -38,6 +39,7 @@ export default [
     type: '개인 프로젝트',
     organization: '래브라도랩스 인턴 (AI분석엔진팀)',
     featured: true,
+    diagrams: [{ title: '시스템 아키텍처', image: 'images/diagram/dmds_archi.png' }],
     techStack: ['Python', 'FastAPI', 'Streamlit', 'SQLite', 'Docker'],
     summary:
       '취약점 감지 현황·크롤링 데이터 통계·운영 설정을 하나의 화면에서 확인·조작할 수 있는 통합 Back-Office 대시보드',
@@ -74,6 +76,7 @@ export default [
     type: '개인 프로젝트',
     organization: '래브라도랩스 인턴 (AI분석엔진팀)',
     featured: true,
+    diagrams: [{ title: '시스템 아키텍처', image: 'images/diagram/vas.png' }],
     techStack: ['FastAPI', 'Docker', 'MySQL', 'Slack Webhook', 'KakaoWork Bot API'],
     summary: '담당자의 임계치 설정 조건에 따른 데이터 자동 감지·알림 시스템',
     responsibilities: [
