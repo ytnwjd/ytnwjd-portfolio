@@ -33,6 +33,10 @@ jobs:
       - name: Build
         run: npm run build
 
+      # headless Chromium이 한글 글리프를 렌더링할 수 있도록 CJK 폰트 설치.
+      - name: Install Korean fonts
+        run: sudo apt-get update && sudo apt-get install -y fonts-noto-cjk
+
       # 빌드 결과물을 Puppeteer로 열어 dist/resume.pdf로 저장.
       # `npm ci`가 puppeteer의 postinstall로 Chromium까지 함께 받아두므로 별도 설치 스텝은 불필요.
       - name: Generate resume PDF
