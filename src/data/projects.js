@@ -1,63 +1,34 @@
 export default [
   {
-    slug: 'chongchongchong',
-    title: '총총총 (총학생회 홈페이지 개편 프로젝트)',
-    period: '2024.08 ~ 2024.12',
-    type: '팀 프로젝트 (5명)',
-    organization: '다학제 캡스톤 디자인',
-    featured: true,
-    techStack: ['React', 'Java', 'Spring Boot', 'PostgreSQL', 'AWS S3', 'Cloudflare', 'Vercel', 'GitHub Actions'],
-    summary:
-      '레거시 Django 시스템의 비용·유지보수 문제를 해결하고 브랜드 아이덴티티를 반영하기 위해 Spring Boot 기반으로 전면 재설계·런칭한 총학생회 공식 홈페이지 개편 프로젝트',
-    responsibilities: [
-      '프론트엔드 개발자 2명 영입 및 팀 빌딩, 프로젝트 개발 표준 정립',
-      'Django → Java/Spring Boot 아키텍처 전면 재설계 주도',
-      'docker-compose 기반 팀 로컬 개발환경 통일 및 OAuth·JWT 인증 파이프라인 Spring Security 모듈화',
-      'AOLDA 클라우드 및 자체 도메인(ajouchong.com) 연결 실서비스 배포, GitHub Actions+Vercel CI/CD 파이프라인 구축',
-    ],
-    troubleshooting: [
-      {
-        problem:
-          '팀원 다수가 참여하는 개발·배포 환경에 표준이 없어 프론트엔드 개발자들이 백엔드·DB 연동에 어려움을 겪었고, OAuth·JWT 인증 로직의 복잡도도 높았습니다.',
-        cause: '초기 단계에서 개발 환경과 인증 파이프라인에 대한 표준이 마련되지 않았습니다.',
-        solution:
-          'docker-compose로 팀원 로컬 개발환경을 통일하고, OAuth로 전달받은 정보로 자체 JWT를 발행하는 인증 파이프라인을 Spring Security로 모듈화해 팀원 모두가 동일한 환경에서 개발할 수 있도록 정리했습니다.',
-      },
-    ],
-    result: [
-      'Spring Boot + React 기반 신규 홈페이지를 기한 내 성공적으로 런칭',
-      '개발환경·CI/CD 표준화로 팀 전체의 협업 생산성 향상에 기여',
-    ],
-  },
-  {
-    slug: 'ajouchong',
-    title: '총학생회 홈페이지 단독 운영·고도화',
-    period: '2024.01 ~ 2026.03',
+    slug: 'crawler-watcher',
+    title: 'Crawler Watcher',
+    period: '2026.05 ~ 2026.06',
     type: '개인 프로젝트',
-    organization: '아주대학교 총학생회',
+    organization: '래브라도랩스 인턴 (AI분석엔진팀)',
     featured: true,
-    techStack: ['React', 'Java', 'Spring Boot', 'PostgreSQL', 'AWS EC2', 'AWS S3', 'Cloudflare', 'GitHub Actions', 'Vercel'],
+    techStack: ['FastAPI', 'Docker', 'SQLite', 'Slack Webhook'],
     summary:
-      '총총총 개편 이후, 실서비스로 전환된 총학생회 홈페이지를 2년간 단독으로 운영하며 인프라 안정화와 Admin 페이지 신규 구축까지 책임진 풀사이클 운영 경험',
+      '다수의 데이터 크롤러들의 로그 실시간 모니터링으로 이상 탐지 자동화, 탐지 건 수 일/월 별 report 생성 시스템',
     responsibilities: [
-      'AOLDA 클라우드 서비스와 자체 도메인(ajouchong.com)을 연결한 실서비스를 2년간 단독 운영',
-      '관리자(Admin) 페이지 기획 및 구현',
-      'AWS 인프라 마이그레이션 및 운영 중 발생한 비용·장애 이슈 단독 대응',
-      '서비스 운영 데이터를 기반으로 한 지속적인 개선 및 유지보수',
+      'json 설정 파일 기반 Multi Thread 로그 감시 아키텍처 및 FileWatcher 스레드 동적 생성 구조 설계',
+      'WatcherManager를 구축해 다중 watcher 스레드의 Life Cycle을 통과하는 오케스트레이터 구현',
+      'tail -f 방식 폴링, 정규식 매칭, 쿨다운 등 크롤러 특성에 맞춘 실시간 로그 감시 로직 구현',
+      'LogCounter 기반 Severity 집계, DB 영속화 및 Slack Webhook 이상 탐지 즉시 알림 파이프라인 구축',
+      'Watcher 생명주기 제어(등록/조회/제어) 및 통계 조회를 위한 FastAPI 기반 REST API 개발',
     ],
     troubleshooting: [
       {
         problem:
-          'AWS RDS+EC2 설정 오류로 운영비가 월 10만 원에서 50만 원으로 급증했고, 이후 기존 클라우드의 불안정성으로 DB 데이터가 유실되는 장애까지 발생했습니다.',
-        cause: '인프라 설정 자체의 비효율성과, 데이터 가용성이 보장되지 않는 클라우드 환경이 근본 원인이었습니다.',
+          '멀티스레드 환경에서 다중 FileWatcher가 동시 SQLite write를 시도하며 DB lock 경합이 발생했고, Watcher 중지 요청 시 메인 스레드와 종결 스레드 간 lock 점유로 Deadlock이 발생했습니다.',
+        cause:
+          'SQLite의 기본 동시 쓰기 제어 한계와, lock을 해제하지 않은 상태에서 join()을 호출하는 생명주기 제어 로직의 결함이 원인이었습니다.',
         solution:
-          '모니터링으로 비용 원인을 분석하고 AWS EC2 환경 설정을 독학해 서버를 직접 이전했습니다. 이후 Vercel+GitHub Actions로 CI/CD를 자동화하고 관리자 페이지를 단독 구현해, 데이터 손실 리스크 없는 안정적인 운영 환경을 확보했습니다.',
+          '애플리케이션 레벨 lock 직렬화, SQLite WAL 모드 적용 및 5초 대기 후 재시도 로직으로 동시성 제어를 이중화했습니다. 또한 stop() 시그널 처리만 lock 내부에서 수행하고 join() 호출은 lock 바깥으로 분리하여 Deadlock을 완벽히 해결했습니다.',
       },
     ],
     result: [
-      '2년간 단독 운영하며 실사용자 대상 서비스 지속 제공',
-      'AWS 운영 비용 80% 이상 절감',
-      '방문자 평균 CTR 16% 향상',
+      '다중 크롤러 로그를 무중단으로 실시간 통합 모니터링하며 이상 탐지 자동화 달성',
+      'DB lock 경합 및 deadlock 해결로 멀티스레드 로그 수집 환경의 안정성 확보',
     ],
   },
   {
@@ -91,38 +62,9 @@ export default [
           '기본 Shape을 등록하고 NULL_LOADERS로 사전 검증하는 절차를 마련해, 새 타입 추가 시 4단계 표준 개발 절차를 강제함으로써 언패킹 오류를 제거했습니다.',
       },
     ],
-    result: ['페이지 로딩 속도 30초 → 2초로 93% 단축', '취약점·크롤러·DB 현황 통계 일/월 단위 시각화 구현'],
-  },
-  {
-    slug: 'crawler-watcher',
-    title: 'Crawler Watcher',
-    period: '2026.05 ~ 2026.06',
-    type: '개인 프로젝트',
-    organization: '래브라도랩스 인턴 (AI분석엔진팀)',
-    featured: true,
-    techStack: ['FastAPI', 'Docker', 'SQLite', 'Slack Webhook'],
-    summary:
-      '다수의 데이터 크롤러들의 로그 실시간 모니터링으로 이상 탐지 자동화, 탐지 건 수 일/월 별 report 생성 시스템',
-    responsibilities: [
-      'json 설정 파일 기반 Multi Thread 로그 감시 아키텍처 및 FileWatcher 스레드 동적 생성 구조 설계',
-      'WatcherManager를 구축해 다중 watcher 스레드의 Life Cycle을 통과하는 오케스트레이터 구현',
-      'tail -f 방식 폴링, 정규식 매칭, 쿨다운 등 크롤러 특성에 맞춘 실시간 로그 감시 로직 구현',
-      'LogCounter 기반 Severity 집계, DB 영속화 및 Slack Webhook 이상 탐지 즉시 알림 파이프라인 구축',
-      'Watcher 생명주기 제어(등록/조회/제어) 및 통계 조회를 위한 FastAPI 기반 REST API 개발',
-    ],
-    troubleshooting: [
-      {
-        problem:
-          '멀티스레드 환경에서 다중 FileWatcher가 동시 SQLite write를 시도하며 DB lock 경합이 발생했고, Watcher 중지 요청 시 메인 스레드와 종결 스레드 간 lock 점유로 Deadlock이 발생했습니다.',
-        cause:
-          'SQLite의 기본 동시 쓰기 제어 한계와, lock을 해제하지 않은 상태에서 join()을 호출하는 생명주기 제어 로직의 결함이 원인이었습니다.',
-        solution:
-          '애플리케이션 레벨 lock 직렬화, SQLite WAL 모드 적용 및 5초 대기 후 재시도 로직으로 동시성 제어를 이중화했습니다. 또한 stop() 시그널 처리만 lock 내부에서 수행하고 join() 호출은 lock 바깥으로 분리하여 Deadlock을 완벽히 해결했습니다.',
-      },
-    ],
     result: [
-      '다중 크롤러 로그를 무중단으로 실시간 통합 모니터링하며 이상 탐지 자동화 달성',
-      'DB lock 경합 및 deadlock 해결로 멀티스레드 로그 수집 환경의 안정성 확보',
+      '페이지 로딩 속도 30초 → 2초로 93% 단축',
+      '취약점·크롤러·DB 현황 통계 일/월 단위 시각화 구현',
     ],
   },
   {
@@ -133,8 +75,7 @@ export default [
     organization: '래브라도랩스 인턴 (AI분석엔진팀)',
     featured: true,
     techStack: ['FastAPI', 'Docker', 'MySQL', 'Slack Webhook', 'KakaoWork Bot API'],
-    summary:
-      '담당자의 임계치 설정 조건에 따른 데이터 자동 감지·알림 시스템',
+    summary: '담당자의 임계치 설정 조건에 따른 데이터 자동 감지·알림 시스템',
     responsibilities: [
       'DBWatcher를 통한 주기적 DB 스캔 및 JSON 정의 규칙 기반 RuleProcessor 룰 엔진 구현',
       '운영 중 코드 수정 없이 JSON 파일 변경만으로 규칙을 추가·수정할 수 있는 구조 설계',
@@ -170,8 +111,7 @@ export default [
     organization: '교내 데이터베이스 수업',
     featured: true,
     techStack: ['React.js', 'Spring Boot', 'MySQL', 'Git'],
-    summary:
-      '여러 미술관 사이트에 파편화된 소장품 정보를 통합 조회할 수 있는 미술품 정보 플랫폼',
+    summary: '여러 미술관 사이트에 파편화된 소장품 정보를 통합 조회할 수 있는 미술품 정보 플랫폼',
     responsibilities: [
       '팀원들과 함께 기관별 데이터 통합 분석 및 5개 핵심 엔티티 대상 제3정규화(3NF) 적용, FK·Cascade 제약조건 설계',
       'Cursor AI 도구를 활용한 React 기반 UI 신속 구축 (프론트엔드 메인 담당)',
@@ -221,7 +161,8 @@ export default [
       {
         problem:
           '교내 코딩 플랫폼(AjoupyterHub) 내 사용자별 독립 로컬 파일 시스템 환경에서, 공유 경로가 아닌 접속자 ID 기준 격리 홈 디렉토리를 동적 인식하고 시각화해야 하는 과제가 존재했습니다.',
-        cause: '플랫폼 특성상 사용자별로 파일 시스템 디렉토리 경로가 격리되어 있어 일률적인 static 경로 조회가 불가능했습니다.',
+        cause:
+          '플랫폼 특성상 사용자별로 파일 시스템 디렉토리 경로가 격리되어 있어 일률적인 static 경로 조회가 불가능했습니다.',
         solution:
           '요청자 ID 식별 기반 재귀 파일 스캔 API를 구축하고 이를 Finder 스타일 File Tree UI로 연동하여, 경로 직접 입력 없이 클릭만으로 GPU Job 코드를 등록할 수 있게 개선했습니다.',
       },
@@ -229,6 +170,45 @@ export default [
     result: [
       'CLI 및 서버 설정 부담을 해소하여 AI 학습 진입 장벽 완화',
       'Ajou Softcon 인기상 수상 및 사용자 GPU 수요 패턴 분석 기반 마련',
+    ],
+  },
+  {
+    slug: 'chongchongchong',
+    title: '총총총',
+    period: '2024.08 ~ 2024.12',
+    type: '팀 프로젝트 (5명)',
+    organization: '다학제 캡스톤 디자인',
+    featured: true,
+    techStack: [
+      'React',
+      'Java',
+      'Spring Boot',
+      'PostgreSQL',
+      'AWS S3',
+      'Cloudflare',
+      'Vercel',
+      'GitHub Actions',
+    ],
+    summary:
+      '레거시 Django 시스템의 비용·유지보수 문제를 해결하고 브랜드 아이덴티티를 반영하기 위해 Spring Boot 기반으로 전면 재설계·런칭한 총학생회 공식 홈페이지 개편 프로젝트',
+    responsibilities: [
+      '프론트엔드 개발자 2명 영입 및 팀 빌딩, 프로젝트 개발 표준 정립',
+      'Django → Java/Spring Boot 아키텍처 전면 재설계 주도',
+      'docker-compose 기반 팀 로컬 개발환경 통일 및 OAuth·JWT 인증 파이프라인 Spring Security 모듈화',
+      'AOLDA 클라우드 및 자체 도메인(ajouchong.com) 연결 실서비스 배포, GitHub Actions+Vercel CI/CD 파이프라인 구축',
+    ],
+    troubleshooting: [
+      {
+        problem:
+          '팀원 다수가 참여하는 개발·배포 환경에 표준이 없어 프론트엔드 개발자들이 백엔드·DB 연동에 어려움을 겪었고, OAuth·JWT 인증 로직의 복잡도도 높았습니다.',
+        cause: '초기 단계에서 개발 환경과 인증 파이프라인에 대한 표준이 마련되지 않았습니다.',
+        solution:
+          'docker-compose로 팀원 로컬 개발환경을 통일하고, OAuth로 전달받은 정보로 자체 JWT를 발행하는 인증 파이프라인을 Spring Security로 모듈화해 팀원 모두가 동일한 환경에서 개발할 수 있도록 정리했습니다.',
+      },
+    ],
+    result: [
+      'Spring Boot + React 기반 신규 홈페이지를 기한 내 성공적으로 런칭',
+      '개발환경·CI/CD 표준화로 팀 전체의 협업 생산성 향상에 기여',
     ],
   },
   {
@@ -257,6 +237,54 @@ export default [
     result: [
       '클라우드 인프라 운영 가시성을 확보하는 통합 모니터링 환경 구축',
       '교내 프로젝트 최종 평가 A+ 달성',
+    ],
+  },
+  {
+    slug: 'ajouchong',
+    title: '총학생회 홈페이지 단독 운영·고도화',
+    period: '2024.01 ~ 2026.03',
+    type: '개인 프로젝트',
+    organization: '아주대학교 총학생회',
+    featured: true,
+    techStack: [
+      'React',
+      'Java',
+      'Spring Boot',
+      'PostgreSQL',
+      'AWS EC2',
+      'AWS S3',
+      'Cloudflare',
+      'GitHub Actions',
+      'Vercel',
+    ],
+    summary:
+      '총총총 개편 이후, 실서비스로 전환된 총학생회 홈페이지를 2년간 단독으로 운영하며 인프라 안정화와 Admin 페이지 신규 구축까지 책임진 풀사이클 운영 경험',
+    responsibilities: [
+      '자체 도메인(ajouchong.com)을 연결한 실서비스를 2년간 단독 운영',
+      '관리자(Admin) 페이지 기획 및 구현',
+      '비용·안정성 문제 해결을 위한 인프라 재설계 및 이관(AWS → AOLDA → AWS EC2+Vercel) 단독 주도',
+      '서비스 운영 데이터를 기반으로 한 지속적인 개선 및 유지보수',
+    ],
+    troubleshooting: [
+      {
+        problem: '기존 AWS 인프라의 운영비가 월 60만 원까지 급증했습니다.',
+        cause: '비효율적인 리소스 설정과 인프라 구조 전반의 문제가 누적된 결과였습니다.',
+        solution:
+          '단기 설정 수정에 그치지 않고 근본 원인을 분석해 시스템 전면 개편을 결정했습니다. 학교에서 무상으로 제공하는 AOLDA 클라우드로 인프라를 이관해 운영비를 0원으로 만들었습니다.',
+      },
+      {
+        problem:
+          'AOLDA는 학생들이 직접 관리하는 클라우드 환경이라, 운영 중간중간 DB가 유실되거나 서비스가 중단되는 장애가 반복적으로 발생했습니다.',
+        cause:
+          '비전문 인력이 운영하는 클라우드 환경 특성상 안정성이 보장되지 않는 구조가 근본 원인이었습니다.',
+        solution:
+          '서비스 안정성을 확보하기 위해 백엔드와 DB만 AWS EC2로 다시 이관하고, 비용 절감을 위해 프론트엔드는 Vercel로 분리 배포했습니다. 그 결과 안정성을 확보하면서도 운영비를 월 4만 원대로 최소화했습니다.',
+      },
+    ],
+    result: [
+      '2년간 단독 운영하며 실사용자 대상 서비스 지속 제공',
+      'AWS 운영 비용 월 60만 원 → 4만 원대로 90% 이상 절감',
+      '방문자 평균 CTR 16% 향상',
     ],
   },
   {
@@ -304,7 +332,8 @@ export default [
       {
         problem:
           '단일 소켓 공유 구조 시 데이터 충돌 및 알림 지연이 우려되었으며, 기존 RF 통신 모듈의 실시간성 한계 및 센서 오탐지 문제가 존재했습니다.',
-        cause: '통신 채널 미분리 및 센서 임계값이 실환경에 맞게 최적화되지 않은 점이 원인이었습니다.',
+        cause:
+          '통신 채널 미분리 및 센서 임계값이 실환경에 맞게 최적화되지 않은 점이 원인이었습니다.',
         solution:
           '기능별 3개 독립 TCP 소켓 채널로 분리 설계하고, 실환경 테스트를 통해 센서 최적 임계값을 도출했습니다. 또한 불꽃 센서에 3초 지속성 판단 로직을 추가하여 오탐을 방지했습니다.',
       },
