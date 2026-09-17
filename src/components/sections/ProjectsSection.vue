@@ -128,8 +128,11 @@ const isLastCardWide = computed(
   margin-top: 32px;
 }
 
-/* KPI 카드에서 특정 프로젝트로 스크롤 이동 시, sticky 상단 내비게이션에 카드가 가리지 않도록 여백 확보 */
+/* KPI 카드에서 특정 프로젝트로 스크롤 이동 시, sticky 상단 내비게이션에 카드가 가리지 않도록 여백 확보.
+   min-width: 0은 카드 내부 텍스트의 고유 너비가 그리드 트랙을 밀어내 페이지 전체가 가로로
+   넘치는 것(overflow-x: hidden에 의해 우측 요소가 잘려 보이지 않는 문제)을 막는다 */
 .project-item {
+  min-width: 0;
   scroll-margin-top: calc(var(--nav-height) + 24px);
 }
 

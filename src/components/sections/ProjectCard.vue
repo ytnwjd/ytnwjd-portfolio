@@ -110,6 +110,7 @@ function tagStyle(tech) {
 }
 
 .meta-text {
+  min-width: 0;
   overflow: hidden;
   font-family: var(--font-mono);
   font-size: 11.5px;
@@ -154,6 +155,7 @@ function tagStyle(tech) {
 
 .summary-text,
 .result-text {
+  min-width: 0;
   font-size: 13.5px;
   line-height: 1.6;
   color: var(--color-text-muted);

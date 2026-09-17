@@ -1,7 +1,7 @@
 <script setup>
-import { computed, onBeforeUnmount, onMounted, ref } from 'vue'
+import { computed, onBeforeUnmount, onMounted, ref, watch } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
-import { IconBrandGithub, IconFileCv } from '@tabler/icons-vue'
+import { IconBrandGithub, IconFileCv, IconMenu2, IconX } from '@tabler/icons-vue'
 import { profile } from '@/data/profile'
 
 const navItems = [
@@ -65,6 +65,24 @@ function scrollToSection(id) {
   }
 }
 
+// 860px 이하에서는 .menu가 숨겨지므로, 같은 항목에 접근할 수 있는 햄버거 메뉴를 대신 띄운다
+const isMobileMenuOpen = ref(false)
+
+function closeMobileMenu() {
+  isMobileMenuOpen.value = false
+}
+
+function handleMobileNavClick(id) {
+  closeMobileMenu()
+  scrollToSection(id)
+}
+
+// 라우트 이동(다른 항목 클릭, 프로젝트 상세 진입 등) 후에는 메뉴가 열린 채로 남지 않도록 정리
+watch(
+  () => route.fullPath,
+  () => closeMobileMenu(),
+)
+
 function scrollToTop() {
   const el = document.getElementById('about')
   if (el) {
@@ -97,8 +115,26 @@ function scrollToTop() {
           <IconFileCv :size="16" :stroke-width="1.75" />
           이력서
         </a>
+        <button type="button" class="menu-toggle" :aria-expanded="isMobileMenuOpen" aria-label="메뉴 열기"
+          @click="isMobileMenuOpen = !isMobileMenuOpen">
+          <IconX v-if="isMobileMenuOpen" :size="22" :stroke-width="1.75" />
+          <IconMenu2 v-else :size="22" :stroke-width="1.75" />
+        </button>
       </div>
     </div>
+
+    <!-- 모바일 드롭다운 메뉴 — .menu가 숨겨지는 860px 이하에서 동일한 섹션 이동 기능을 제공 -->
+    <nav v-if="isMobileMenuOpen" class="mobile-menu" aria-label="모바일 메뉴">
+      <button v-for="item in navItems" :key="item.id" type="button" class="mobile-menu-item"
+        :class="{ active: item.id === activeId }" @click="handleMobileNavClick(item.id)">
+        {{ item.labelKo }}
+        <span class="menu-item-en">({{ item.labelEn }})</span>
+      </button>
+      <a class="mobile-menu-item" :href="profile.github" target="_blank" rel="noopener" @click="closeMobileMenu">
+        <IconBrandGithub :size="16" :stroke-width="1.75" />
+        GitHub
+      </a>
+    </nav>
   </header>
 
   <div class="floating-nav" role="navigation" aria-label="빠른 이동">
@@ -208,6 +244,62 @@ function scrollToTop() {
   background: rgba(255, 255, 255, 0.85);
 }
 
+/* 햄버거 토글 — 데스크톱에서는 숨기고, 860px 이하에서만 노출 */
+.menu-toggle {
+  display: none;
+  align-items: center;
+  justify-content: center;
+  width: 36px;
+  height: 36px;
+  flex-shrink: 0;
+  border-radius: 999px;
+  color: #ffffff;
+  transition: background-color 0.2s ease;
+}
+
+.menu-toggle:hover {
+  background: rgba(255, 255, 255, 0.12);
+}
+
+/* 모바일 드롭다운 — top-nav(position: sticky)를 기준으로 바로 아래에 펼쳐진다 */
+.mobile-menu {
+  position: absolute;
+  top: 100%;
+  left: 0;
+  right: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  padding: 12px;
+  background: var(--color-ink);
+  border-top: 1px solid rgba(255, 255, 255, 0.12);
+  box-shadow: 0 16px 32px rgba(0, 0, 0, 0.25);
+}
+
+.mobile-menu-item {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 12px 14px;
+  border-radius: 10px;
+  color: rgba(255, 255, 255, 0.7);
+  font-size: 15px;
+  font-weight: 500;
+  transition:
+    color 0.2s ease,
+    background-color 0.2s ease;
+}
+
+.mobile-menu-item:hover {
+  color: #ffffff;
+  background: rgba(255, 255, 255, 0.08);
+}
+
+.mobile-menu-item.active {
+  color: #ffffff;
+  background: var(--color-accent);
+}
+
 /* 플로팅 알약 내비 — awwwards 식 좌하단 고정 위젯 */
 .floating-nav {
   position: fixed;
@@ -255,6 +347,10 @@ function scrollToTop() {
 
   .action-github {
     display: none;
+  }
+
+  .menu-toggle {
+    display: flex;
   }
 }
 </style>
