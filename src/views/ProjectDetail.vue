@@ -123,11 +123,8 @@ function publicAsset(path) {
                         <div v-for="(diagram, idx) in project.diagrams" :key="idx" class="diagram-item">
                             <span class="diagram-label">{{ diagram.title }}</span>
                             <div class="architecture-box">
-                                <img
-                                    :src="publicAsset(diagram.image)"
-                                    :alt="`${project.title} ${diagram.title}`"
-                                    class="architecture-image"
-                                />
+                                <img :src="publicAsset(diagram.image)" :alt="`${project.title} ${diagram.title}`"
+                                    class="architecture-image" />
                             </div>
                         </div>
                     </div>
@@ -149,7 +146,8 @@ function publicAsset(path) {
                     <h2 class="block-title">문제 해결 및 트러블슈팅</h2>
                     <div class="trouble-list">
                         <div v-for="(item, idx) in project.troubleshooting" :key="idx" class="trouble-card">
-                            <span v-if="project.troubleshooting.length > 1" class="trouble-index">이슈 {{ idx + 1 }}</span>
+                            <span v-if="project.troubleshooting.length > 1" class="trouble-index">이슈 {{ idx + 1
+                                }}</span>
                             <div class="trouble-section">
                                 <span class="trouble-label">문제 상황</span>
                                 <p class="trouble-text">{{ item.problem }}</p>
@@ -305,13 +303,15 @@ function publicAsset(path) {
     margin-bottom: 32px;
     background: var(--color-border);
     border: 1px solid var(--color-border);
+    border-radius: 8px;
+    overflow: hidden;
 }
 
 .stat-card {
     display: flex;
     flex-direction: column;
     padding: 20px 18px;
-    background: var(--color-bg-alt);
+    background: #faf6ec;
     border-top: 3px solid var(--color-accent);
     border-radius: 8px;
 }
