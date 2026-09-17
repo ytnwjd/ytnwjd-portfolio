@@ -153,7 +153,7 @@ function scrollToTop() {
   z-index: 100;
   height: var(--nav-height);
   background: var(--color-ink);
-  color: #ffffff;
+  color: var(--color-white);
 }
 
 .top-nav-inner {
@@ -192,7 +192,7 @@ function scrollToTop() {
 }
 
 .menu-item.active {
-  color: #ffffff;
+  color: var(--color-white);
   background: var(--color-accent);
 }
 
@@ -201,7 +201,7 @@ function scrollToTop() {
 }
 
 .menu-item:hover {
-  color: #ffffff;
+  color: var(--color-white);
 }
 
 .actions {
@@ -213,18 +213,18 @@ function scrollToTop() {
 
 .action-github {
   border-color: rgba(255, 255, 255, 0.35);
-  color: #ffffff;
+  color: var(--color-white);
 }
 
 .action-github:hover {
-  border-color: #ffffff;
+  border-color: var(--color-white);
   background: rgba(255, 255, 255, 0.12);
-  color: #ffffff;
+  color: var(--color-white);
 }
 
 .actions .btn--fill {
-  background: #ffffff;
-  border-color: #ffffff;
+  background: var(--color-white);
+  border-color: var(--color-white);
   color: var(--color-ink);
 }
 
@@ -241,7 +241,7 @@ function scrollToTop() {
   height: 36px;
   flex-shrink: 0;
   border-radius: 999px;
-  color: #ffffff;
+  color: var(--color-white);
   transition: background-color 0.2s ease;
 }
 
@@ -279,12 +279,12 @@ function scrollToTop() {
 }
 
 .mobile-menu-item:hover {
-  color: #ffffff;
+  color: var(--color-white);
   background: rgba(255, 255, 255, 0.08);
 }
 
 .mobile-menu-item.active {
-  color: #ffffff;
+  color: var(--color-white);
   background: var(--color-accent);
 }
 
@@ -315,17 +315,17 @@ function scrollToTop() {
 }
 
 .pill-logo {
-  color: #ffffff;
+  color: var(--color-white);
   background: rgba(255, 255, 255, 0.14);
 }
 
 .pill.active {
-  color: #ffffff;
+  color: var(--color-white);
   background: var(--color-accent);
 }
 
 .pill:hover {
-  color: #ffffff;
+  color: var(--color-white);
 }
 
 @media (max-width: 860px) {

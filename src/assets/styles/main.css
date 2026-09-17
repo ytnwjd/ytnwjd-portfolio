@@ -1,5 +1,6 @@
 :root {
   /* Awwwards식 무채색 팔레트 — 포인트 컬러 없이 흑백 명도 단계로만 위계를 만든다 */
+  --color-white: #ffffff;
   --color-bg: #f8f8f8;
   --color-bg-alt: #e8e8e8;
   --color-surface: #ffffff;
@@ -151,11 +152,11 @@ button {
 .btn--fill {
   background: var(--color-ink);
   border-color: var(--color-ink);
-  color: #ffffff;
+  color: var(--color-white);
 }
 
 .btn--fill:hover {
-  background: #222222;
+  background: var(--color-text);
 }
 
 .btn--outline {
@@ -166,7 +167,7 @@ button {
 
 .btn--outline:hover {
   background: var(--color-ink);
-  color: #ffffff;
+  color: var(--color-white);
 }
 
 .btn--ghost {

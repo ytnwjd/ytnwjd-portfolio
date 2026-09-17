@@ -107,7 +107,7 @@ const isLastCardWide = computed(
 .filter-tab.active {
   background: var(--color-accent);
   border-color: var(--color-accent);
-  color: #ffffff;
+  color: var(--color-white);
 }
 
 .filter-empty {

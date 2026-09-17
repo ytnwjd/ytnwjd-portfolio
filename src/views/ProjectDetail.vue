@@ -4,7 +4,7 @@ import { useRoute, RouterLink } from 'vue-router'
 import { computed, nextTick, onMounted, onUnmounted, ref, watch } from 'vue'
 import { IconCheck, IconStar, IconX } from '@tabler/icons-vue'
 import projects from '@/data/projects'
-import { getTechColor } from '@/data/techColors'
+import { getTechColor, getTagTextColor } from '@/data/techColors'
 
 const route = useRoute()
 const project = computed(() => projects.find((p) => p.slug === route.params.slug))
@@ -53,7 +53,7 @@ function tagStyle(tech) {
     return {
         backgroundColor: match.color,
         borderColor: match.color,
-        color: match.light ? '#1a1a1a' : '#ffffff',
+        color: getTagTextColor(match.light),
     }
 }
 
@@ -218,6 +218,7 @@ onUnmounted(() => window.removeEventListener('keydown', handleLightboxKeydown))
 <style scoped>
 .project-detail {
     max-width: 980px;
+    --color-highlight-bg: #faf6ec;
 }
 
 .back-link {
@@ -336,7 +337,7 @@ onUnmounted(() => window.removeEventListener('keydown', handleLightboxKeydown))
     display: flex;
     flex-direction: column;
     padding: 20px 18px;
-    background: #faf6ec;
+    background: var(--color-highlight-bg);
     border: 1px solid var(--color-border);
     border-top: 3px solid var(--color-accent);
     border-radius: 8px;
@@ -464,7 +465,7 @@ onUnmounted(() => window.removeEventListener('keydown', handleLightboxKeydown))
     justify-content: center;
     border-radius: 999px;
     background: rgba(255, 255, 255, 0.1);
-    color: #ffffff;
+    color: var(--color-white);
     transition: background-color 0.2s ease;
 }
 
@@ -532,7 +533,7 @@ onUnmounted(() => window.removeEventListener('keydown', handleLightboxKeydown))
 .trouble-card {
     position: relative;
     padding: 24px 28px;
-    background: #faf6ec;
+    background: var(--color-highlight-bg);
     border-left: 3px solid var(--color-accent);
     border-radius: 12px;
     box-shadow: 0 4px 20px rgba(0, 0, 0, 0.06);

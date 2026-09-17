@@ -2,11 +2,12 @@
 import { reactive } from 'vue'
 import { IconInfoCircle } from '@tabler/icons-vue'
 import { skillCategories, levelLegend } from '@/data/skills'
+import { getTagTextColor } from '@/data/techColors'
 import SkillIcon from '@/components/ui/SkillIcon.vue'
 
 function chipStyle(skill) {
   if (skill.level !== 'high') return undefined
-  return { backgroundColor: skill.color, color: skill.light ? '#1a1a1a' : '#ffffff' }
+  return { backgroundColor: skill.color, color: getTagTextColor(skill.light) }
 }
 
 // 배지별 설명 아코디언 — 여러 개를 동시에 열어 서로 비교할 수 있도록 독립적으로 토글
@@ -116,7 +117,7 @@ function toggleLevel(level) {
 .legend-info-btn.is-open {
   background: var(--color-accent);
   border-color: var(--color-accent);
-  color: #ffffff;
+  color: var(--color-white);
 }
 
 /* 아코디언 — max-height 트랜지션으로 높이를 부드럽게(과하지 않게) 애니메이션 */
@@ -192,7 +193,7 @@ function toggleLevel(level) {
 /* 많이 해봤어요 — 각 기술의 실제 브랜드 컬러로 채운다(색상은 chipStyle에서 인라인으로 지정) */
 .legend-chip.level-high {
   background: var(--color-accent);
-  color: #ffffff;
+  color: var(--color-white);
 }
 
 /* 아이콘이 어떤 브랜드 컬러 배경 위에 와도 또렷하게 보이도록 흰 원판을 깔아준다 */
@@ -204,7 +205,7 @@ function toggleLevel(level) {
   height: 18px;
   padding: 2px;
   border-radius: 999px;
-  background: #ffffff;
+  background: var(--color-white);
 }
 
 .level-mid {

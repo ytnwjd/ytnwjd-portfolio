@@ -40,3 +40,11 @@ const FALLBACK_COLOR = { color: '#475569' }
 export function getTechColor(name) {
   return techColorMap[normalize(name)] || FALLBACK_COLOR
 }
+
+// 밝은 배경(light: true)에는 짙은 텍스트를, 어두운 배경에는 흰 텍스트를 얹어 항상 대비를 확보한다
+const DARK_TEXT = '#1a1a1a'
+const LIGHT_TEXT = '#ffffff'
+
+export function getTagTextColor(light) {
+  return light ? DARK_TEXT : LIGHT_TEXT
+}

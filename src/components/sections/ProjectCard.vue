@@ -2,7 +2,7 @@
 <script setup>
 import { computed } from 'vue'
 import { RouterLink } from 'vue-router'
-import { getTechColor } from '@/data/techColors'
+import { getTechColor, getTagTextColor } from '@/data/techColors'
 
 const props = defineProps({
   project: { type: Object, required: true },
@@ -26,7 +26,7 @@ function tagStyle(tech) {
   return {
     backgroundColor: match.color,
     borderColor: match.color,
-    color: match.light ? '#1a1a1a' : '#ffffff',
+    color: getTagTextColor(match.light),
   }
 }
 </script>
