@@ -1,6 +1,7 @@
 <script setup>
-import { computed } from 'vue'
+import { computed, onMounted, onUnmounted, ref } from 'vue'
 import { RouterLink } from 'vue-router'
+import { IconExternalLink, IconX } from '@tabler/icons-vue'
 import activities from '@/data/activities'
 import projects from '@/data/projects'
 
@@ -32,13 +33,37 @@ function periodLabel(item) {
   const startYear = item.date.slice(0, 4)
   const endYear = item.endDate.slice(0, 4)
   const end =
-    endYear === startYear ? formatMD(item.endDate) : `'${endYear.slice(2)}.${formatMD(item.endDate)}`
+    endYear === startYear
+      ? formatMD(item.endDate)
+      : `'${endYear.slice(2)}.${formatMD(item.endDate)}`
   return `${formatMD(item.date)} ~ ${end}`
 }
 
 function projectTitle(slug) {
   return projects.find((p) => p.slug === slug)?.title ?? slug
 }
+
+function publicAsset(path) {
+  return `${import.meta.env.BASE_URL}${path}`
+}
+
+// 활동 사진 클릭 시 원본 크기로 확인할 수 있는 라이트박스
+const lightboxImage = ref(null)
+
+function openLightbox(src, alt) {
+  lightboxImage.value = { src, alt }
+}
+
+function closeLightbox() {
+  lightboxImage.value = null
+}
+
+function handleLightboxKeydown(e) {
+  if (e.key === 'Escape') closeLightbox()
+}
+
+onMounted(() => window.addEventListener('keydown', handleLightboxKeydown))
+onUnmounted(() => window.removeEventListener('keydown', handleLightboxKeydown))
 
 // 연도가 바뀌는 지점마다 연도 구분 행을 끼워 넣은 단일 타임라인 시퀀스를 만든다.
 // side는 연도 행을 제외한 활동 항목의 순번으로만 매겨서 좌우가 끊기지 않고 번갈아 이어지게 한다.
@@ -86,7 +111,10 @@ const timelineEntries = computed(() => {
         </li>
 
         <li v-else :id="entry.item.id" class="timeline-row" :class="`timeline-row--${entry.side}`">
-          <span class="timeline-marker" :style="{ backgroundColor: categoryColor(entry.item.category) }"></span>
+          <span
+            class="timeline-marker"
+            :style="{ backgroundColor: categoryColor(entry.item.category) }"
+          ></span>
 
           <div class="side-block">
             <span class="timeline-date">{{ periodLabel(entry.item) }}</span>
@@ -96,17 +124,64 @@ const timelineEntries = computed(() => {
               <p v-if="entry.item.orgInfo" class="item-org">{{ entry.item.orgInfo }}</p>
               <p v-if="entry.item.role" class="item-role">{{ entry.item.role }}</p>
 
+              <div v-if="entry.item.links?.length" class="item-links">
+                <a
+                  v-for="link in entry.item.links"
+                  :key="link.url"
+                  :href="link.url"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  class="item-link"
+                >
+                  <IconExternalLink :size="15" :stroke-width="2" />
+                  {{ link.label }}
+                </a>
+              </div>
+
               <div v-if="entry.item.relatedProjects?.length" class="item-projects">
-                <RouterLink v-for="slug in entry.item.relatedProjects" :key="slug"
-                  :to="{ name: 'project-detail', params: { slug } }" class="item-project-link">
+                <RouterLink
+                  v-for="slug in entry.item.relatedProjects"
+                  :key="slug"
+                  :to="{ name: 'project-detail', params: { slug } }"
+                  class="item-project-link"
+                >
                   {{ projectTitle(slug) }} →
                 </RouterLink>
+              </div>
+            </div>
+
+            <div v-if="entry.item.photos?.length" class="item-attachments">
+              <div class="item-photos">
+                <button
+                  v-for="(photo, i) in entry.item.photos"
+                  :key="photo"
+                  type="button"
+                  class="item-photo-btn"
+                  @click="openLightbox(publicAsset(photo), `${entry.item.title} 사진 ${i + 1}`)"
+                >
+                  <img
+                    :src="publicAsset(photo)"
+                    :alt="`${entry.item.title} 사진 ${i + 1}`"
+                    class="item-photo-thumb"
+                    loading="lazy"
+                  />
+                </button>
               </div>
             </div>
           </div>
         </li>
       </template>
     </ol>
+
+    <!-- 활동 사진 라이트박스 -->
+    <Teleport to="body">
+      <div v-if="lightboxImage" class="lightbox-overlay" @click="closeLightbox">
+        <button class="lightbox-close" @click.stop="closeLightbox" aria-label="닫기">
+          <IconX :size="22" :stroke-width="2" />
+        </button>
+        <img :src="lightboxImage.src" :alt="lightboxImage.alt" class="lightbox-image" @click.stop />
+      </div>
+    </Teleport>
   </section>
 </template>
 
@@ -174,11 +249,13 @@ const timelineEntries = computed(() => {
   z-index: 1;
 }
 
-/* 카드 없이 점 옆에 날짜, 그 옆에 본문이 나란히 놓인다 */
+/* 카드 없이 점 옆에 날짜, 그 옆에 본문이 나란히 놓인다.
+   자식 순서는 항상 [날짜][본문][첨부]이고, 왼쪽 카드만 row-reverse로 뒤집어서
+   첨부(사진)가 세로선에서 가장 먼 바깥쪽에 오도록 만든다. */
 .side-block {
   display: flex;
-  align-items: flex-start;
-  gap: 14px;
+  align-items: center;
+  gap: 16px;
 }
 
 .timeline-row--left .side-block {
@@ -194,13 +271,22 @@ const timelineEntries = computed(() => {
   flex-shrink: 0;
   margin-top: 3px;
   font-family: var(--font-mono);
-  font-size: 12px;
+  font-size: 13px;
   color: var(--color-text-faint);
   white-space: nowrap;
 }
 
 .timeline-content {
   min-width: 0;
+}
+
+/* 사진·링크 첨부 — 본문 옆, 세로선에서 먼 바깥쪽에 배치되는 블록 */
+.item-attachments {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 8px;
+  flex-shrink: 0;
 }
 
 .timeline-row--year {
@@ -226,7 +312,7 @@ const timelineEntries = computed(() => {
 }
 
 .item-title {
-  font-size: 16px;
+  font-size: 17.5px;
   font-weight: 700;
   color: var(--color-ink);
   word-break: keep-all;
@@ -235,13 +321,13 @@ const timelineEntries = computed(() => {
 .item-org {
   margin-top: 5px;
   color: var(--color-text-muted);
-  font-size: 13.5px;
+  font-size: 14.5px;
 }
 
 .item-role {
   margin-top: 5px;
   color: var(--color-text);
-  font-size: 14px;
+  font-size: 15px;
   line-height: 1.6;
   word-break: keep-all;
 }
@@ -265,6 +351,98 @@ const timelineEntries = computed(() => {
   color: var(--color-accent-dark);
 }
 
+/* 첨부 사진 썸네일 */
+.item-photos {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+.item-photo-btn {
+  padding: 0;
+  border: 1px solid var(--color-border);
+  border-radius: 6px;
+  overflow: hidden;
+  line-height: 0;
+  cursor: pointer;
+  transition:
+    border-color 0.2s ease,
+    transform 0.2s ease;
+}
+
+.item-photo-btn:hover {
+  border-color: var(--color-accent);
+  transform: translateY(-1px);
+}
+
+.item-photo-thumb {
+  width: 120px;
+  height: 120px;
+  object-fit: cover;
+  display: block;
+}
+
+/* 첨부 링크(노션 등) */
+.item-links {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 6px 12px;
+  margin-top: 8px;
+}
+
+.item-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 15px;
+  font-weight: 600;
+  color: var(--color-text-muted);
+  transition: color 0.2s ease;
+}
+
+.item-link:hover {
+  color: var(--color-accent);
+}
+
+/* 활동 사진 라이트박스 */
+.lightbox-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.85);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 48px;
+  z-index: 1000;
+}
+
+.lightbox-image {
+  max-width: 100%;
+  max-height: 100%;
+  border-radius: 8px;
+  cursor: default;
+}
+
+.lightbox-close {
+  position: fixed;
+  top: 24px;
+  right: 32px;
+  width: 40px;
+  height: 40px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.1);
+  color: var(--color-white);
+  transition: background-color 0.2s ease;
+}
+
+.lightbox-close:hover {
+  background: rgba(255, 255, 255, 0.2);
+}
+
 /* 화면이 좁아지면 좌우 교차 배치 대신 선을 왼쪽으로 옮기고 카드를 한 줄로 통일한다 */
 @media (max-width: 640px) {
   .timeline::before {
@@ -280,7 +458,7 @@ const timelineEntries = computed(() => {
   .timeline-row--left .side-block,
   .timeline-row--right .side-block {
     grid-column: 1;
-    flex-direction: row;
+    flex-direction: column;
   }
 
   .timeline-marker {

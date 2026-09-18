@@ -10,8 +10,13 @@ function scrollToTarget(linkTo) {
   <div class="hero-section">
     <span class="eyebrow">Best Accomplishment</span>
     <div class="hero">
-      <button v-for="card in kpiCards" :key="card.id" type="button" class="kpi-card"
-        @click="scrollToTarget(card.linkTo)">
+      <button
+        v-for="card in kpiCards"
+        :key="card.id"
+        type="button"
+        class="kpi-card"
+        @click="scrollToTarget(card.linkTo)"
+      >
         <span class="kpi-value">{{ card.value }}</span>
         <span class="kpi-label">{{ card.label }}</span>
         <span class="kpi-description">{{ card.description }}</span>
@@ -33,7 +38,7 @@ function scrollToTarget(linkTo) {
 .kpi-card {
   display: flex;
   flex-direction: column;
-  padding: 28px 24px;
+  padding: 34px 28px;
   background: var(--color-bg);
   text-align: left;
   transition: background-color 0.2s ease;
@@ -46,7 +51,7 @@ function scrollToTarget(linkTo) {
 .kpi-value {
   display: block;
   color: var(--color-accent);
-  font-size: 26px;
+  font-size: 30px;
   font-weight: 700;
   letter-spacing: -0.01em;
 }
@@ -66,7 +71,7 @@ function scrollToTarget(linkTo) {
   display: block;
   margin-top: 4px;
   color: var(--color-text-muted);
-  font-size: 14px;
+  font-size: 15px;
   line-height: 1.5;
   white-space: pre-line;
 }

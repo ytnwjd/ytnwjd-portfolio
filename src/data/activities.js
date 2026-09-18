@@ -8,6 +8,7 @@ export default [
     highlight: false,
     orgInfo: '소프트웨어학과 학술 소학회',
     role: '부원으로 시작해 학술부 임원진으로 활동하며 스터디 진행 보조 및 질의응답 담당',
+    photos: ['images/activities/hantor.jpg'],
   },
   {
     id: 'activity-doit',
@@ -19,6 +20,7 @@ export default [
     featured: true,
     orgInfo: '중앙 IT 네트워킹 동아리',
     role: '부원으로 시작해 부회장으로 활동하며 동아리 행사 기획·운영',
+    photos: ['images/activities/doit.jpg'],
   },
   {
     id: 'activity-sweat',
@@ -30,6 +32,11 @@ export default [
     featured: true,
     orgInfo: '중앙 코딩 교육 봉사 동아리',
     role: '초·중등 학생 대상 강의 자료·실습 콘텐츠 기획·제작 및 방문 강의 진행',
+    photos: ['images/activities/sweat.jpg'],
+    links: [
+      { label: 'Notion', url: 'https://app.notion.com/p/2023-6d5dd0e5b76b4ffba500f4c1454a0db2' },
+      { label: 'Instagram', url: 'https://www.instagram.com/ajou.sweat/?r=nametag' },
+    ],
   },
   {
     id: 'activity-mathhub',
@@ -50,17 +57,27 @@ export default [
     highlight: false,
     orgInfo: null,
     role: '학과 행사 기획·진행·운영 및 학생 피드백 반영',
+    photos: ['images/activities/enter.jpg'],
+    links: [
+      {
+        label: 'Notion',
+        url: 'https://app.notion.com/p/ytnwjd/7-Enter-2143d7bed4cd83228b9a813bd99057c1?source=copy_link',
+      },
+    ],
   },
   {
     id: 'activity-mekjuhoe',
     category: 'study',
-    title: "맥주회",
+    title: '맥주회',
     date: '2023-01-04',
     endDate: '2024-07-31',
     highlight: false,
     featured: true,
     orgInfo: "'맥북 주는 회사에 들어가자' - 실무 중심 백엔드 및 인프라 심화 스터디",
     role: '서버·데이터베이스·클라우드 인프라 관련 지식을 스터디원과 공유',
+    links: [
+      { label: 'Notion', url: 'https://app.notion.com/p/ytnwjd/7befd73ca7654338bf26c82fb6688d70' },
+    ],
   },
   {
     id: 'activity-moksso-2022winter',
@@ -92,6 +109,7 @@ export default [
     featured: true,
     orgInfo: 'Google Development Student Club',
     role: '교내외 개발자들과 세미나 및 스터디 참여',
+    links: [{ label: 'Instagram', url: 'https://www.instagram.com/gdsc.ajou/' }],
   },
   {
     id: 'activity-moksso-2023winter',
@@ -124,6 +142,7 @@ export default [
     role: '총학생회 SNS 운영 및 공식 홈페이지 개발·운영',
     relatedProjects: ['chongchongchong', 'ajouchong'],
     featured: true,
+    links: [{ label: 'Website', url: 'https://www.ajouchong.com/' }],
   },
   {
     id: 'activity-coding-trainer-2024',
@@ -156,6 +175,7 @@ export default [
     highlight: false,
     orgInfo: '한국과학창의재단 대학생 교육기부 활동',
     role: '과학 체험 및 언플러그드 활동 기획, 3일간 초등학교 방문 수업 진행',
+    photos: ['images/activities/soksok.jpg'],
   },
   {
     id: 'activity-springboot-study',
@@ -177,6 +197,7 @@ export default [
     orgInfo: '싱가포르 해외 현장 연수 프로그램',
     role: '싱가포르 현지 IT 기업·기관 방문, 해외 법인 운영 및 IP 보호 체계 견학',
     featured: true,
+    photos: ['images/activities/ip-it.jpg'],
   },
   {
     id: 'activity-coding-trainer-2025',
@@ -197,6 +218,7 @@ export default [
     highlight: false,
     orgInfo: '중앙 대중가요 동아리',
     role: '다양한 전공 학생들과 무대를 준비하며 협업·소통 경험',
+    photos: ['images/activities/zenith.jpg'],
   },
   {
     id: 'activity-deukgeun',
@@ -229,6 +251,7 @@ export default [
     role: null,
     relatedProjects: ['gpu-job-management-dashboard'],
     featured: true,
+    photos: ['images/activities/gpu_dashboard.jpg'],
   },
   {
     id: 'activity-labradorlabs-intern',
@@ -241,6 +264,7 @@ export default [
     role: 'Streamlit 기반 오픈소스 소프트웨어 및 취약점 관리',
     relatedProjects: ['labradorlabs-DBMS', 'crawler-watcher', 'vulnerability-alert-system'],
     featured: true,
+    photos: ['images/activities/labrador_intern.jpg'],
   },
   {
     id: 'activity-ssafy',

@@ -38,11 +38,15 @@ const FULL_CYCLE_DEVELOPER_DESC =
             </li>
             <li class="id-card-row">
               <span class="id-card-label">Univ.</span>
-              <span class="id-card-value">{{ profile.university }} ({{ profile.universityPeriod }})</span>
+              <span class="id-card-value"
+                >{{ profile.university }} ({{ profile.universityPeriod }})</span
+              >
             </li>
             <li class="id-card-row">
               <span class="id-card-label">E-Mail</span>
-              <a class="id-card-value id-card-link" :href="`mailto:${profile.email}`">{{ profile.email }}</a>
+              <a class="id-card-value id-card-link" :href="`mailto:${profile.email}`">{{
+                profile.email
+              }}</a>
             </li>
           </ul>
         </div>
@@ -82,7 +86,6 @@ const FULL_CYCLE_DEVELOPER_DESC =
 </template>
 
 <style scoped>
-
 .hero-stage {
   position: relative;
   padding: 24px 0;
@@ -117,9 +120,9 @@ const FULL_CYCLE_DEVELOPER_DESC =
 
 .id-card-photo {
   flex-shrink: 0;
-  width: 280px;
+  width: 320px;
   aspect-ratio: 3 / 4;
-  margin-left: 32px;
+  margin-left: 36px;
   border-radius: 8px;
   background-color: var(--color-bg-alt);
   background-image: url('/images/ytnwjd.jpg');
@@ -132,7 +135,7 @@ const FULL_CYCLE_DEVELOPER_DESC =
   flex-direction: column;
   min-width: 0;
   flex: 1;
-  padding: 40px 44px;
+  padding: 48px 56px;
 }
 
 .id-card-header {
@@ -141,7 +144,7 @@ const FULL_CYCLE_DEVELOPER_DESC =
 }
 
 .id-card-name {
-  font-size: 24px;
+  font-size: 28px;
   font-weight: 700;
   color: var(--color-ink);
   letter-spacing: -0.01em;
@@ -150,21 +153,21 @@ const FULL_CYCLE_DEVELOPER_DESC =
 .id-card-role {
   margin-top: 4px;
   color: var(--color-accent);
-  font-size: 14px;
+  font-size: 15px;
   font-weight: 600;
 }
 
 .id-card-role-desc {
   margin: 0px 0 8px 0;
   color: var(--color-text-muted);
-  font-size: 13px;
+  font-size: 14px;
   line-height: 1.6;
 }
 
 .id-card-info {
   display: flex;
   flex-wrap: wrap;
-  column-gap: 32px;
+  column-gap: 36px;
   row-gap: 8px;
   margin-top: 0;
 }
@@ -174,7 +177,7 @@ const FULL_CYCLE_DEVELOPER_DESC =
   align-items: baseline;
   gap: 10px;
   margin: 0;
-  font-size: 14px;
+  font-size: 15px;
 }
 
 .id-card-label {
@@ -235,11 +238,11 @@ const FULL_CYCLE_DEVELOPER_DESC =
 }
 
 .about-me-emoji {
-  font-size: 16px;
+  font-size: 18px;
 }
 
 .about-me-text {
-  font-size: 14px;
+  font-size: 15.5px;
   line-height: 1.7;
 }
 
@@ -266,7 +269,7 @@ const FULL_CYCLE_DEVELOPER_DESC =
 .certification-card {
   display: flex;
   flex-direction: column;
-  padding: 28px 24px;
+  padding: 34px 28px;
   background: var(--color-bg);
   transition: background-color 0.2s ease;
 }
@@ -278,7 +281,7 @@ const FULL_CYCLE_DEVELOPER_DESC =
 .certification-name {
   display: block;
   color: var(--color-accent);
-  font-size: 26px;
+  font-size: 30px;
   font-weight: 700;
   letter-spacing: -0.01em;
 }
@@ -298,7 +301,7 @@ const FULL_CYCLE_DEVELOPER_DESC =
   display: block;
   margin-top: 4px;
   color: var(--color-text-muted);
-  font-size: 14px;
+  font-size: 15px;
   line-height: 1.5;
 }
 
