@@ -1,22 +1,78 @@
 <script setup>
-import { ref } from 'vue'
 import HeroSection from './HeroSection.vue'
 import { profile } from '@/data/profile'
 import { aboutMe } from '@/data/aboutMe'
 import { certifications } from '@/data/certifications'
-import { useNetworkCanvas } from '@/composables/useNetworkCanvas'
-
-const canvasEl = ref(null)
-useNetworkCanvas(canvasEl)
 
 const FULL_CYCLE_DEVELOPER_DESC =
   'Full-cycle Developer란, 기획부터 배포, 운영까지 SDLC 전 과정을 스스로 책임지는 개발자를 뜻합니다.'
+
+// Hero 배경 — Full-cycle 순환 고리 클러스터 (SVG)
+function toRad(deg) { return (deg * Math.PI) / 180 }
+function pt(cx, cy, r, deg) {
+  const rad = toRad(deg)
+  return [cx + r * Math.cos(rad), cy + r * Math.sin(rad)]
+}
+function f(n) { return +n.toFixed(2) }
+
+function makeArcPath(cx, cy, r, s, e) {
+  const [x1, y1] = pt(cx, cy, r, s)
+  const [x2, y2] = pt(cx, cy, r, e)
+  const span = ((e - s) + 360) % 360
+  return `M ${f(x1)} ${f(y1)} A ${r} ${r} 0 ${span > 180 ? 1 : 0} 1 ${f(x2)} ${f(y2)}`
+}
+
+function makeArrowPath(cx, cy, r, endDeg, size = 5) {
+  const [ex, ey] = pt(cx, cy, r, endDeg)
+  const rad = toRad(endDeg)
+  const tx = -Math.sin(rad), ty = Math.cos(rad) // SVG(y-down) 시계방향 접선
+  const ox = Math.cos(rad), oy = Math.sin(rad)  // 반지름 방향(outward), 접선의 수직
+  const b1 = [f(ex - tx * size + ox * size * 0.42), f(ey - ty * size + oy * size * 0.42)]
+  const b2 = [f(ex - tx * size - ox * size * 0.42), f(ey - ty * size - oy * size * 0.42)]
+  return `M ${b1[0]} ${b1[1]} L ${f(ex)} ${f(ey)} L ${b2[0]} ${b2[1]}`
+}
+
+function makeDots(cx, cy, r, s, e, count) {
+  const span = ((e - s) + 360) % 360
+  return Array.from({ length: count }, (_, i) => {
+    const [x, y] = pt(cx, cy, r, s + (span / (count - 1)) * i)
+    return { x: f(x), y: f(y) }
+  })
+}
+
+const cycles = [
+  { cx: 148,  cy: 128, r: 56, s: -80, gap: 42, n: 5, dur: 28 },
+  { cx: 820,  cy: 72,  r: 40, s:  20, gap: 50, n: 4, dur: 22 },
+  { cx: 1350, cy: 180, r: 62, s: 140, gap: 36, n: 6, dur: 32 },
+  { cx: 440,  cy: 320, r: 46, s: 200, gap: 44, n: 5, dur: 25 },
+  { cx: 1160, cy: 285, r: 50, s: -20, gap: 40, n: 5, dur: 30 },
+].map(({ cx, cy, r, s, gap, n, dur }) => {
+  const e = s + (360 - gap)
+  return { cx, cy, dur, arc: makeArcPath(cx, cy, r, s, e), arrow: makeArrowPath(cx, cy, r, e), dots: makeDots(cx, cy, r, s, e, n) }
+})
 </script>
 
 <template>
   <section id="about" class="section hero-section">
     <div class="hero-stage">
-      <canvas ref="canvasEl" class="hero-canvas" aria-hidden="true"></canvas>
+      <svg
+        class="hero-canvas"
+        aria-hidden="true"
+        viewBox="0 0 1440 420"
+        preserveAspectRatio="xMidYMid slice"
+        xmlns="http://www.w3.org/2000/svg"
+      >
+        <g
+          v-for="(c, i) in cycles"
+          :key="i"
+          class="cycle-cluster"
+          :style="`transform-origin: ${c.cx}px ${c.cy}px; animation-duration: ${c.dur}s`"
+        >
+          <path :d="c.arc" class="cycle-arc" />
+          <path :d="c.arrow" class="cycle-arrow" />
+          <circle v-for="(dot, j) in c.dots" :key="j" :cx="dot.x" :cy="dot.y" r="2" class="cycle-dot" />
+        </g>
+      </svg>
       <span class="eyebrow">Portfolio · Full-cycle Developer</span>
       <h1 class="giant-title outline">유수정</h1>
       <p class="hero-tagline">
@@ -100,6 +156,38 @@ const FULL_CYCLE_DEVELOPER_DESC =
   inset: -40px -20px;
   width: calc(100% + 40px);
   height: calc(100% + 80px);
+}
+
+.cycle-arc {
+  stroke: rgba(0, 0, 0, 0.12);
+  stroke-width: 1;
+  fill: none;
+}
+
+.cycle-arrow {
+  stroke: rgba(0, 0, 0, 0.14);
+  stroke-width: 1;
+  fill: none;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+.cycle-dot {
+  fill: rgba(0, 0, 0, 0.35);
+}
+
+.cycle-cluster {
+  animation: cycle-spin linear infinite;
+}
+
+@keyframes cycle-spin {
+  to { transform: rotate(360deg); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .cycle-cluster {
+    animation: none;
+  }
 }
 
 .hero-stage .eyebrow,
