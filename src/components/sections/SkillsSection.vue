@@ -30,10 +30,15 @@ function toggleLevel(level) {
       <li v-for="item in levelLegend" :key="item.level" class="legend-item">
         <div class="legend-chip-row">
           <span class="legend-chip" :class="`level-${item.level}`">{{ item.label }}</span>
-          <button type="button" class="legend-info-btn" :class="{ 'is-open': openLevels.has(item.level) }"
-            :aria-expanded="openLevels.has(item.level)" :aria-controls="`level-desc-${item.level}`"
+          <button
+            type="button"
+            class="legend-info-btn"
+            :class="{ 'is-open': openLevels.has(item.level) }"
+            :aria-expanded="openLevels.has(item.level)"
+            :aria-controls="`level-desc-${item.level}`"
             :aria-label="`${item.label} 설명 ${openLevels.has(item.level) ? '닫기' : '보기'}`"
-            @click="toggleLevel(item.level)">
+            @click="toggleLevel(item.level)"
+          >
             <IconInfoCircle :size="15" :stroke-width="1.75" />
           </button>
         </div>
@@ -50,8 +55,11 @@ function toggleLevel(level) {
         <span class="skill-row-label">{{ cat.category }}</span>
         <ul class="skill-chips">
           <li v-for="skill in cat.skills" :key="skill.name">
-            <span class="skill-chip" :class="[`level-${skill.level}`, { 'has-fill': skill.level === 'high' }]"
-              :style="chipStyle(skill)">
+            <span
+              class="skill-chip"
+              :class="[`level-${skill.level}`, { 'has-fill': skill.level === 'high' }]"
+              :style="chipStyle(skill)"
+            >
               <span class="skill-chip-icon" :class="{ 'is-badged': skill.level === 'high' }">
                 <SkillIcon :name="skill.name" :icon-slug="skill.iconSlug" />
               </span>
@@ -86,9 +94,9 @@ function toggleLevel(level) {
 }
 
 .legend-chip {
-  padding: 7px 14px;
+  padding: 8px 16px;
   border-radius: 999px;
-  font-size: 12.5px;
+  font-size: 13.5px;
   font-weight: 600;
 }
 
@@ -156,9 +164,9 @@ function toggleLevel(level) {
 
 .skill-row-label {
   flex-shrink: 0;
-  width: 96px;
+  width: 104px;
   font-family: var(--font-mono);
-  font-size: 12px;
+  font-size: 13px;
   font-weight: 700;
   letter-spacing: 0.08em;
   text-transform: uppercase;
@@ -175,9 +183,9 @@ function toggleLevel(level) {
   display: inline-flex;
   align-items: center;
   gap: 6px;
-  padding: 6px 12px 6px 8px;
+  padding: 7px 14px 7px 9px;
   border-radius: 999px;
-  font-size: 13.5px;
+  font-size: 14.5px;
   font-weight: 500;
   white-space: nowrap;
   transition:
@@ -201,8 +209,8 @@ function toggleLevel(level) {
   display: flex;
   align-items: center;
   justify-content: center;
-  width: 18px;
-  height: 18px;
+  width: 20px;
+  height: 20px;
   padding: 2px;
   border-radius: 999px;
   background: var(--color-white);

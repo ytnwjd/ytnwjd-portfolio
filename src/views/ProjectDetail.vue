@@ -217,7 +217,8 @@ onUnmounted(() => window.removeEventListener('keydown', handleLightboxKeydown))
 
 <style scoped>
 .project-detail {
-    max-width: 980px;
+    max-width: 1200px;
+    padding-block: 80px;
     --color-highlight-bg: #faf6ec;
 }
 
@@ -243,8 +244,8 @@ onUnmounted(() => window.removeEventListener('keydown', handleLightboxKeydown))
 /* 2단 레이아웃 — 사이드바(기간·소속·유형·스택) + 메인(제목~트러블슈팅) */
 .detail-layout {
     display: grid;
-    grid-template-columns: 260px 1fr;
-    gap: 56px;
+    grid-template-columns: 220px 1fr;
+    gap: 72px;
     align-items: start;
 }
 
@@ -298,7 +299,7 @@ onUnmounted(() => window.removeEventListener('keydown', handleLightboxKeydown))
 
 .detail-main {
     min-width: 0;
-    max-width: 680px;
+    max-width: 820px;
 }
 
 @media (max-width: 860px) {
@@ -317,11 +318,11 @@ onUnmounted(() => window.removeEventListener('keydown', handleLightboxKeydown))
 }
 
 .project-title {
-    font-size: 34px;
+    font-size: clamp(34px, 3vw, 52px);
     font-weight: 700;
-    line-height: 1.3;
+    line-height: 1.25;
     letter-spacing: -0.01em;
-    margin-bottom: 28px;
+    margin-bottom: 32px;
     color: var(--color-ink);
 }
 
@@ -345,7 +346,7 @@ onUnmounted(() => window.removeEventListener('keydown', handleLightboxKeydown))
 
 .stat-value {
     color: var(--color-accent);
-    font-size: 24px;
+    font-size: 30px;
     font-weight: 700;
     letter-spacing: -0.01em;
 }
@@ -359,7 +360,7 @@ onUnmounted(() => window.removeEventListener('keydown', handleLightboxKeydown))
 
 /* Content Block */
 .content-block {
-    margin-bottom: 40px;
+    margin-bottom: 52px;
 }
 
 .block-title {
@@ -474,7 +475,7 @@ onUnmounted(() => window.removeEventListener('keydown', handleLightboxKeydown))
 }
 
 .summary-text {
-    font-size: 15.5px;
+    font-size: 17px;
     line-height: 1.75;
     color: var(--color-text);
 }
@@ -506,7 +507,7 @@ onUnmounted(() => window.removeEventListener('keydown', handleLightboxKeydown))
     display: flex;
     align-items: flex-start;
     gap: 12px;
-    font-size: 15px;
+    font-size: 16px;
     line-height: 1.65;
     color: var(--color-text);
 }
@@ -572,7 +573,7 @@ onUnmounted(() => window.removeEventListener('keydown', handleLightboxKeydown))
 }
 
 .trouble-text {
-    font-size: 15px;
+    font-size: 16px;
     line-height: 1.65;
     color: var(--color-text);
 }

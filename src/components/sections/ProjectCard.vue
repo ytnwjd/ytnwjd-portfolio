@@ -32,8 +32,12 @@ function tagStyle(tech) {
 </script>
 
 <template>
-  <RouterLink :to="{ name: 'project-detail', params: { slug: project.slug } }" class="project-card"
-    :class="{ 'no-tilt': wide }" :style="{ '--rotate': rotate }">
+  <RouterLink
+    :to="{ name: 'project-detail', params: { slug: project.slug } }"
+    class="project-card"
+    :class="{ 'no-tilt': wide }"
+    :style="{ '--rotate': rotate }"
+  >
     <div class="card-top">
       <span class="index-badge">{{ indexLabel }}</span>
       <span class="meta-text">{{ project.period }} · {{ project.organization }}</span>
@@ -53,10 +57,17 @@ function tagStyle(tech) {
 
     <div class="card-footer">
       <ul v-if="project.techStack?.length" class="tech-tags">
-        <li v-for="tech in project.techStack.slice(0, 4)" :key="tech" class="tech-tag" :style="tagStyle(tech)">
+        <li
+          v-for="tech in project.techStack.slice(0, 4)"
+          :key="tech"
+          class="tech-tag"
+          :style="tagStyle(tech)"
+        >
           {{ tech }}
         </li>
-        <li v-if="project.techStack.length > 4" class="tech-tag more">+{{ project.techStack.length - 4 }}</li>
+        <li v-if="project.techStack.length > 4" class="tech-tag more">
+          +{{ project.techStack.length - 4 }}
+        </li>
       </ul>
 
       <span class="more-link">자세히 보기<span class="arrow">›</span></span>
@@ -69,7 +80,7 @@ function tagStyle(tech) {
   display: flex;
   flex-direction: column;
   height: 100%;
-  padding: 24px 22px;
+  padding: 28px 26px;
   background: var(--color-bg);
   border: 1px solid var(--color-accent);
   border-radius: 16px;
@@ -120,7 +131,7 @@ function tagStyle(tech) {
 }
 
 .project-title {
-  font-size: 18px;
+  font-size: 20px;
   font-weight: 700;
   color: var(--color-ink);
   margin-bottom: 12px;
@@ -156,7 +167,7 @@ function tagStyle(tech) {
 .summary-text,
 .result-text {
   min-width: 0;
-  font-size: 13.5px;
+  font-size: 14.5px;
   line-height: 1.6;
   color: var(--color-text-muted);
   display: -webkit-box;
@@ -187,9 +198,9 @@ function tagStyle(tech) {
 
 .tech-tag {
   font-family: var(--font-mono);
-  font-size: 10.5px;
+  font-size: 11.5px;
   font-weight: 600;
-  padding: 3px 8px;
+  padding: 4px 9px;
   border: 1px solid var(--color-border);
   border-radius: 999px;
   color: var(--color-text-muted);
@@ -205,7 +216,7 @@ function tagStyle(tech) {
   flex-shrink: 0;
   align-items: center;
   gap: 3px;
-  font-size: 12.5px;
+  font-size: 13.5px;
   font-weight: 600;
   color: var(--color-text-muted);
   white-space: nowrap;
