@@ -276,5 +276,6 @@ export default [
     orgInfo: '삼성 청년 SW·AI 아카데미 16기',
     featured: true,
     role: '알고리즘 및 AI/LLM 커리큘럼 기반 실전 프로젝트와 팀 협업을 통한 백엔드 개발 및 AI 활용 역량 강화',
+    links: [{ label: 'Website', url: 'https://www.ssafy.com/' }],
   },
 ]
