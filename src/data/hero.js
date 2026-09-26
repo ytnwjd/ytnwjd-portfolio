@@ -5,6 +5,7 @@ export const kpiCards = [
     label: '총학생회 공식 홈페이지',
     description: '런칭 및 유지보수,\n평균 CTR 16% 향상',
     linkTo: '#project-ajouchong',
+    projectSlug: 'ajouchong',
   },
   {
     id: 'ajouchong-aws-cost',
@@ -12,6 +13,7 @@ export const kpiCards = [
     label: '총학생회 공식 홈페이지',
     description: 'AWS 인프라 마이그레이션,\n운영 비용 80% 이상 절감',
     linkTo: '#project-ajouchong',
+    projectSlug: 'ajouchong',
   },
   {
     id: 'labradorlabs-dashboard',
@@ -19,6 +21,7 @@ export const kpiCards = [
     label: '래브라도랩스 인턴',
     description: 'Back-Office 개발,\n페이지 로딩 속도 93% 단축',
     linkTo: '#project-labradorlabs-DBMS',
+    projectSlug: 'labradorlabs-DBMS',
   },
   {
     id: 'deukgeun',
@@ -33,5 +36,6 @@ export const kpiCards = [
     label: '자기주도 프로젝트',
     description: 'GPU Job Management Dashboard',
     linkTo: '#project-gpu-job-management-dashboard',
+    projectSlug: 'gpu-job-management-dashboard',
   },
 ]

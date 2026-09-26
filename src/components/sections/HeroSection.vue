@@ -1,8 +1,15 @@
 <script setup>
+import { useRouter } from 'vue-router'
 import { kpiCards } from '@/data/hero'
 
-function scrollToTarget(linkTo) {
-  document.querySelector(linkTo)?.scrollIntoView({ behavior: 'smooth' })
+const router = useRouter()
+
+function handleCardClick(card) {
+  if (card.projectSlug) {
+    router.push(`/projects/${card.projectSlug}`)
+  } else {
+    document.querySelector(card.linkTo)?.scrollIntoView({ behavior: 'smooth' })
+  }
 }
 </script>
 
@@ -15,7 +22,7 @@ function scrollToTarget(linkTo) {
         :key="card.id"
         type="button"
         class="kpi-card"
-        @click="scrollToTarget(card.linkTo)"
+        @click="handleCardClick(card)"
       >
         <span class="kpi-value">{{ card.value }}</span>
         <span class="kpi-label">{{ card.label }}</span>
