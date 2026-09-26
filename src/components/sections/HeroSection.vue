@@ -40,6 +40,7 @@ function handleCardClick(card) {
   margin-top: 24px;
   background: var(--color-border);
   border: 1px solid var(--color-border);
+  max-width: 1400px;
 }
 
 .kpi-card {
