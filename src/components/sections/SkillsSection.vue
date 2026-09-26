@@ -1,6 +1,5 @@
 <script setup>
-import { computed, reactive } from 'vue'
-import { IconInfoCircle } from '@tabler/icons-vue'
+import { computed } from 'vue'
 import { skillCategories, levelLegend } from '@/data/skills'
 import { getTagTextColor } from '@/data/techColors'
 import SkillIcon from '@/components/ui/SkillIcon.vue'
@@ -12,14 +11,6 @@ function chipStyle(skill) {
 
 const usedLevels = new Set(skillCategories.flatMap((c) => c.skills.map((s) => s.level)))
 const activeLegend = computed(() => levelLegend.filter((item) => usedLevels.has(item.level)))
-
-// 배지별 설명 아코디언 — 여러 개를 동시에 열어 서로 비교할 수 있도록 독립적으로 토글
-const openLevels = reactive(new Set())
-
-function toggleLevel(level) {
-  if (openLevels.has(level)) openLevels.delete(level)
-  else openLevels.add(level)
-}
 </script>
 
 <template>
@@ -28,27 +19,11 @@ function toggleLevel(level) {
     <h2 class="giant-title">SKILLS</h2>
     <p class="section-intro">프로젝트를 진행하며 실제로 다뤄본 언어와 프레임워크, 도구들입니다.</p>
 
-    <!-- 숙련도 범례 — 아이콘 클릭 시 해당 항목 설명만 아코디언으로 펼쳐짐 -->
+    <!-- 숙련도 범례 — 배지와 한 줄 요약을 항상 노출 -->
     <ul class="legend">
       <li v-for="item in activeLegend" :key="item.level" class="legend-item">
-        <div class="legend-chip-row">
-          <span class="legend-chip" :class="`level-${item.level}`">{{ item.label }}</span>
-          <button
-            type="button"
-            class="legend-info-btn"
-            :class="{ 'is-open': openLevels.has(item.level) }"
-            :aria-expanded="openLevels.has(item.level)"
-            :aria-controls="`level-desc-${item.level}`"
-            :aria-label="`${item.label} 설명 ${openLevels.has(item.level) ? '닫기' : '보기'}`"
-            @click="toggleLevel(item.level)"
-          >
-            <IconInfoCircle :size="15" :stroke-width="1.75" />
-          </button>
-        </div>
-
-        <div class="legend-desc-wrap" :class="{ 'is-open': openLevels.has(item.level) }">
-          <p :id="`level-desc-${item.level}`" class="legend-desc">{{ item.desc }}</p>
-        </div>
+        <span class="legend-chip" :class="`level-${item.level}`">{{ item.label }}</span>
+        <span class="legend-caption">{{ item.desc }}</span>
       </li>
     </ul>
 
@@ -80,74 +55,41 @@ function toggleLevel(level) {
   display: flex;
   flex-wrap: wrap;
   align-items: flex-start;
-  gap: 10px 16px;
+  gap: 20px 80px;
   margin: 32px 0 48px;
 }
 
+/* 배지 + 캡션을 하나의 묶음으로 — 줄바꿈 시 둘이 함께 이동 */
 .legend-item {
   display: flex;
   flex-direction: column;
-  min-width: 0;
-}
-
-.legend-chip-row {
-  display: inline-flex;
-  align-items: center;
+  align-items: flex-start;
   gap: 6px;
 }
 
 .legend-chip {
+  flex-shrink: 0;
   padding: 8px 16px;
   border-radius: 999px;
   font-size: 13.5px;
   font-weight: 600;
 }
 
-/* 배지 옆 정보 아이콘 — 클릭으로만 토글, 모바일 탭도 동일하게 동작 */
-.legend-info-btn {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  width: 22px;
-  height: 22px;
-  flex-shrink: 0;
-  border: 1px solid var(--color-border-strong);
-  border-radius: 999px;
+/* 캡션 max-width는 배지 폭과 무관하게 독립 설정 — 의미 단위 기준 줄바꿈 유도 */
+.legend-caption {
+  font-size: 12.5px;
   color: var(--color-text-muted);
-  transition:
-    background-color 0.2s ease,
-    color 0.2s ease,
-    border-color 0.2s ease;
+  line-height: 1.45;
+  max-width: 240px;
+  padding-top: 4px;
 }
 
-.legend-info-btn:hover {
-  border-color: var(--color-accent);
-  color: var(--color-accent);
-}
-
-.legend-info-btn.is-open {
-  background: var(--color-accent);
-  border-color: var(--color-accent);
-  color: var(--color-white);
-}
-
-/* 아코디언 — max-height 트랜지션으로 높이를 부드럽게(과하지 않게) 애니메이션 */
-.legend-desc-wrap {
-  max-width: 320px;
-  max-height: 0;
-  overflow: hidden;
-  transition: max-height 0.25s ease;
-}
-
-.legend-desc-wrap.is-open {
-  max-height: 220px;
-}
-
-.legend-desc {
-  padding-top: 10px;
-  color: var(--color-text-muted);
-  font-size: 13.5px;
-  line-height: 1.6;
+/* 모바일에서 그룹이 세로로 쌓일 때는 column gap이 의미 없으므로 간격을 줄임 */
+@media (max-width: 600px) {
+  .legend {
+    flex-direction: column;
+    gap: 20px;
+  }
 }
 
 /* 태그 클라우드 보드 — 카테고리를 좌측 라벨 + 우측 칩 한 줄로, 세로 공간을 최소화 */
