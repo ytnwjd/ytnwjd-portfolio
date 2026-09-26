@@ -20,8 +20,8 @@ const FULL_CYCLE_DEVELOPER_DESC =
       <span class="eyebrow">Portfolio · Full-cycle Developer</span>
       <h1 class="giant-title outline">유수정</h1>
       <p class="hero-tagline">
-        단편적인 문제 해결보다 근본 원인을 찾아 해결하고,<br />
-        운영 안정화까지 책임지는 Full-cycle 개발자 유수정입니다!
+        <span>단편적인 문제 해결보다 근본 원인을 찾아 해결하고,</span>
+        <span>운영 안정화까지 책임지는 Full-cycle 개발자 유수정입니다!</span>
       </p>
     </div>
 
@@ -114,6 +114,10 @@ const FULL_CYCLE_DEVELOPER_DESC =
   font-size: 30px;
   font-weight: 600;
   line-height: 1.65;
+}
+
+.hero-tagline span {
+  display: block;
 }
 
 /* 명함(ID card) — 사진 한 장이 카드 왼쪽 전체 높이를 차지하고, 오른쪽에 연락처와 About Me까지
@@ -339,7 +343,7 @@ const FULL_CYCLE_DEVELOPER_DESC =
 
 @media (max-width: 520px) {
   .hero-tagline {
-    font-size: 16px;
+    font-size: 14px;
   }
 
   .certifications-grid {
