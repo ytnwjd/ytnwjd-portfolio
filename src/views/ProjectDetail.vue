@@ -2,7 +2,7 @@
 <script setup>
 import { useRoute, RouterLink } from 'vue-router'
 import { computed, nextTick, onMounted, onUnmounted, ref, watch } from 'vue'
-import { IconCheck, IconStar, IconX } from '@tabler/icons-vue'
+import { IconArrowLeft, IconCheck, IconStar, IconX } from '@tabler/icons-vue'
 import projects from '@/data/projects'
 import { getTechColor, getTagTextColor } from '@/data/techColors'
 
@@ -88,7 +88,8 @@ onUnmounted(() => window.removeEventListener('keydown', handleLightboxKeydown))
                  그 아래 기간·소속·유형 메타와 기술 스택. 데스크탑에서는 sticky -->
             <aside class="detail-sidebar">
                 <RouterLink :to="{ path: '/', hash: '#projects' }" replace class="back-link">
-                    ← 프로젝트 목록으로 돌아가기
+                    <IconArrowLeft :size="14" :stroke-width="2.5" />
+                    목록으로
                 </RouterLink>
 
                 <ul class="sidebar-meta">
@@ -223,16 +224,24 @@ onUnmounted(() => window.removeEventListener('keydown', handleLightboxKeydown))
 }
 
 .back-link {
-    display: inline-block;
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
     margin-bottom: 32px;
-    font-size: 14px;
-    font-weight: 500;
-    color: var(--color-text-muted);
-    transition: color 0.2s ease;
+    padding: 8px 16px;
+    border: 1.5px solid var(--color-border-strong);
+    border-radius: 999px;
+    font-size: 13.5px;
+    font-weight: 600;
+    color: var(--color-text);
+    transition:
+        border-color 0.2s ease,
+        color 0.2s ease;
 }
 
 .back-link:hover {
-    color: var(--color-ink);
+    border-color: var(--color-accent);
+    color: var(--color-accent);
 }
 
 /* 사이드바 안에서는 flex gap이 간격을 이미 만들어주고, 사이드바 첫 줄이 제목과
