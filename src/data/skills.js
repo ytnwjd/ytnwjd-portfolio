@@ -29,7 +29,6 @@ export const skillCategories = [
       { name: 'Java', level: 'high', iconSlug: null, color: '#007396' },
       { name: 'JavaScript', level: 'high', color: '#F7DF1E', light: true },
       { name: 'C', level: 'mid', iconSlug: null },
-      { name: 'Go', level: 'learning' },
     ],
   },
   {
@@ -39,8 +38,6 @@ export const skillCategories = [
       { name: 'Vue.js', level: 'high', iconSlug: 'vuedotjs', color: '#4FC08D' },
       { name: 'MUI', level: 'mid' },
       { name: 'Vite', level: 'mid' },
-      { name: 'Next.js', level: 'learning', iconSlug: 'nextdotjs' },
-      { name: 'TypeScript', level: 'learning' },
     ],
   },
   {
@@ -51,7 +48,6 @@ export const skillCategories = [
       { name: 'Django', level: 'high', color: '#092E20' },
       { name: 'Streamlit', level: 'high', color: '#FF4B4B' },
       { name: 'JWT', level: 'mid', iconSlug: 'jsonwebtokens' },
-      { name: 'JUnit', level: 'learning', iconSlug: 'junit5' },
     ],
   },
   {
@@ -77,7 +73,7 @@ export const skillCategories = [
       { name: 'AWS', level: 'mid', iconSlug: null },
       { name: 'Prometheus', level: 'mid' },
       { name: 'Grafana', level: 'mid' },
-      { name: 'Kubernetes', level: 'learning' },
+      { name: 'Kubernetes', level: 'mid' },
     ],
   },
   {

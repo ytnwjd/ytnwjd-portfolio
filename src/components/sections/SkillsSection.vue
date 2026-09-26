@@ -1,5 +1,5 @@
 <script setup>
-import { reactive } from 'vue'
+import { computed, reactive } from 'vue'
 import { IconInfoCircle } from '@tabler/icons-vue'
 import { skillCategories, levelLegend } from '@/data/skills'
 import { getTagTextColor } from '@/data/techColors'
@@ -9,6 +9,9 @@ function chipStyle(skill) {
   if (skill.level !== 'high') return undefined
   return { backgroundColor: skill.color, color: getTagTextColor(skill.light) }
 }
+
+const usedLevels = new Set(skillCategories.flatMap((c) => c.skills.map((s) => s.level)))
+const activeLegend = computed(() => levelLegend.filter((item) => usedLevels.has(item.level)))
 
 // 배지별 설명 아코디언 — 여러 개를 동시에 열어 서로 비교할 수 있도록 독립적으로 토글
 const openLevels = reactive(new Set())
@@ -27,7 +30,7 @@ function toggleLevel(level) {
 
     <!-- 숙련도 범례 — 아이콘 클릭 시 해당 항목 설명만 아코디언으로 펼쳐짐 -->
     <ul class="legend">
-      <li v-for="item in levelLegend" :key="item.level" class="legend-item">
+      <li v-for="item in activeLegend" :key="item.level" class="legend-item">
         <div class="legend-chip-row">
           <span class="legend-chip" :class="`level-${item.level}`">{{ item.label }}</span>
           <button
