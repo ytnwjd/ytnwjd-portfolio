@@ -61,7 +61,6 @@ export const skillCategories = [
       { name: 'MySQL', level: 'high', color: '#4479A1' },
       { name: 'SQLite', level: 'high', color: '#003B57' },
       { name: 'MongoDB', level: 'mid' },
-      { name: 'NoSQL', level: 'mid', iconSlug: null },
     ],
   },
   {
