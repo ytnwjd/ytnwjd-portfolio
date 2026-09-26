@@ -124,6 +124,7 @@ const isLastCardWide = computed(
 .project-grid {
   display: grid;
   grid-template-columns: repeat(3, 1fr);
+  grid-auto-rows: minmax(330px, auto);
   gap: 24px;
   margin-top: 32px;
 }

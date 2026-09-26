@@ -137,6 +137,10 @@ function tagStyle(tech) {
   margin-bottom: 12px;
   line-height: 1.4;
   word-break: keep-all;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
 }
 
 .summary-highlight,
