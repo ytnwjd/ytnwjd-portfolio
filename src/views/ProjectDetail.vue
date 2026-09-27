@@ -218,7 +218,6 @@ onUnmounted(() => window.removeEventListener('keydown', handleLightboxKeydown))
 
 <style scoped>
 .project-detail {
-    max-width: 1200px;
     padding-block: 80px;
     --color-highlight-bg: #faf6ec;
 }
@@ -308,7 +307,6 @@ onUnmounted(() => window.removeEventListener('keydown', handleLightboxKeydown))
 
 .detail-main {
     min-width: 0;
-    max-width: 820px;
 }
 
 @media (max-width: 860px) {
