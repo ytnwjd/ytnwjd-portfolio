@@ -21,6 +21,10 @@ export default [
     orgInfo: '중앙 IT 네트워킹 동아리',
     role: '부원으로 시작해 부회장으로 활동하며 동아리 행사 기획·운영',
     photos: ['images/activities/doit.jpg'],
+    links: [
+      { label: 'Notion', url: 'https://shocking-calcium-196.notion.site/Main-Page-170b8a1007aa80c1aa86fa6103b8109c?source=copy_link' },
+      { label: 'Instagram', url: 'https://www.instagram.com/ajou_doit/' },
+    ],
   },
   {
     id: 'activity-sweat',
@@ -229,6 +233,7 @@ export default [
     highlight: false,
     orgInfo: '헬스 동아리',
     role: '동아리 개설, 회원 100명+ 규모로 성장시키며 운영 주도',
+    links: [{ label: 'Instagram', url: 'https://www.instagram.com/ajou_build.muscle/' }],
   },
   {
     id: 'activity-coding-test-study',
@@ -247,7 +252,7 @@ export default [
     date: '2025-12-04',
     endDate: null,
     highlight: true,
-    orgInfo: '자기주도 프로젝트 (GPU Job Management Dashboard)',
+    orgInfo: '자기주도 프로젝트',
     role: null,
     relatedProjects: ['gpu-job-management-dashboard'],
     featured: true,
@@ -265,6 +270,7 @@ export default [
     relatedProjects: ['labradorlabs-DBMS', 'crawler-watcher', 'vulnerability-alert-system'],
     featured: true,
     photos: ['images/activities/labrador_intern.jpg'],
+    links: [{ label: 'Website', url: 'https://labradorlabs.ai/?lang=ko' }],
   },
   {
     id: 'activity-ssafy',
