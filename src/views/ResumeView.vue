@@ -65,6 +65,9 @@ function periodLabel(item) {
           <li>{{ profile.email }}</li>
           <li>{{ profile.github }}</li>
           <li v-if="profile.blog">{{ profile.blog }}</li>
+          <li v-if="profile.portfolio">
+            <a class="r-contact-link" :href="profile.portfolio" target="_blank">{{ profile.portfolio }}</a>
+          </li>
         </ul>
       </div>
       <img class="r-photo" :src="photoSrc" alt="유수정 프로필 사진" />
@@ -194,6 +197,18 @@ function periodLabel(item) {
 
 .r-contacts li {
     list-style: none;
+}
+
+.r-contact-link {
+    color: inherit;
+    text-decoration: none;
+}
+
+@media print {
+    .r-contact-link {
+        color: #111111;
+        text-decoration: none;
+    }
 }
 
 .r-section {
