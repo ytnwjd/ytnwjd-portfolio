@@ -136,6 +136,7 @@ function tagStyle(tech) {
   color: var(--color-ink);
   margin-bottom: 12px;
   line-height: 1.4;
+  height: calc(2 * 1.4em);
   word-break: keep-all;
   display: -webkit-box;
   -webkit-line-clamp: 2;
@@ -153,7 +154,6 @@ function tagStyle(tech) {
 
 .result-highlight {
   margin-bottom: 16px;
-  flex-grow: 1;
 }
 
 .summary-tag,
@@ -173,6 +173,8 @@ function tagStyle(tech) {
   min-width: 0;
   font-size: 14.5px;
   line-height: 1.6;
+  /* 본문이 1줄이어도 2줄 높이로 고정 — 섹션 높이를 카드마다 동일하게 유지 */
+  height: calc(2 * 1.6em);
   color: var(--color-text-muted);
   display: -webkit-box;
   -webkit-line-clamp: 2;
@@ -182,14 +184,14 @@ function tagStyle(tech) {
   word-break: keep-all;
 }
 
-/* 하단 스택 및 자세히 보기 링크 */
+/* 하단 스택 및 자세히 보기 링크 — 위 섹션들이 고정 높이라 구분선(border-top)이
+   모든 카드에서 같은 높이에 온다. 태그 줄 수 차이는 구분선 아래 여백으로만 흡수된다. */
 .card-footer {
   display: flex;
-  align-items: center;
+  align-items: flex-start;
   justify-content: space-between;
   gap: 10px;
-  margin-top: auto;
-  padding-top: 14px;
+  padding-top: 22px;
   border-top: 1px solid var(--color-border);
 }
 
@@ -219,6 +221,8 @@ function tagStyle(tech) {
   display: flex;
   flex-shrink: 0;
   align-items: center;
+  /* 첫 줄 태그 높이에 맞춰 세로 중앙 정렬 */
+  min-height: 26px;
   gap: 3px;
   font-size: 13.5px;
   font-weight: 600;
