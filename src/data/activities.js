@@ -144,7 +144,7 @@ export default [
     highlight: false,
     orgInfo: null,
     role: '총학생회 SNS 운영 및 공식 홈페이지 개발·운영',
-    relatedProjects: ['chongchongchong', 'ajouchong'],
+    relatedProjects: ['ajouchong'],
     featured: true,
     links: [{ label: 'Website', url: 'https://www.ajouchong.com/' }],
   },
