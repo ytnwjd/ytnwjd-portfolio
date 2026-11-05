@@ -7,7 +7,7 @@ import ActivitiesSection from '@/components/sections/ActivitiesSection.vue'
 
 <template>
     <AboutSection />
-    <SkillsSection />
     <ProjectsSection />
     <ActivitiesSection />
+    <SkillsSection />
 </template>

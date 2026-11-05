@@ -70,17 +70,6 @@ function periodLabel(item) {
       <img class="r-photo" :src="photoSrc" alt="유수정 프로필 사진" />
     </header>
 
-    <!-- Skills -->
-    <section class="r-section">
-      <h2 class="r-section-title">Skills</h2>
-      <ul class="r-skill-list">
-        <li v-for="line in skillLines" :key="line.category" class="r-skill-row">
-          <span class="r-skill-category">{{ line.category }}</span>
-          <span class="r-skill-text">{{ line.text }}</span>
-        </li>
-      </ul>
-    </section>
-
     <!-- Projects -->
     <section class="r-section">
       <h2 class="r-section-title">Projects</h2>
@@ -111,6 +100,17 @@ function periodLabel(item) {
           </div>
           <p v-if="item.orgInfo" class="r-activity-org">{{ item.orgInfo }}</p>
           <p v-if="item.role" class="r-activity-role">{{ item.role }}</p>
+        </li>
+      </ul>
+    </section>
+
+    <!-- Skills -->
+    <section class="r-section">
+      <h2 class="r-section-title">Skills</h2>
+      <ul class="r-skill-list">
+        <li v-for="line in skillLines" :key="line.category" class="r-skill-row">
+          <span class="r-skill-category">{{ line.category }}</span>
+          <span class="r-skill-text">{{ line.text }}</span>
         </li>
       </ul>
     </section>

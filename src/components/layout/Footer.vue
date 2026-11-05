@@ -35,9 +35,9 @@ const resumeHref = `${import.meta.env.BASE_URL}resume.pdf`
           <div class="footer-col">
             <p class="footer-col-title">Sections</p>
             <a href="#about">소개</a>
-            <a href="#skills">기술 스택</a>
             <a href="#projects">프로젝트</a>
             <a href="#activity">활동</a>
+            <a href="#skills">기술 스택</a>
           </div>
 
           <div class="footer-col">
