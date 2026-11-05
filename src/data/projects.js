@@ -112,7 +112,8 @@ export default [
     period: '2025.10 ~ 2025.12',
     type: '팀 프로젝트 (3명)',
     organization: '교내 데이터베이스 수업',
-    featured: true,
+    featured: false,
+    hidden: true,
     diagrams: [{ title: 'ERD', image: 'images/diagram/artifact-erd.svg' }],
     techStack: ['React.js', 'Spring Boot', 'MySQL', 'Git'],
     summary: '여러 미술관 사이트에 파편화된 소장품 정보를 통합 조회할 수 있는 미술품 정보 플랫폼',
@@ -150,7 +151,7 @@ export default [
     period: '2025.08 ~ 2025.12',
     type: '개인 프로젝트',
     organization: '교내 자기주도 프로젝트',
-    featured: true,
+    featured: false,
     diagrams: [
       { title: '시스템 아키텍처', image: 'images/diagram/gpu-archi.svg' },
       { title: 'GPU Job 등록 플로우', image: 'images/diagram/gpu_regist-flow.svg' },
@@ -186,7 +187,8 @@ export default [
     period: '2024.03 ~ 2024.06',
     type: '팀 프로젝트 (3명)',
     organization: '파란학기(아주도전)',
-    featured: true,
+    featured: false,
+    hidden: true,
     techStack: ['Kubernetes', 'Docker', 'Grafana', 'Prometheus', 'AlertManager', 'Git'],
     summary:
       'OpenStack 기반 클라우드 환경에서 Kubernetes 클러스터를 효율적으로 배포 및 관리하는 Managed Service(PaaS)와 모니터링 시스템 설계',
@@ -277,6 +279,7 @@ export default [
     type: '개인 프로젝트',
     organization: '교내 오픈소스소프트웨어 수업',
     featured: false,
+    hidden: true,
     techStack: ['Docker', 'Prometheus', 'Grafana', 'Linux'],
     summary:
       '<Docker 기반 3-Tier 아키텍처 배포 및 Prometheus·Grafana를 활용한 메트릭 데이터 분석>을 주제로 기획·제작한 실습 중심의 오픈소스 강의 동영상 제작',
@@ -303,6 +306,7 @@ export default [
     type: '팀 프로젝트 (4명)',
     organization: '교내 시스템 프로그래밍 수업',
     featured: false,
+    hidden: true,
     techStack: ['C', 'Raspberry Pi', 'TCP/IP Socket', 'POSIX Threads'],
     summary:
       '라즈베리파이 4대와 다양한 임베디드 센서를 연동하여 골목길 내 화재, 흡연, 무단투기 등 위험 상황을 실시간 감지하고 대응하는 통합 안전 시스템 구축',

@@ -7,7 +7,8 @@ import projects from '@/data/projects'
 import { getTechColor, getTagTextColor } from '@/data/techColors'
 
 const route = useRoute()
-const project = computed(() => projects.find((p) => p.slug === route.params.slug))
+// hidden 프로젝트는 URL로 직접 들어와도 노출하지 않는다
+const project = computed(() => projects.find((p) => p.slug === route.params.slug && !p.hidden))
 
 // 라우터의 scrollBehavior와 별개로, 이 페이지 자체에서도 맨 위로 스크롤을 강제한다.
 // (다른 프로젝트 상세로 바로 이동할 땐 같은 컴포넌트가 재사용되어 onMounted가 다시
