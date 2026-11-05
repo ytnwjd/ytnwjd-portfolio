@@ -43,7 +43,7 @@ const isLastCardWide = computed(
   <section id="projects" class="section">
     <span class="eyebrow">Selected Work</span>
     <h2 class="giant-title">PROJECTS</h2>
-    <p class="section-intro">실서비스 운영부터 팀 프로젝트까지, 직접 설계하고 완성해낸 결과물입니다.</p>
+    <p class="section-intro">인턴 실무와 실서비스 운영 경험으로 문제를 정의하고 해결한 과정을 담았습니다.</p>
 
     <!-- 3열 그리드 — 모든 카드는 동일한 크기, 마지막 줄에 혼자 남는 카드만 전체 폭으로 확장 -->
     <ul class="project-grid">
