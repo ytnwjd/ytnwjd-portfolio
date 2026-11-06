@@ -7,9 +7,7 @@ import { getTechColor, getTagTextColor } from '@/data/techColors'
 const props = defineProps({
   project: { type: Object, required: true },
   index: { type: Number, required: true },
-  // 그리드 전체 폭을 차지하는 마지막 카드는 회전을 주면 모서리가 섹션 밖으로
-  // 삐져나가 가로 스크롤이 생기므로 회전 없이 뜨는 효과만 적용
-  wide: { type: Boolean, default: false },
+  noTilt: { type: Boolean, default: false },
 })
 
 const indexLabel = computed(() => String(props.index + 1).padStart(2, '0'))
@@ -35,7 +33,7 @@ function tagStyle(tech) {
   <RouterLink
     :to="{ name: 'project-detail', params: { slug: project.slug } }"
     class="project-card"
-    :class="{ 'no-tilt': wide }"
+    :class="{ 'no-tilt': noTilt }"
     :style="{ '--rotate': rotate }"
   >
     <div class="card-top">
