@@ -2,6 +2,9 @@ export default [
   {
     slug: 'crawler-watcher',
     title: 'Crawler Watcher',
+    // PROJECTS 섹션 카드 전용 — metrics는 카드 상단 수치, hook은 "문제 → 해결" 한 줄 요약
+    metrics: [{ value: 'Multi-Thread', label: '다중 크롤러 로그 실시간 감시·이상 탐지' }],
+    hook: '멀티스레드 SQLite lock 경합·Deadlock → WAL 모드 + lock 범위 분리',
     period: '2026.05 ~ 2026.06',
     type: '개인 프로젝트',
     organization: '래브라도랩스 인턴 (AI분석엔진팀)',
@@ -35,12 +38,14 @@ export default [
   {
     slug: 'labradorlabs-DBMS',
     title: 'LabradorLabs DBMS',
+    metrics: [{ value: '93%', label: '페이지 로딩 30초 → 2초' }],
+    hook: '동기 순차 조회 병목 → ThreadPoolExecutor 기반 병렬 조회',
     period: '2026.02 ~ 2026.04',
     type: '개인 프로젝트',
     organization: '래브라도랩스 인턴 (AI분석엔진팀)',
     featured: true,
     diagrams: [{ title: '시스템 아키텍처', image: 'images/diagram/dmds_archi.png' }],
-    techStack: ['Python', 'FastAPI', 'Streamlit', 'SQLite', 'Docker'],
+    techStack: ['Streamlit', 'FastAPI', 'Python', 'SQLite', 'Docker'],
     summary:
       '취약점 감지 현황·크롤링 데이터 통계·운영 설정을 하나의 화면에서 확인·조작할 수 있는 통합 Back-Office 대시보드',
     responsibilities: [
@@ -72,6 +77,8 @@ export default [
   {
     slug: 'vulnerability-alert-system',
     title: 'Vulnerability Alert System',
+    metrics: [{ value: 'Rule Engine', label: 'JSON 규칙 기반 데이터 감지·알림 자동화' }],
+    hook: '코드 수정 없는 JSON 규칙 엔진 + Docker 컨테이너 장애 감시',
     period: '2025.12 ~ 2026.02',
     type: '개인 프로젝트',
     organization: '래브라도랩스 인턴 (AI분석엔진팀)',
@@ -112,7 +119,7 @@ export default [
     period: '2025.10 ~ 2025.12',
     type: '팀 프로젝트 (3명)',
     organization: '교내 데이터베이스 수업',
-    featured: true,
+    hidden: true,
     diagrams: [{ title: 'ERD', image: 'images/diagram/artifact-erd.svg' }],
     techStack: ['React.js', 'Spring Boot', 'MySQL', 'Git'],
     summary: '여러 미술관 사이트에 파편화된 소장품 정보를 통합 조회할 수 있는 미술품 정보 플랫폼',
@@ -147,10 +154,11 @@ export default [
   {
     slug: 'gpu-job-management-dashboard',
     title: 'k8s 기반의 GPU Job Management Dashboard',
+    metrics: [{ value: '인기상', label: 'Ajou Softcon 2025' }],
+    hook: '가용 GPU 자동 할당·대기열 스케줄링 + 사용자별 격리 디렉토리 File Tree로 CLI 없이 Job 등록',
     period: '2025.08 ~ 2025.12',
     type: '개인 프로젝트',
     organization: '교내 자기주도 프로젝트',
-    featured: true,
     diagrams: [
       { title: '시스템 아키텍처', image: 'images/diagram/gpu-archi.svg' },
       { title: 'GPU Job 등록 플로우', image: 'images/diagram/gpu_regist-flow.svg' },
@@ -181,51 +189,12 @@ export default [
     ],
   },
   {
-    slug: 'chongchongchong',
-    title: '총총총',
-    period: '2024.08 ~ 2024.12',
-    type: '팀 프로젝트 (5명)',
-    organization: '다학제 캡스톤 디자인',
-    featured: true,
-    techStack: [
-      'React',
-      'Java',
-      'Spring Boot',
-      'PostgreSQL',
-      'AWS S3',
-      'Cloudflare',
-      'Vercel',
-      'GitHub Actions',
-    ],
-    summary:
-      '레거시 Django 시스템의 비용·유지보수 문제를 해결하고 브랜드 아이덴티티를 반영하기 위해 Spring Boot 기반으로 전면 재설계·런칭한 총학생회 공식 홈페이지 개편 프로젝트',
-    responsibilities: [
-      '프론트엔드 개발자 2명 영입 및 팀 빌딩, 프로젝트 개발 표준 정립',
-      'Django → Java/Spring Boot 아키텍처 전면 재설계 주도',
-      'docker-compose 기반 팀 로컬 개발환경 통일 및 OAuth·JWT 인증 파이프라인 Spring Security 모듈화',
-      'AOLDA 클라우드 및 자체 도메인(ajouchong.com) 연결 실서비스 배포, GitHub Actions+Vercel CI/CD 파이프라인 구축',
-    ],
-    troubleshooting: [
-      {
-        problem:
-          '팀원 다수가 참여하는 개발·배포 환경에 표준이 없어 프론트엔드 개발자들이 백엔드·DB 연동에 어려움을 겪었고, OAuth·JWT 인증 로직의 복잡도도 높았습니다.',
-        cause: '초기 단계에서 개발 환경과 인증 파이프라인에 대한 표준이 마련되지 않았습니다.',
-        solution:
-          'docker-compose로 팀원 로컬 개발환경을 통일하고, OAuth로 전달받은 정보로 자체 JWT를 발행하는 인증 파이프라인을 Spring Security로 모듈화해 팀원 모두가 동일한 환경에서 개발할 수 있도록 정리했습니다.',
-      },
-    ],
-    result: [
-      'Spring Boot + React 기반 신규 홈페이지를 기한 내 성공적으로 런칭',
-      '개발환경·CI/CD 표준화로 팀 전체의 협업 생산성 향상에 기여',
-    ],
-  },
-  {
     slug: 'aks',
     title: 'AKS (AOLDA K8s managed Service)',
     period: '2024.03 ~ 2024.06',
     type: '팀 프로젝트 (3명)',
     organization: '파란학기(아주도전)',
-    featured: true,
+    hidden: true,
     techStack: ['Kubernetes', 'Docker', 'Grafana', 'Prometheus', 'AlertManager', 'Git'],
     summary:
       'OpenStack 기반 클라우드 환경에서 Kubernetes 클러스터를 효율적으로 배포 및 관리하는 Managed Service(PaaS)와 모니터링 시스템 설계',
@@ -249,9 +218,14 @@ export default [
   },
   {
     slug: 'ajouchong',
-    title: '총학생회 홈페이지 단독 운영·고도화',
+    title: '총학생회 홈페이지 개편·운영',
+    metrics: [
+      { value: '90%', label: 'AWS 비용 월 60만 → 4만 원' },
+      { value: '16%', label: '방문자 평균 CTR 향상' },
+    ],
+    hook: 'Django → Spring Boot 전면 재설계 후, 2년간 단독 운영하며 인프라 이관까지 주도',
     period: '2024.01 ~ 2026.03',
-    type: '개인 프로젝트',
+    type: '팀 프로젝트 (5명) → 단독 운영',
     organization: '아주대학교 총학생회',
     featured: true,
     diagrams: [{ title: '시스템 아키텍처', image: 'images/diagram/ajouchong-archi.svg' }],
@@ -267,14 +241,25 @@ export default [
       'Vercel',
     ],
     summary:
-      '총총총 개편 이후, 실서비스로 전환된 총학생회 홈페이지를 2년간 단독으로 운영하며 인프라 안정화와 Admin 페이지 신규 구축까지 책임진 풀사이클 운영 경험',
+      '레거시 Django 시스템의 비용·유지보수 문제를 해결하기 위해 Spring Boot 기반으로 전면 재설계·런칭(총총총, 5인 팀)하고, 이후 2년간 단독 운영하며 인프라 안정화와 Admin 페이지 신규 구축까지 책임진 총학생회 공식 홈페이지 풀사이클 프로젝트',
     responsibilities: [
+      '프론트엔드 개발자 2명 영입 및 팀 빌딩, 프로젝트 개발 표준 정립',
+      'Django → Java/Spring Boot 아키텍처 전면 재설계 주도',
+      'docker-compose 기반 팀 로컬 개발환경 통일 및 OAuth·JWT 인증 파이프라인 Spring Security 모듈화',
+      'GitHub Actions+Vercel CI/CD 파이프라인 구축',
       '자체 도메인(ajouchong.com)을 연결한 실서비스를 2년간 단독 운영',
       '관리자(Admin) 페이지 기획 및 구현',
       '비용·안정성 문제 해결을 위한 인프라 재설계 및 이관(AWS → AOLDA → AWS EC2+Vercel) 단독 주도',
       '서비스 운영 데이터를 기반으로 한 지속적인 개선 및 유지보수',
     ],
     troubleshooting: [
+      {
+        problem:
+          '팀원 다수가 참여하는 개발·배포 환경에 표준이 없어 프론트엔드 개발자들이 백엔드·DB 연동에 어려움을 겪었고, OAuth·JWT 인증 로직의 복잡도도 높았습니다.',
+        cause: '초기 단계에서 개발 환경과 인증 파이프라인에 대한 표준이 마련되지 않았습니다.',
+        solution:
+          'docker-compose로 팀원 로컬 개발환경을 통일하고, OAuth로 전달받은 정보로 자체 JWT를 발행하는 인증 파이프라인을 Spring Security로 모듈화해 팀원 모두가 동일한 환경에서 개발할 수 있도록 정리했습니다.',
+      },
       {
         problem: '기존 AWS 인프라의 운영비가 월 60만 원까지 급증했습니다.',
         cause: '비효율적인 리소스 설정과 인프라 구조 전반의 문제가 누적된 결과였습니다.',
@@ -291,6 +276,8 @@ export default [
       },
     ],
     result: [
+      'Spring Boot + React 기반 신규 홈페이지를 기한 내 성공적으로 런칭',
+      '개발환경·CI/CD 표준화로 팀 전체의 협업 생산성 향상에 기여',
       '2년간 단독 운영하며 실사용자 대상 서비스 지속 제공',
       'AWS 운영 비용 월 60만 원 → 4만 원대로 90% 이상 절감',
       '방문자 평균 CTR 16% 향상',
@@ -302,7 +289,7 @@ export default [
     period: '2023.10 ~ 2023.12',
     type: '개인 프로젝트',
     organization: '교내 오픈소스소프트웨어 수업',
-    featured: false,
+    hidden: true,
     techStack: ['Docker', 'Prometheus', 'Grafana', 'Linux'],
     summary:
       '<Docker 기반 3-Tier 아키텍처 배포 및 Prometheus·Grafana를 활용한 메트릭 데이터 분석>을 주제로 기획·제작한 실습 중심의 오픈소스 강의 동영상 제작',
@@ -328,7 +315,7 @@ export default [
     period: '2023.08 ~ 2023.12',
     type: '팀 프로젝트 (4명)',
     organization: '교내 시스템 프로그래밍 수업',
-    featured: false,
+    hidden: true,
     techStack: ['C', 'Raspberry Pi', 'TCP/IP Socket', 'POSIX Threads'],
     summary:
       '라즈베리파이 4대와 다양한 임베디드 센서를 연동하여 골목길 내 화재, 흡연, 무단투기 등 위험 상황을 실시간 감지하고 대응하는 통합 안전 시스템 구축',

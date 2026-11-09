@@ -9,9 +9,9 @@ const resumeHref = `${import.meta.env.BASE_URL}resume.pdf`
 
 const navItems = [
   { id: 'about', labelKo: '소개', labelEn: 'About' },
-  { id: 'skills', labelKo: '기술 스택', labelEn: 'Skills' },
   { id: 'projects', labelKo: '프로젝트', labelEn: 'Projects' },
   { id: 'activity', labelKo: '활동', labelEn: 'Activity' },
+  { id: 'skills', labelKo: '기술 스택', labelEn: 'Skills' },
 ]
 
 // 플로팅 위젯에는 자리 제약상 짧은 핵심 항목만 노출

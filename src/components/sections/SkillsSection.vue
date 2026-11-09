@@ -3,6 +3,7 @@ import { computed } from 'vue'
 import { skillCategories, levelLegend } from '@/data/skills'
 import { getTagTextColor } from '@/data/techColors'
 import SkillIcon from '@/components/ui/SkillIcon.vue'
+import { certifications } from '@/data/certifications'
 
 function chipStyle(skill) {
   if (skill.level !== 'high') return undefined
@@ -45,6 +46,17 @@ const activeLegend = computed(() => levelLegend.filter((item) => usedLevels.has(
             </span>
           </li>
         </ul>
+      </div>
+    </div>
+
+    <div class="certifications">
+      <span class="eyebrow">Certifications</span>
+      <div class="certifications-grid">
+        <div v-for="cert in certifications" :key="cert.name" class="certification-card">
+          <span class="certification-name">{{ cert.name }}</span>
+          <span class="certification-grade">{{ cert.grade }}</span>
+          <span class="certification-date">취득일 {{ cert.date }}</span>
+        </div>
       </div>
     </div>
   </section>
@@ -187,6 +199,71 @@ const activeLegend = computed(() => levelLegend.filter((item) => usedLevels.has(
 
   .skill-row-label {
     width: auto;
+  }
+}
+
+/* 자격증 — 이력서 PDF와 동일하게 기술 스택 바로 아래에 배치 */
+.certifications {
+  margin-top: 72px;
+}
+
+.certifications-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 1px;
+  margin-top: 24px;
+  background: var(--color-border);
+  border: 1px solid var(--color-border);
+}
+
+.certification-card {
+  display: flex;
+  flex-direction: column;
+  padding: 34px 28px;
+  background: var(--color-bg);
+  transition: background-color 0.2s ease;
+}
+
+.certification-card:hover {
+  background: var(--color-bg-alt);
+}
+
+.certification-name {
+  display: block;
+  color: var(--color-accent);
+  font-size: 30px;
+  font-weight: 700;
+  letter-spacing: -0.01em;
+}
+
+.certification-grade {
+  display: block;
+  margin-top: 14px;
+  font-family: var(--font-mono);
+  color: var(--color-text-faint);
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+
+.certification-date {
+  display: block;
+  margin-top: 4px;
+  color: var(--color-text-muted);
+  font-size: 15px;
+  line-height: 1.5;
+}
+
+@media (max-width: 900px) {
+  .certifications-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (max-width: 520px) {
+  .certifications-grid {
+    grid-template-columns: 1fr;
   }
 }
 </style>

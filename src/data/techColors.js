@@ -18,13 +18,10 @@ for (const cat of skillCategories) {
 // 아예 없거나 색이 지정 안 된 기술(Grafana·Prometheus는 SKILLS에서 level:'mid'라 색이 없음)을 위한 보강 항목
 const extraColors = {
   react: { color: '#61DAFB', light: true },
-  reactjs: { color: '#61DAFB', light: true },
   kubernetes: { color: '#326CE5' },
   mui: { color: '#007FFF' },
   c: { color: '#A8B9CC', light: true },
   raspberrypi: { color: '#A22846' },
-  streamlit: { color: '#FF4B4B' },
-  sqlite: { color: '#003B57' },
   mongodb: { color: '#47A248' },
   grafana: { color: '#F46800' },
   prometheus: { color: '#E6522C' },

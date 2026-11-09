@@ -1,155 +1,207 @@
 <!-- src/components/sections/ProjectsSection.vue -->
 <script setup>
-import { computed, onBeforeUnmount, onMounted, ref } from 'vue'
+import { RouterLink } from 'vue-router'
+import { IconArrowRight } from '@tabler/icons-vue'
 import projects from '@/data/projects'
+import { projectGroups } from '@/data/projectGroups'
 import ProjectCard from './ProjectCard.vue'
 
-const filters = [
-  { key: 'all', label: '전체', test: () => true },
-  { key: 'featured', label: '주요 프로젝트', test: (p) => p.featured },
-  { key: 'solo', label: '개인 프로젝트', test: (p) => p.type === '개인 프로젝트' },
-  { key: 'team', label: '팀 프로젝트', test: (p) => p.type.includes('팀 프로젝트') },
-]
+// hidden 프로젝트는 데이터는 보존하되 화면에는 노출하지 않는다
+const visibleProjects = projects.filter((p) => !p.hidden)
+const bySlug = Object.fromEntries(visibleProjects.map((p) => [p.slug, p]))
 
-const activeFilterKey = ref('all')
+// 그룹 순서대로 대표 프로젝트를 묶고, 나머지는 하단 목록으로 내린다
+const groups = projectGroups
+  .map((group) => ({ ...group, projects: group.slugs.map((slug) => bySlug[slug]).filter(Boolean) }))
+  .filter((group) => group.projects.length)
 
-const filteredProjects = computed(() => {
-  const filter = filters.find((f) => f.key === activeFilterKey.value)
-  return projects.filter(filter.test)
-})
+const groupedSlugs = new Set(groups.flatMap((g) => g.projects.map((p) => p.slug)))
+const otherProjects = visibleProjects.filter((p) => !groupedSlugs.has(p.slug))
 
-// .project-grid의 그리드 컬럼 수는 미디어 쿼리로 3 → 2 → 1개로 바뀐다.
-// 현재 컬럼 수를 함께 추적해야 "마지막 줄에 혼자 남는지" 판단이 브레이크포인트마다 정확해진다.
-const mediaQueries = [
-  { query: '(max-width: 600px)', columns: 1 },
-  { query: '(max-width: 900px)', columns: 2 },
-]
-const columns = ref(3)
-
-function updateColumns() {
-  const matched = mediaQueries.find((mq) => window.matchMedia(mq.query).matches)
-  columns.value = matched ? matched.columns : 3
+function startYear(period) {
+  return period?.slice(0, 4)
 }
-
-let mqlList = []
-
-onMounted(() => {
-  updateColumns()
-  mqlList = mediaQueries.map((mq) => window.matchMedia(mq.query))
-  mqlList.forEach((mql) => mql.addEventListener('change', updateColumns))
-})
-
-onBeforeUnmount(() => {
-  mqlList.forEach((mql) => mql.removeEventListener('change', updateColumns))
-})
-
-// 현재 컬럼 수 기준으로 마지막 줄에 카드 1개만 덩그러니 남는 경우에만
-// 그 카드를 전체 폭으로 넓혀 어색한 여백을 없앤다. 1열에서는 이미 전체 폭이라 항상 제외한다.
-const isLastCardWide = computed(
-  () => columns.value > 1 && filteredProjects.value.length % columns.value === 1,
-)
 </script>
 
 <template>
   <section id="projects" class="section">
     <span class="eyebrow">Selected Work</span>
     <h2 class="giant-title">PROJECTS</h2>
-    <p class="section-intro">실서비스 운영부터 팀 프로젝트까지, 직접 설계하고 완성해낸 결과물입니다.</p>
+    <p class="section-intro">인턴 실무와 실서비스 운영 경험으로 문제를 정의하고 해결한 과정을 담았습니다.</p>
 
-    <!-- 필터 탭 — URL 이동 없이 로컬 state로 즉시 필터링 -->
-    <div class="filter-tabs" role="tablist" aria-label="프로젝트 필터">
-      <button v-for="filter in filters" :key="filter.key" type="button" class="filter-tab"
-        :class="{ active: activeFilterKey === filter.key }" role="tab" :aria-selected="activeFilterKey === filter.key"
-        @click="activeFilterKey = filter.key">
-        {{ filter.label }}
-      </button>
+    <div class="project-groups">
+      <div v-for="group in groups" :key="group.key" class="project-group">
+        <!-- 그룹 헤더 — 회사/조직 · 기간 · 한 줄 맥락 -->
+        <header class="group-head">
+          <div class="group-head-main">
+            <h3 class="group-title">{{ group.title }}</h3>
+            <span class="group-period">{{ group.period }}</span>
+          </div>
+        </header>
+        <p class="group-desc">{{ group.description }}</p>
+
+        <ul class="group-cards" :class="`layout-${group.layout}`">
+          <li v-for="project in group.projects" :key="project.slug" :id="`project-${project.slug}`"
+            class="project-item">
+            <ProjectCard :project="project" :wide="group.layout === 'wide'"
+              :tone="group.highlight ? 'accent' : 'navy'" />
+          </li>
+        </ul>
+      </div>
+
+      <!-- 대표 묶음에 속하지 않은 프로젝트 — 한 줄 목록으로 축약하되 상세 페이지 링크는 유지 -->
+      <div v-if="otherProjects.length" class="other-projects">
+        <span class="other-title">Other Projects</span>
+        <ul class="other-list">
+          <li v-for="project in otherProjects" :key="project.slug" :id="`project-${project.slug}`"
+            class="project-item">
+            <RouterLink :to="{ name: 'project-detail', params: { slug: project.slug } }" class="other-row">
+              <span class="other-name">{{ project.title }}</span>
+              <span class="other-meta">
+                {{ startYear(project.period) }}
+                <IconArrowRight class="other-arrow" :size="15" :stroke-width="2" />
+              </span>
+            </RouterLink>
+          </li>
+        </ul>
+      </div>
     </div>
-
-    <p v-if="filteredProjects.length === 0" class="filter-empty">해당하는 프로젝트가 없습니다.</p>
-
-    <!-- 3열 그리드 — 모든 카드는 동일한 크기, 마지막 줄에 혼자 남는 카드만 전체 폭으로 확장 -->
-    <ul v-else class="project-grid">
-      <li v-for="(project, i) in filteredProjects" :key="project.slug" :id="`project-${project.slug}`"
-        class="project-item" :class="{ 'is-wide': isLastCardWide && i === filteredProjects.length - 1 }">
-        <ProjectCard :project="project" :index="i" :wide="isLastCardWide && i === filteredProjects.length - 1" />
-      </li>
-    </ul>
   </section>
 </template>
 
 <style scoped>
-/* 필터 탭 — 활성 탭은 포인트 컬러로 채워 명확히 구분 */
-.filter-tabs {
+.project-groups {
   display: flex;
-  flex-wrap: wrap;
-  gap: 8px;
-  margin-top: 32px;
+  flex-direction: column;
+  gap: 72px;
+  margin-top: 64px;
 }
 
-.filter-tab {
-  padding: 9px 18px;
-  border: 1px solid var(--color-border-strong);
-  border-radius: 999px;
-  color: var(--color-text-muted);
-  font-size: 13.5px;
-  font-weight: 600;
-  transition:
-    background-color 0.2s ease,
-    color 0.2s ease,
-    border-color 0.2s ease;
-}
-
-.filter-tab:hover {
-  border-color: var(--color-accent);
-  color: var(--color-accent);
-}
-
-.filter-tab.active {
-  background: var(--color-accent);
-  border-color: var(--color-accent);
-  color: var(--color-white);
-}
-
-.filter-empty {
-  margin-top: 48px;
-  padding: 48px 0;
-  border-top: 1px solid var(--color-border);
-  border-bottom: 1px solid var(--color-border);
-  color: var(--color-text-muted);
-  font-size: 14px;
-  text-align: center;
-}
-
-/* 프로젝트 그리드 — 카드마다 그림자로 떠 보이도록 실제 간격을 두고 배치 */
-.project-grid {
-  display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  grid-auto-rows: minmax(330px, auto);
-  gap: 24px;
-  margin-top: 32px;
-}
-
-/* KPI 카드에서 특정 프로젝트로 스크롤 이동 시, sticky 상단 내비게이션에 카드가 가리지 않도록 여백 확보.
-   min-width: 0은 카드 내부 텍스트의 고유 너비가 그리드 트랙을 밀어내 페이지 전체가 가로로
-   넘치는 것(overflow-x: hidden에 의해 우측 요소가 잘려 보이지 않는 문제)을 막는다 */
+/* KPI 카드에서 특정 프로젝트로 스크롤 이동 시, sticky 상단 내비게이션에 가리지 않도록 여백 확보 */
 .project-item {
   min-width: 0;
   scroll-margin-top: calc(var(--nav-height) + 24px);
 }
 
-.project-item.is-wide {
-  grid-column: 1 / -1;
+/* 그룹 헤더 — 굵은 상단 선으로 묶음의 시작을 표시 */
+.group-head {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 8px 24px;
+  padding-top: 16px;
+  border-top: 2px solid var(--color-ink);
 }
 
-@media (max-width: 900px) {
-  .project-grid {
-    grid-template-columns: repeat(2, 1fr);
+.group-head-main {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 4px 14px;
+}
+
+.group-title {
+  font-size: 22px;
+  font-weight: 700;
+  color: var(--color-ink);
+  word-break: keep-all;
+}
+
+.group-period {
+  font-family: var(--font-mono);
+  font-size: 12.5px;
+  color: var(--color-text-muted);
+}
+
+.group-desc {
+  margin: 8px 0 24px;
+  font-size: 15px;
+  line-height: 1.6;
+  color: var(--color-text-muted);
+  word-break: keep-all;
+}
+
+.group-cards {
+  display: grid;
+  gap: 20px;
+}
+
+.group-cards.layout-cards {
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+}
+
+.group-cards.layout-wide {
+  grid-template-columns: minmax(0, 1fr);
+}
+
+@media (max-width: 1000px) {
+  .group-cards.layout-cards {
+    grid-template-columns: minmax(0, 1fr);
   }
 }
 
+/* Other Projects — 카드 없이 얇은 행 목록 */
+.other-title {
+  display: block;
+  margin-bottom: 10px;
+  font-family: var(--font-mono);
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--color-text-faint);
+}
+
+.other-list {
+  border-top: 1px solid var(--color-border);
+}
+
+.other-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  padding: 16px 4px;
+  border-bottom: 1px solid var(--color-border);
+  transition: color 0.2s ease;
+}
+
+.other-name {
+  min-width: 0;
+  font-size: 16px;
+  font-weight: 600;
+  color: var(--color-text);
+  word-break: keep-all;
+}
+
+.other-meta {
+  display: inline-flex;
+  flex-shrink: 0;
+  align-items: center;
+  gap: 8px;
+  font-family: var(--font-mono);
+  font-size: 12.5px;
+  color: var(--color-text-muted);
+}
+
+.other-arrow {
+  transition: transform 0.2s ease;
+}
+
+.other-row:hover .other-name {
+  color: var(--color-accent);
+}
+
+.other-row:hover .other-arrow {
+  transform: translateX(3px);
+}
+
 @media (max-width: 600px) {
-  .project-grid {
-    grid-template-columns: 1fr;
+  .other-row {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 6px;
   }
 }
 </style>

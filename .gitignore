@@ -42,3 +42,4 @@ __screenshots__/
 # skil
 .skills.json
 .playwright-mcp/
+.claude/launch.json

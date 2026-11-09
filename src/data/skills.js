@@ -3,19 +3,16 @@ export const levelLegend = [
     level: 'high',
     label: '많이 해봤어요',
     desc: '핵심 원리 이해 + 독립 구현·트러블슈팅 가능',
-    levelNum: 3,
   },
   {
     level: 'mid',
     label: '해본 적 있어요',
     desc: '레퍼런스 참고해 기능 구현·적용 가능',
-    levelNum: 2,
   },
   {
     level: 'learning',
     label: '알아가고 있어요',
     desc: '개념 학습 중, 튜토리얼 수준 실습 가능',
-    levelNum: 1,
   },
 ]
 

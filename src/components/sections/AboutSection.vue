@@ -2,7 +2,6 @@
 import HeroSection from './HeroSection.vue'
 import { profile } from '@/data/profile'
 import { aboutMe } from '@/data/aboutMe'
-import { certifications } from '@/data/certifications'
 
 const FULL_CYCLE_DEVELOPER_DESC =
   'Full-cycle Developer란, 기획부터 배포, 운영까지 SDLC 전 과정을 스스로 책임지는 개발자를 뜻합니다.'
@@ -130,17 +129,6 @@ const cycles = [
 
     <div class="hero-kpi">
       <HeroSection />
-    </div>
-
-    <div class="certifications">
-      <span class="eyebrow">Certifications</span>
-      <div class="certifications-grid">
-        <div v-for="cert in certifications" :key="cert.name" class="certification-card">
-          <span class="certification-name">{{ cert.name }}</span>
-          <span class="certification-grade">{{ cert.grade }}</span>
-          <span class="certification-date">취득일 {{ cert.date }}</span>
-        </div>
-      </div>
     </div>
   </section>
 </template>
@@ -358,58 +346,6 @@ const cycles = [
   text-underline-offset: 3px;
 }
 
-.hero-kpi {
-  margin-bottom: 96px;
-}
-
-.certifications-grid {
-  display: grid;
-  grid-template-columns: repeat(4, 1fr);
-  gap: 1px;
-  margin-top: 24px;
-  background: var(--color-border);
-  border: 1px solid var(--color-border);
-}
-
-.certification-card {
-  display: flex;
-  flex-direction: column;
-  padding: 34px 28px;
-  background: var(--color-bg);
-  transition: background-color 0.2s ease;
-}
-
-.certification-card:hover {
-  background: var(--color-bg-alt);
-}
-
-.certification-name {
-  display: block;
-  color: var(--color-accent);
-  font-size: 30px;
-  font-weight: 700;
-  letter-spacing: -0.01em;
-}
-
-.certification-grade {
-  display: block;
-  margin-top: 14px;
-  font-family: var(--font-mono);
-  color: var(--color-text-faint);
-  font-size: 11px;
-  font-weight: 600;
-  letter-spacing: 0.06em;
-  text-transform: uppercase;
-}
-
-.certification-date {
-  display: block;
-  margin-top: 4px;
-  color: var(--color-text-muted);
-  font-size: 15px;
-  line-height: 1.5;
-}
-
 @media (max-width: 900px) {
   .id-card {
     flex-direction: column;
@@ -423,19 +359,11 @@ const cycles = [
   .id-card-body {
     padding: 32px 28px;
   }
-
-  .certifications-grid {
-    grid-template-columns: repeat(2, 1fr);
-  }
 }
 
 @media (max-width: 520px) {
   .hero-tagline {
     font-size: 14px;
-  }
-
-  .certifications-grid {
-    grid-template-columns: 1fr;
   }
 }
 </style>
