@@ -1,4 +1,6 @@
 <!-- src/views/ProjectDetail.vue -->
+<!-- 섹션 순서: 배경·목적 → 역할·성과 → 아키텍처(+설계 이유) → 동작 흐름 → 트러블슈팅 → 회고.
+     데이터가 없는 섹션은 렌더링하지 않으므로, 프로젝트마다 채운 만큼만 노출된다. -->
 <script setup>
 import { useRoute, RouterLink } from 'vue-router'
 import { computed, nextTick, onMounted, onUnmounted, ref, watch } from 'vue'
@@ -32,11 +34,12 @@ watch(
     async () => {
         await nextTick()
         resetScroll()
+        renderFlows()
+        updateActiveSection()
     },
 )
 
-// result 항목 중 숫자/퍼센트가 들어간 정량적 성과만 뽑아 상단 스탯 카드로 승격.
-// "2년간 단독 운영..." 같은 정성적 문장은 제외하고 기존 하단 불릿에만 남긴다.
+// result 항목 중 숫자/퍼센트가 들어간 정량적 성과만 뽑아 상단 스탯 카드로 승격
 const statCards = computed(() => {
     const result = project.value?.result
     if (!result) return []
@@ -49,6 +52,91 @@ const statCards = computed(() => {
         .slice(0, 3)
 })
 
+// ── 섹션 구성 ─────────────────────────────────────────────
+// 각 섹션의 노출 여부를 한곳에서 판단하고, 같은 목록으로 사이드바 목차도 만든다
+const hasBackground = computed(() => !!(project.value?.background || project.value?.summary))
+const hasRole = computed(() => !!(project.value?.responsibilities?.length || project.value?.result?.length))
+const hasArchitecture = computed(() => !!project.value?.diagrams?.length)
+const hasFlows = computed(() => !!project.value?.flows?.length)
+const hasTroubleshooting = computed(() => !!project.value?.troubleshooting?.length)
+const hasRetrospective = computed(() => !!project.value?.retrospective?.length)
+
+const sections = computed(() =>
+    [
+        { id: 'background', label: project.value?.background ? '배경 · 목적' : '프로젝트 개요', show: hasBackground.value },
+        { id: 'role', label: '담당 역할 · 성과', show: hasRole.value },
+        { id: 'architecture', label: '시스템 아키텍처', show: hasArchitecture.value },
+        { id: 'flow', label: '동작 흐름', show: hasFlows.value },
+        { id: 'troubleshooting', label: '트러블슈팅', show: hasTroubleshooting.value },
+        { id: 'retrospective', label: '회고 · 한계', show: hasRetrospective.value },
+    ].filter((s) => s.show),
+)
+
+// ── 사이드바 목차 (scroll-spy) ─────────────────────────────
+// 뷰포트 상단 기준선을 통과한 마지막 섹션을 현재 위치로 본다 (TopNav와 같은 방식)
+const activeSectionId = ref(null)
+const ACTIVE_LINE_OFFSET = 160
+
+function updateActiveSection() {
+    let current = sections.value[0]?.id ?? null
+    for (const { id } of sections.value) {
+        const el = document.getElementById(`section-${id}`)
+        if (el && el.getBoundingClientRect().top - ACTIVE_LINE_OFFSET <= 0) current = id
+    }
+    activeSectionId.value = current
+}
+
+function scrollToSection(id) {
+    document.getElementById(`section-${id}`)?.scrollIntoView({ behavior: 'smooth' })
+}
+
+onMounted(() => {
+    updateActiveSection()
+    window.addEventListener('scroll', updateActiveSection, { passive: true })
+})
+onUnmounted(() => window.removeEventListener('scroll', updateActiveSection))
+
+// ── 동작 흐름 (Mermaid) ───────────────────────────────────
+// mermaid는 용량이 커서 이 페이지에서, 그것도 flows가 있을 때만 동적으로 불러온다
+const flowSvgs = ref([])
+let mermaidInstance = null
+let renderSeq = 0
+
+async function renderFlows() {
+    const flows = project.value?.flows ?? []
+    const seq = ++renderSeq
+    flowSvgs.value = flows.map(() => null)
+    if (!flows.length) return
+
+    if (!mermaidInstance) {
+        const { default: mermaid } = await import('mermaid')
+        mermaid.initialize({
+            startOnLoad: false,
+            theme: 'neutral',
+            fontFamily: getComputedStyle(document.body).fontFamily,
+            sequence: { useMaxWidth: true, mirrorActors: false },
+        })
+        mermaidInstance = mermaid
+    }
+
+    const rendered = await Promise.all(
+        flows.map(async (flow, idx) => {
+            try {
+                const { svg } = await mermaidInstance.render(`flow-${seq}-${idx}`, flow.mermaid)
+                return svg
+            } catch (err) {
+                console.error('[ProjectDetail] mermaid render failed:', err)
+                return ''
+            }
+        }),
+    )
+    // 렌더 도중 다른 프로젝트로 이동했다면 늦게 끝난 결과는 버린다
+    if (seq === renderSeq) flowSvgs.value = rendered
+}
+
+onMounted(renderFlows)
+
+// ── 기타 ─────────────────────────────────────────────────
 function tagStyle(tech) {
     const match = getTechColor(tech)
     return {
@@ -58,7 +146,6 @@ function tagStyle(tech) {
     }
 }
 
-// public 자산은 base 경로(`/ytnwjd-portfolio/`)를 붙여야 배포 환경에서도 정상 로드된다
 function publicAsset(path) {
     return `${import.meta.env.BASE_URL}${path}`
 }
@@ -85,8 +172,7 @@ onUnmounted(() => window.removeEventListener('keydown', handleLightboxKeydown))
 <template>
     <section v-if="project" class="section project-detail">
         <div class="detail-layout">
-            <!-- 사이드바 — 돌아가기 링크를 맨 위에 두어 제목과 시작 높이를 맞추고,
-                 그 아래 기간·소속·유형 메타와 기술 스택. 데스크탑에서는 sticky -->
+            <!-- 사이드바 — 돌아가기 · 메타 · 기술 스택 · 페이지 목차. 데스크탑에서는 sticky -->
             <aside class="detail-sidebar">
                 <RouterLink :to="{ path: '/', hash: '#projects' }" replace class="back-link">
                     <IconArrowLeft :size="14" :stroke-width="2.5" />
@@ -106,6 +192,10 @@ onUnmounted(() => window.removeEventListener('keydown', handleLightboxKeydown))
                         <span class="sidebar-meta-label">Type</span>
                         <span class="sidebar-meta-value">{{ project.type }}</span>
                     </li>
+                    <li v-if="project.role" class="sidebar-meta-row">
+                        <span class="sidebar-meta-label">Role</span>
+                        <span class="sidebar-meta-value">{{ project.role }}</span>
+                    </li>
                 </ul>
 
                 <div v-if="project.techStack?.length" class="sidebar-tech">
@@ -116,13 +206,19 @@ onUnmounted(() => window.removeEventListener('keydown', handleLightboxKeydown))
                         </span>
                     </div>
                 </div>
+
+                <nav v-if="sections.length > 1" class="sidebar-toc" aria-label="페이지 목차">
+                    <span class="sidebar-tech-title">On this page</span>
+                    <button v-for="s in sections" :key="s.id" type="button" class="toc-item"
+                        :class="{ active: s.id === activeSectionId }" @click="scrollToSection(s.id)">
+                        {{ s.label }}
+                    </button>
+                </nav>
             </aside>
 
-            <!-- 메인 컬럼 — 제목부터 트러블슈팅까지 -->
             <div class="detail-main">
                 <h1 class="project-title">{{ project.title }}</h1>
 
-                <!-- Best Accomplishment 스타일 스탯 카드 -->
                 <div v-if="statCards.length" class="stat-cards">
                     <div v-for="(stat, idx) in statCards" :key="idx" class="stat-card">
                         <span class="stat-value">{{ stat.value }}</span>
@@ -130,15 +226,42 @@ onUnmounted(() => window.removeEventListener('keydown', handleLightboxKeydown))
                     </div>
                 </div>
 
-                <!-- Project Summary -->
-                <div v-if="project.summary" class="content-block summary-box">
-                    <h2 class="block-title">프로젝트 개요</h2>
-                    <p class="summary-text">{{ project.summary }}</p>
+                <!-- 1. 배경 · 목적 — background가 없으면 기존 summary를 개요로 대신 노출 -->
+                <div v-if="hasBackground" id="section-background" class="content-block">
+                    <h2 class="block-title">{{ project.background ? '배경 · 목적' : '프로젝트 개요' }}</h2>
+                    <div v-if="project.background" class="background-grid">
+                        <div class="background-box">
+                            <span class="box-label">Why · 문제</span>
+                            <p class="box-text">{{ project.background.problem }}</p>
+                        </div>
+                        <div class="background-box">
+                            <span class="box-label">Goal · 목표</span>
+                            <p class="box-text">{{ project.background.goal }}</p>
+                        </div>
+                    </div>
+                    <p v-else class="summary-text summary-box">{{ project.summary }}</p>
                 </div>
 
-                <!-- Architecture / ERD Diagrams -->
-                <div v-if="project.diagrams && project.diagrams.length" class="content-block">
-                    <h2 class="block-title">시스템 다이어그램</h2>
+                <!-- 2. 담당 역할 · 성과 — 다이어그램보다 먼저 "내가 한 일"을 보여준다 -->
+                <div v-if="hasRole" id="section-role" class="content-block">
+                    <h2 class="block-title">담당 역할 · 성과</h2>
+                    <ul v-if="project.responsibilities?.length" class="detail-list">
+                        <li v-for="(item, idx) in project.responsibilities" :key="idx" class="detail-item">
+                            <IconCheck class="bullet bullet-icon" :size="17" :stroke-width="2" />
+                            <span class="text">{{ item }}</span>
+                        </li>
+                    </ul>
+                    <ul v-if="project.result?.length" class="detail-list result-list">
+                        <li v-for="(res, idx) in project.result" :key="idx" class="detail-item">
+                            <IconStar class="bullet bullet-icon" :size="17" :stroke-width="2" />
+                            <span class="text">{{ res }}</span>
+                        </li>
+                    </ul>
+                </div>
+
+                <!-- 3. 시스템 아키텍처 — 다이어그램마다 "왜 이렇게 설계했나"를 notes로 덧붙인다 -->
+                <div v-if="hasArchitecture" id="section-architecture" class="content-block">
+                    <h2 class="block-title">시스템 아키텍처</h2>
                     <div class="diagram-list">
                         <div v-for="(diagram, idx) in project.diagrams" :key="idx" class="diagram-item">
                             <span class="diagram-label">{{ diagram.title }}</span>
@@ -147,28 +270,45 @@ onUnmounted(() => window.removeEventListener('keydown', handleLightboxKeydown))
                                     class="architecture-image"
                                     @click="openLightbox(publicAsset(diagram.image), `${project.title} ${diagram.title}`)" />
                             </div>
+                            <ol v-if="diagram.notes?.length" class="design-notes">
+                                <li v-for="(note, nIdx) in diagram.notes" :key="nIdx" class="design-note">
+                                    <span class="design-note-index">{{ nIdx + 1 }}</span>
+                                    <span class="design-note-text">{{ note }}</span>
+                                </li>
+                            </ol>
                         </div>
                     </div>
                 </div>
 
-                <!-- Key Responsibilities -->
-                <div v-if="project.responsibilities && project.responsibilities.length" class="content-block">
-                    <h2 class="block-title">주요 담당 역할 및 성과</h2>
-                    <ul class="detail-list">
-                        <li v-for="(item, idx) in project.responsibilities" :key="idx" class="detail-item">
-                            <IconCheck class="bullet bullet-icon" :size="17" :stroke-width="2" />
-                            <span class="text">{{ item }}</span>
-                        </li>
-                    </ul>
+                <!-- 4. 동작 흐름 — Mermaid 시퀀스 다이어그램 -->
+                <div v-if="hasFlows" id="section-flow" class="content-block">
+                    <h2 class="block-title">동작 흐름</h2>
+                    <div class="diagram-list">
+                        <div v-for="(flow, idx) in project.flows" :key="idx" class="diagram-item">
+                            <span class="diagram-label">{{ flow.title }}</span>
+                            <div class="architecture-box flow-box">
+                                <div v-if="flowSvgs[idx]" class="flow-svg" v-html="flowSvgs[idx]"></div>
+                                <p v-else-if="flowSvgs[idx] === ''" class="flow-placeholder">다이어그램을 그리지 못했습니다.</p>
+                                <p v-else class="flow-placeholder">다이어그램을 불러오는 중…</p>
+                            </div>
+                            <p v-if="flow.description" class="flow-description">{{ flow.description }}</p>
+                        </div>
+                    </div>
                 </div>
 
-                <!-- Problem Solving & Troubleshooting -->
-                <div v-if="project.troubleshooting && project.troubleshooting.length" class="content-block">
-                    <h2 class="block-title">문제 해결 및 트러블슈팅</h2>
+                <!-- 5. 트러블슈팅 — 관련 개념 → 문제 → 원인 → 해결 → 코드·로그 → 결과 -->
+                <div v-if="hasTroubleshooting" id="section-troubleshooting" class="content-block">
+                    <h2 class="block-title">트러블슈팅</h2>
                     <div class="trouble-list">
-                        <div v-for="(item, idx) in project.troubleshooting" :key="idx" class="trouble-card">
-                            <span v-if="project.troubleshooting.length > 1" class="trouble-index">이슈 {{ idx + 1
-                                }}</span>
+                        <article v-for="(item, idx) in project.troubleshooting" :key="idx" class="trouble-card">
+                            <div v-if="project.troubleshooting.length > 1 || item.title" class="trouble-head">
+                                <span v-if="project.troubleshooting.length > 1" class="trouble-index">이슈 {{ idx + 1 }}</span>
+                                <h3 v-if="item.title" class="trouble-title">{{ item.title }}</h3>
+                            </div>
+                            <div v-if="item.concept" class="trouble-section trouble-concept">
+                                <span class="trouble-label">관련 개념</span>
+                                <p class="trouble-text">{{ item.concept }}</p>
+                            </div>
                             <div class="trouble-section">
                                 <span class="trouble-label">문제 상황</span>
                                 <p class="trouble-text">{{ item.problem }}</p>
@@ -178,21 +318,26 @@ onUnmounted(() => window.removeEventListener('keydown', handleLightboxKeydown))
                                 <p class="trouble-text">{{ item.cause }}</p>
                             </div>
                             <div class="trouble-section">
-                                <span class="trouble-label">해결 및 결과</span>
+                                <span class="trouble-label">{{ item.outcome ? '해결' : '해결 및 결과' }}</span>
                                 <p class="trouble-text">{{ item.solution }}</p>
                             </div>
-                        </div>
+                            <div v-if="item.code?.snippet" class="trouble-section">
+                                <span class="trouble-label">{{ item.code.label || '코드' }}</span>
+                                <pre class="trouble-code"><code>{{ item.code.snippet }}</code></pre>
+                            </div>
+                            <div v-if="item.outcome" class="trouble-section">
+                                <span class="trouble-label">결과</span>
+                                <p class="trouble-text">{{ item.outcome }}</p>
+                            </div>
+                        </article>
                     </div>
                 </div>
 
-                <!-- Key Results / Output -->
-                <div v-if="project.result && project.result.length" class="content-block">
-                    <h2 class="block-title">주요 성과 및 결과</h2>
-                    <ul class="detail-list result-list">
-                        <li v-for="(res, idx) in project.result" :key="idx" class="detail-item">
-                            <IconStar class="bullet bullet-icon" :size="17" :stroke-width="2" />
-                            <span class="text">{{ res }}</span>
-                        </li>
+                <!-- 6. 회고 · 한계 — 아쉬운 점과 다시 한다면 바꿀 것 -->
+                <div v-if="hasRetrospective" id="section-retrospective" class="content-block">
+                    <h2 class="block-title">회고 · 한계</h2>
+                    <ul class="retro-list">
+                        <li v-for="(item, idx) in project.retrospective" :key="idx" class="retro-item">{{ item }}</li>
                     </ul>
                 </div>
             </div>
@@ -369,6 +514,8 @@ onUnmounted(() => window.removeEventListener('keydown', handleLightboxKeydown))
 /* Content Block */
 .content-block {
     margin-bottom: 52px;
+    /* 목차로 이동 시 sticky 상단 내비게이션에 제목이 가리지 않도록 */
+    scroll-margin-top: calc(var(--nav-height) + 32px);
 }
 
 .block-title {
@@ -376,7 +523,7 @@ onUnmounted(() => window.removeEventListener('keydown', handleLightboxKeydown))
     padding-left: 14px;
     font-size: 14px;
     font-weight: 700;
-    letter-spacing: 0.1em;
+    letter-spacing: 0.02em;
     text-transform: uppercase;
     margin-bottom: 18px;
     color: var(--color-ink);
@@ -420,7 +567,7 @@ onUnmounted(() => window.removeEventListener('keydown', handleLightboxKeydown))
     font-size: 11.5px;
     font-weight: 700;
     text-transform: uppercase;
-    letter-spacing: 0.08em;
+    letter-spacing: 0.02em;
     color: var(--color-text-faint);
 }
 
@@ -576,7 +723,7 @@ onUnmounted(() => window.removeEventListener('keydown', handleLightboxKeydown))
     font-size: 11.5px;
     font-weight: 700;
     text-transform: uppercase;
-    letter-spacing: 0.08em;
+    letter-spacing: 0.02em;
     color: var(--color-text-faint);
 }
 
@@ -584,6 +731,218 @@ onUnmounted(() => window.removeEventListener('keydown', handleLightboxKeydown))
     font-size: 16px;
     line-height: 1.65;
     color: var(--color-text);
+}
+
+/* 배경 · 목적 — 문제(Why)와 목표(Goal)를 나란히 */
+.background-grid {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 16px;
+}
+
+.background-box {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    padding: 22px 24px;
+    background: var(--color-surface);
+    border: 1px solid var(--color-border);
+    border-radius: 12px;
+}
+
+.box-label {
+    font-family: var(--font-mono);
+    font-size: 11.5px;
+    font-weight: 700;
+    letter-spacing: 0.02em;
+    text-transform: uppercase;
+    color: var(--color-text-faint);
+}
+
+.box-text {
+    font-size: 16px;
+    line-height: 1.7;
+    color: var(--color-text);
+    word-break: keep-all;
+}
+
+@media (max-width: 700px) {
+    .background-grid {
+        grid-template-columns: minmax(0, 1fr);
+    }
+}
+
+/* 역할 목록 다음에 오는 성과 목록은 구분선으로 한 번 끊는다 */
+.detail-list + .result-list {
+    margin-top: 20px;
+    padding-top: 20px;
+    border-top: 1px dashed var(--color-border);
+}
+
+/* 설계 이유 — 다이어그램 바로 아래 번호 목록 */
+.design-notes {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    margin-top: 6px;
+}
+
+.design-note {
+    display: flex;
+    align-items: flex-start;
+    gap: 10px;
+    font-size: 15.5px;
+    line-height: 1.65;
+    color: var(--color-text);
+}
+
+.design-note-index {
+    flex-shrink: 0;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 22px;
+    height: 22px;
+    margin-top: 2px;
+    border-radius: 999px;
+    background: var(--color-accent-soft);
+    color: var(--color-accent);
+    font-family: var(--font-mono);
+    font-size: 11.5px;
+    font-weight: 700;
+}
+
+/* 동작 흐름 (Mermaid) — 넓은 시퀀스 다이어그램은 박스 안에서만 가로 스크롤 */
+.flow-box {
+    padding: 16px;
+    overflow-x: auto;
+}
+
+.flow-svg {
+    width: 100%;
+}
+
+.flow-svg :deep(svg) {
+    display: block;
+    max-width: 100%;
+    height: auto;
+    margin: 0 auto;
+}
+
+.flow-placeholder {
+    padding: 32px 0;
+    font-size: 14px;
+    color: var(--color-text-faint);
+}
+
+.flow-description {
+    font-size: 15.5px;
+    line-height: 1.65;
+    color: var(--color-text-muted);
+}
+
+/* 트러블슈팅 확장 항목 */
+.trouble-head {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 8px 12px;
+}
+
+.trouble-head .trouble-index {
+    align-self: auto;
+}
+
+.trouble-title {
+    font-size: 18px;
+    font-weight: 700;
+    line-height: 1.4;
+    color: var(--color-ink);
+    word-break: keep-all;
+}
+
+/* 관련 개념 — 면접에서 바로 이어질 개념 질문에 대한 답을 먼저 깔아둔다 */
+.trouble-concept {
+    padding: 14px 16px;
+    background: var(--color-surface);
+    border: 1px solid var(--color-border);
+    border-radius: 8px;
+}
+
+.trouble-code {
+    margin: 0;
+    padding: 16px 18px;
+    overflow-x: auto;
+    background: #1e1e1e;
+    border-radius: 8px;
+    color: #e6e6e6;
+    font-family: var(--font-mono);
+    font-size: 13px;
+    line-height: 1.6;
+    white-space: pre;
+}
+
+/* 회고 · 한계 */
+.retro-list {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+.retro-item {
+    position: relative;
+    padding-left: 18px;
+    font-size: 16px;
+    line-height: 1.65;
+    color: var(--color-text);
+    word-break: keep-all;
+}
+
+.retro-item::before {
+    content: '';
+    position: absolute;
+    left: 0;
+    top: 0.75em;
+    width: 8px;
+    height: 2px;
+    background: var(--color-text-faint);
+}
+
+/* 사이드바 목차 */
+.sidebar-toc {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+    padding-top: 20px;
+    border-top: 1px solid var(--color-border);
+}
+
+.toc-item {
+    padding: 6px 0 6px 12px;
+    border-left: 2px solid var(--color-border);
+    text-align: left;
+    font-size: 13.5px;
+    color: var(--color-text-muted);
+    transition:
+        color 0.2s ease,
+        border-color 0.2s ease;
+}
+
+.toc-item:hover {
+    color: var(--color-ink);
+}
+
+.toc-item.active {
+    border-left-color: var(--color-accent);
+    color: var(--color-ink);
+    font-weight: 600;
+}
+
+/* 모바일에서는 사이드바가 본문 위로 쌓이므로 목차는 생략 */
+@media (max-width: 860px) {
+    .sidebar-toc {
+        display: none;
+    }
 }
 
 /* Empty State */
