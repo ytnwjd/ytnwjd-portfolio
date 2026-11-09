@@ -137,7 +137,7 @@ function periodLabel(item) {
     padding: 48px 40px 80px;
     background: #ffffff;
     color: #111111;
-    font-family: 'Inter Tight', -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Pretendard', Roboto, sans-serif;
+    font-family: 'Inter Tight', 'Pretendard Variable', Pretendard, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
     font-size: 13.5px;
     line-height: 1.6;
 }
