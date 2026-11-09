@@ -2,6 +2,9 @@ export default [
   {
     slug: 'crawler-watcher',
     title: 'Crawler Watcher',
+    // PROJECTS 섹션 카드 전용 — metrics는 카드 상단 수치, hook은 "문제 → 해결" 한 줄 요약
+    metrics: [{ value: '무중단', label: '다중 크롤러 로그 실시간 감시' }],
+    hook: '멀티스레드 SQLite lock 경합·Deadlock → WAL 모드 + lock 범위 분리',
     period: '2026.05 ~ 2026.06',
     type: '개인 프로젝트',
     organization: '래브라도랩스 인턴 (AI분석엔진팀)',
@@ -35,6 +38,8 @@ export default [
   {
     slug: 'labradorlabs-DBMS',
     title: 'LabradorLabs DBMS',
+    metrics: [{ value: '93%', label: '페이지 로딩 30초 → 2초' }],
+    hook: '동기 순차 조회 병목 → ThreadPoolExecutor 기반 병렬 조회',
     period: '2026.02 ~ 2026.04',
     type: '개인 프로젝트',
     organization: '래브라도랩스 인턴 (AI분석엔진팀)',
@@ -72,6 +77,8 @@ export default [
   {
     slug: 'vulnerability-alert-system',
     title: 'Vulnerability Alert System',
+    metrics: [{ value: '2채널', label: 'Slack · KakaoWork 알림 자동화' }],
+    hook: '코드 수정 없는 JSON 규칙 엔진 + Docker 컨테이너 장애 감시',
     period: '2025.12 ~ 2026.02',
     type: '개인 프로젝트',
     organization: '래브라도랩스 인턴 (AI분석엔진팀)',
@@ -112,7 +119,6 @@ export default [
     period: '2025.10 ~ 2025.12',
     type: '팀 프로젝트 (3명)',
     organization: '교내 데이터베이스 수업',
-    featured: false,
     hidden: true,
     diagrams: [{ title: 'ERD', image: 'images/diagram/artifact-erd.svg' }],
     techStack: ['React.js', 'Spring Boot', 'MySQL', 'Git'],
@@ -148,10 +154,11 @@ export default [
   {
     slug: 'gpu-job-management-dashboard',
     title: 'k8s 기반의 GPU Job Management Dashboard',
+    metrics: [{ value: '인기상', label: 'Ajou Softcon 2025' }],
+    hook: '가용 GPU 자동 할당·대기열 스케줄링 + 사용자별 격리 디렉토리 File Tree로 CLI 없이 Job 등록',
     period: '2025.08 ~ 2025.12',
     type: '개인 프로젝트',
     organization: '교내 자기주도 프로젝트',
-    featured: false,
     diagrams: [
       { title: '시스템 아키텍처', image: 'images/diagram/gpu-archi.svg' },
       { title: 'GPU Job 등록 플로우', image: 'images/diagram/gpu_regist-flow.svg' },
@@ -187,7 +194,6 @@ export default [
     period: '2024.03 ~ 2024.06',
     type: '팀 프로젝트 (3명)',
     organization: '파란학기(아주도전)',
-    featured: false,
     hidden: true,
     techStack: ['Kubernetes', 'Docker', 'Grafana', 'Prometheus', 'AlertManager', 'Git'],
     summary:
@@ -213,6 +219,11 @@ export default [
   {
     slug: 'ajouchong',
     title: '총학생회 홈페이지 개편·운영',
+    metrics: [
+      { value: '90%', label: 'AWS 비용 월 60만 → 4만 원' },
+      { value: '16%', label: '방문자 평균 CTR 향상' },
+    ],
+    hook: 'Django → Spring Boot 전면 재설계 후, 2년간 단독 운영하며 인프라 이관까지 주도',
     period: '2024.01 ~ 2026.03',
     type: '팀 프로젝트 (5명) → 단독 운영',
     organization: '아주대학교 총학생회',
@@ -278,7 +289,6 @@ export default [
     period: '2023.10 ~ 2023.12',
     type: '개인 프로젝트',
     organization: '교내 오픈소스소프트웨어 수업',
-    featured: false,
     hidden: true,
     techStack: ['Docker', 'Prometheus', 'Grafana', 'Linux'],
     summary:
@@ -305,7 +315,6 @@ export default [
     period: '2023.08 ~ 2023.12',
     type: '팀 프로젝트 (4명)',
     organization: '교내 시스템 프로그래밍 수업',
-    featured: false,
     hidden: true,
     techStack: ['C', 'Raspberry Pi', 'TCP/IP Socket', 'POSIX Threads'],
     summary:
