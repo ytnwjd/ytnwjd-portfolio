@@ -3,7 +3,7 @@ export default [
     slug: 'crawler-watcher',
     title: 'Crawler Watcher',
     // PROJECTS 섹션 카드 전용 — metrics는 카드 상단 수치, hook은 "문제 → 해결" 한 줄 요약
-    metrics: [{ value: '무중단', label: '다중 크롤러 로그 실시간 감시' }],
+    metrics: [{ value: 'Multi-Thread', label: '다중 크롤러 로그 실시간 감시·이상 탐지' }],
     hook: '멀티스레드 SQLite lock 경합·Deadlock → WAL 모드 + lock 범위 분리',
     period: '2026.05 ~ 2026.06',
     type: '개인 프로젝트',
@@ -45,7 +45,7 @@ export default [
     organization: '래브라도랩스 인턴 (AI분석엔진팀)',
     featured: true,
     diagrams: [{ title: '시스템 아키텍처', image: 'images/diagram/dmds_archi.png' }],
-    techStack: ['Python', 'FastAPI', 'Streamlit', 'SQLite', 'Docker'],
+    techStack: ['Streamlit', 'FastAPI', 'Python', 'SQLite', 'Docker'],
     summary:
       '취약점 감지 현황·크롤링 데이터 통계·운영 설정을 하나의 화면에서 확인·조작할 수 있는 통합 Back-Office 대시보드',
     responsibilities: [
@@ -77,7 +77,7 @@ export default [
   {
     slug: 'vulnerability-alert-system',
     title: 'Vulnerability Alert System',
-    metrics: [{ value: '2채널', label: 'Slack · KakaoWork 알림 자동화' }],
+    metrics: [{ value: 'Rule Engine', label: 'JSON 규칙 기반 데이터 감지·알림 자동화' }],
     hook: '코드 수정 없는 JSON 규칙 엔진 + Docker 컨테이너 장애 감시',
     period: '2025.12 ~ 2026.02',
     type: '개인 프로젝트',
