@@ -78,23 +78,64 @@ const activeSectionId = ref(null)
 const ACTIVE_LINE_OFFSET = 160
 
 function updateActiveSection() {
-    let current = sections.value[0]?.id ?? null
-    for (const { id } of sections.value) {
+    const ids = sections.value.map((s) => s.id)
+    if (!ids.length) {
+        activeSectionId.value = null
+        return
+    }
+
+    // 페이지 끝에 닿으면 마지막 섹션을 활성화 — 마지막 섹션이 짧으면 기준선까지
+    // 올라오지 못해 영영 활성화되지 않는 문제를 막는다
+    const scrollBottom = window.scrollY + window.innerHeight
+    if (scrollBottom >= document.documentElement.scrollHeight - 2) {
+        activeSectionId.value = ids[ids.length - 1]
+        return
+    }
+
+    let current = ids[0]
+    for (const id of ids) {
         const el = document.getElementById(`section-${id}`)
         if (el && el.getBoundingClientRect().top - ACTIVE_LINE_OFFSET <= 0) current = id
     }
     activeSectionId.value = current
 }
 
+// 목차 클릭 시에는 누른 항목을 즉시 활성화하고, 부드러운 스크롤이 끝날 때까지
+// scroll-spy를 잠근다 (지나가는 중간 섹션으로 강조가 깜빡이거나, 끝까지 못 가는
+// 섹션에서 다른 항목으로 되돌아가지 않도록)
+let lockedSectionId = null
+let unlockTimer = null
+
+function armUnlock() {
+    clearTimeout(unlockTimer)
+    unlockTimer = setTimeout(() => {
+        lockedSectionId = null
+    }, 150)
+}
+
+function handleScroll() {
+    if (lockedSectionId) {
+        armUnlock()
+        return
+    }
+    updateActiveSection()
+}
+
 function scrollToSection(id) {
+    activeSectionId.value = id
+    lockedSectionId = id
+    armUnlock()
     document.getElementById(`section-${id}`)?.scrollIntoView({ behavior: 'smooth' })
 }
 
 onMounted(() => {
     updateActiveSection()
-    window.addEventListener('scroll', updateActiveSection, { passive: true })
+    window.addEventListener('scroll', handleScroll, { passive: true })
 })
-onUnmounted(() => window.removeEventListener('scroll', updateActiveSection))
+onUnmounted(() => {
+    window.removeEventListener('scroll', handleScroll)
+    clearTimeout(unlockTimer)
+})
 
 // ── 동작 흐름 (Mermaid) ───────────────────────────────────
 // mermaid는 용량이 커서 이 페이지에서, 그것도 flows가 있을 때만 동적으로 불러온다
