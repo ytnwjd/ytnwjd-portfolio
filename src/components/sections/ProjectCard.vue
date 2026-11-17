@@ -168,7 +168,7 @@ function tagStyle(tech) {
 
 .metric-value {
   font-size: 34px;
-  font-weight: 800;
+  font-weight: 700;
   line-height: 1.1;
   letter-spacing: -0.02em;
   color: var(--color-accent);
@@ -194,7 +194,7 @@ function tagStyle(tech) {
 .project-title {
   margin: 4px 0 8px;
   font-size: 20px;
-  font-weight: 700;
+  font-weight: 600;
   line-height: 1.35;
   color: var(--color-ink);
   word-break: keep-all;
@@ -258,7 +258,7 @@ function tagStyle(tech) {
 .tech-tag {
   font-family: var(--font-mono);
   font-size: 11.5px;
-  font-weight: 600;
+  font-weight: 500;
   padding: 4px 9px;
   border: 1px solid var(--color-border);
   border-radius: 999px;
@@ -278,7 +278,7 @@ function tagStyle(tech) {
   min-height: 26px;
   gap: 3px;
   font-size: 13.5px;
-  font-weight: 600;
+  font-weight: 500;
   color: var(--color-text-muted);
   white-space: nowrap;
   transition: color 0.2s ease;

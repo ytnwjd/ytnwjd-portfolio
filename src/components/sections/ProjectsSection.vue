@@ -103,7 +103,7 @@ function startYear(period) {
 
 .group-title {
   font-size: 22px;
-  font-weight: 700;
+  font-weight: 600;
   color: var(--color-ink);
   word-break: keep-all;
 }
