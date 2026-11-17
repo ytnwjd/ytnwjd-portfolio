@@ -57,6 +57,8 @@ const statCards = computed(() => {
 const hasBackground = computed(() => !!(project.value?.background || project.value?.summary))
 const hasRole = computed(() => !!(project.value?.responsibilities?.length || project.value?.result?.length))
 const hasArchitecture = computed(() => !!project.value?.diagrams?.length)
+// 다이어그램을 한 줄로 나란히 보여주므로, 설계 이유도 하나의 번호 목록으로 합친다
+const designNotes = computed(() => project.value?.diagrams?.flatMap((d) => d.notes ?? []) ?? [])
 const hasFlows = computed(() => !!project.value?.flows?.length)
 const hasTroubleshooting = computed(() => !!project.value?.troubleshooting?.length)
 const hasRetrospective = computed(() => !!project.value?.retrospective?.length)
@@ -299,22 +301,21 @@ onUnmounted(() => window.removeEventListener('keydown', handleLightboxKeydown))
                 <!-- 3. 시스템 아키텍처 — 다이어그램마다 "왜 이렇게 설계했나"를 notes로 덧붙인다 -->
                 <div v-if="hasArchitecture" id="section-architecture" class="content-block">
                     <h2 class="block-title">시스템 아키텍처</h2>
-                    <div class="diagram-list">
-                        <div v-for="(diagram, idx) in project.diagrams" :key="idx" class="diagram-item">
-                            <span class="diagram-label">{{ diagram.title }}</span>
-                            <div class="architecture-box">
-                                <img :src="publicAsset(diagram.image)" :alt="`${project.title} ${diagram.title}`"
-                                    class="architecture-image"
-                                    @click="openLightbox(publicAsset(diagram.image), `${project.title} ${diagram.title}`)" />
-                            </div>
-                            <ol v-if="diagram.notes?.length" class="design-notes">
-                                <li v-for="(note, nIdx) in diagram.notes" :key="nIdx" class="design-note">
-                                    <span class="design-note-index">{{ nIdx + 1 }}</span>
-                                    <span class="design-note-text">{{ note }}</span>
-                                </li>
-                            </ol>
+                    <!-- 다이어그램이 여러 장이면 한 박스 안에 나란히 두고 세로선으로 구분 (이름 라벨 없음) -->
+                    <div class="architecture-box diagram-row"
+                        :style="{ '--diagram-count': project.diagrams.length }">
+                        <div v-for="(diagram, idx) in project.diagrams" :key="idx" class="diagram-cell">
+                            <img :src="publicAsset(diagram.image)" :alt="`${project.title} ${diagram.title}`"
+                                class="architecture-image"
+                                @click="openLightbox(publicAsset(diagram.image), `${project.title} ${diagram.title}`)" />
                         </div>
                     </div>
+                    <ol v-if="designNotes.length" class="design-notes">
+                        <li v-for="(note, nIdx) in designNotes" :key="nIdx" class="design-note">
+                            <span class="design-note-index">{{ nIdx + 1 }}</span>
+                            <span class="design-note-text">{{ note }}</span>
+                        </li>
+                    </ol>
                 </div>
 
                 <!-- 4. 동작 흐름 — Mermaid 시퀀스 다이어그램 -->
@@ -599,17 +600,15 @@ onUnmounted(() => window.removeEventListener('keydown', handleLightboxKeydown))
     gap: 10px;
 }
 
+/* 다이어그램 이름 — 회색은 잘 안 읽혀서 본문색 + 약간 키운 크기로 */
 .diagram-label {
-    font-family: var(--font-mono);
-    font-size: 11.5px;
-    font-weight: 700;
-    text-transform: uppercase;
-    letter-spacing: 0.02em;
-    color: var(--color-text-faint);
+    font-size: 14px;
+    font-weight: 600;
+    color: var(--color-text);
 }
 
 .architecture-box {
-    padding: 8px;
+    padding: 16px;
     border: 1px solid var(--color-border);
     background-color: var(--color-surface);
     border-radius: 12px;
@@ -617,9 +616,46 @@ onUnmounted(() => window.removeEventListener('keydown', handleLightboxKeydown))
     justify-content: center;
 }
 
+/* 아키텍처 다이어그램 행 — 장수만큼 같은 폭으로 나누고, 칸 사이를 세로선(|)으로 구분 */
+.diagram-row {
+    display: grid;
+    grid-template-columns: repeat(var(--diagram-count, 1), minmax(0, 1fr));
+    padding: 16px 0;
+}
+
+.diagram-cell {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 0;
+    padding: 0 16px;
+}
+
+.diagram-cell + .diagram-cell {
+    border-left: 1px solid var(--color-border);
+}
+
+/* 좁은 화면에서는 위아래로 쌓고 가로선으로 구분 */
+@media (max-width: 700px) {
+    .diagram-row {
+        grid-template-columns: minmax(0, 1fr);
+    }
+
+    .diagram-cell + .diagram-cell {
+        margin-top: 16px;
+        padding-top: 16px;
+        border-left: none;
+        border-top: 1px solid var(--color-border);
+    }
+}
+
+/* 세로로 긴 다이어그램이 화면을 다 덮지 않도록 높이를 제한 — 원본은 클릭해서 라이트박스로 */
 .architecture-image {
     max-width: 100%;
+    max-height: 480px;
+    width: auto;
     height: auto;
+    object-fit: contain;
     cursor: zoom-in;
     transition: opacity 0.2s ease;
 }
@@ -821,7 +857,7 @@ onUnmounted(() => window.removeEventListener('keydown', handleLightboxKeydown))
     display: flex;
     flex-direction: column;
     gap: 10px;
-    margin-top: 6px;
+    margin-top: 16px;
 }
 
 .design-note {
