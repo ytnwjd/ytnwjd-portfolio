@@ -91,7 +91,8 @@ function startYear(period) {
   justify-content: space-between;
   gap: 8px 24px;
   padding-top: 16px;
-  border-top: 2px solid var(--color-ink);
+  /* 검정은 너무 강해서 한 단계 연한 회색으로 — 구분은 하되 카드보다 튀지 않게 */
+  border-top: 2px solid var(--color-text-faint);
 }
 
 .group-head-main {
