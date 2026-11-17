@@ -42,6 +42,12 @@ const featuredActivities = computed(() => {
     .sort((a, b) => a.date.localeCompare(b.date))
 })
 
+// 성과 문장이 "헤드라인 — 설명" 형식이면 헤드라인만 굵게 (상세 페이지 성과 카드와 같은 데이터)
+function splitHeadline(text) {
+  const match = text.match(/^(.{1,30}?)\s+—\s+(.+)$/)
+  return match ? { headline: match[1], rest: match[2] } : { headline: null, rest: text }
+}
+
 function formatDate(dateStr) {
   return dateStr.replaceAll('-', '.')
 }
@@ -81,7 +87,9 @@ function periodLabel(item) {
         <p class="r-project-meta">{{ project.organization }} · {{ project.type }}</p>
         <p class="r-project-summary">{{ project.summary }}</p>
         <ul v-if="project.result?.length" class="r-project-result">
-          <li v-for="(res, idx) in project.result" :key="idx">{{ res }}</li>
+          <li v-for="(res, idx) in project.result" :key="idx">
+            <template v-if="splitHeadline(res).headline"><strong>{{ splitHeadline(res).headline }}</strong> — </template>{{ splitHeadline(res).rest }}
+          </li>
         </ul>
         <p v-if="project.techStack?.length" class="r-project-stack">{{ project.techStack.join(', ') }}</p>
       </article>
