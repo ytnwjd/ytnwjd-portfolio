@@ -2,7 +2,7 @@
 <script setup>
 import { computed, nextTick, onBeforeUnmount, onMounted, ref } from 'vue'
 import { RouterLink } from 'vue-router'
-import { getTechColor, getTagTextColor } from '@/data/techColors'
+import { getTechTintStyle } from '@/data/techColors'
 
 const props = defineProps({
   project: { type: Object, required: true },
@@ -71,12 +71,7 @@ onBeforeUnmount(() => resizeObserver?.disconnect())
 
 // 숙련도 구분 없이 모든 태그를 SKILLS 섹션과 같은 브랜드 컬러로 채운다
 function tagStyle(tech) {
-  const match = getTechColor(tech)
-  return {
-    backgroundColor: match.color,
-    borderColor: match.color,
-    color: getTagTextColor(match.light),
-  }
+  return getTechTintStyle(tech)
 }
 </script>
 
@@ -167,7 +162,7 @@ function tagStyle(tech) {
 }
 
 .metric-value {
-  font-size: 34px;
+  font-size: 30px;
   font-weight: 700;
   line-height: 1.1;
   letter-spacing: -0.02em;
