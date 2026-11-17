@@ -5,4 +5,5 @@ export const profile = {
   email: 'ysj120808@gmail.com',
   github: 'https://github.com/ytnwjd',
   blog: 'https://ytnwjd.tistory.com/',
+  portfolio: 'https://ytnwjd.dev',
 }
