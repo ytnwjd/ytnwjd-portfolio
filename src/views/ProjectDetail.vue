@@ -6,7 +6,7 @@ import { useRoute, RouterLink } from 'vue-router'
 import { computed, nextTick, onMounted, onUnmounted, ref, watch } from 'vue'
 import { IconArrowLeft, IconCheck, IconStar, IconX } from '@tabler/icons-vue'
 import projects from '@/data/projects'
-import { getTechColor, getTagTextColor } from '@/data/techColors'
+import { getTechTintStyle } from '@/data/techColors'
 
 const route = useRoute()
 // hidden 프로젝트는 URL로 직접 들어와도 노출하지 않는다
@@ -137,13 +137,9 @@ async function renderFlows() {
 onMounted(renderFlows)
 
 // ── 기타 ─────────────────────────────────────────────────
+// 사이드바 기술 태그는 연한 틴트 — 진한 채움색이 본문보다 튀지 않도록
 function tagStyle(tech) {
-    const match = getTechColor(tech)
-    return {
-        backgroundColor: match.color,
-        borderColor: match.color,
-        color: getTagTextColor(match.light),
-    }
+    return getTechTintStyle(tech)
 }
 
 function publicAsset(path) {

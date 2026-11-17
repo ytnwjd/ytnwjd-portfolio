@@ -45,3 +45,34 @@ const LIGHT_TEXT = '#ffffff'
 export function getTagTextColor(light) {
   return light ? DARK_TEXT : LIGHT_TEXT
 }
+
+// ── 연한 틴트 태그 ─────────────────────────────────────────
+// 진한 브랜드 색을 배경으로 꽉 채우면 태그가 본문보다 튀므로, 브랜드 색을 흰색에 크게 섞은
+// 파스텔 배경 + 같은 계열의 짙은 글자로 바꿔 "색은 알아보되 조용한" 태그를 만든다.
+function hexToRgb(hex) {
+  const value = hex.replace('#', '')
+  const full = value.length === 3 ? [...value].map((c) => c + c).join('') : value
+  const num = parseInt(full, 16)
+  return [(num >> 16) & 255, (num >> 8) & 255, num & 255]
+}
+
+// target 색 쪽으로 ratio(0~1)만큼 섞는다
+function mix(rgb, target, ratio) {
+  const [r, g, b] = rgb.map((c, i) => Math.round(c + (target[i] - c) * ratio))
+  return `rgb(${r}, ${g}, ${b})`
+}
+
+const WHITE = [255, 255, 255]
+const BLACK = [0, 0, 0]
+
+export function getTechTintStyle(name) {
+  const { color, light } = getTechColor(name)
+  const rgb = hexToRgb(color)
+  return {
+    backgroundColor: mix(rgb, WHITE, 0.78),
+    borderColor: mix(rgb, WHITE, 0.45),
+    // 원래 밝은 브랜드 색(노랑·하늘색 등)은 더 많이 어둡게 해야 흰 바탕에서 읽힌다
+    // 작은 글씨 기준 대비 4.5:1 이상이 나오도록 섞는 비율을 잡았다
+    color: mix(rgb, BLACK, light ? 0.6 : 0.4),
+  }
+}
