@@ -40,10 +40,13 @@ src/
 ├── components/
 │   ├── layout/              # TopNav, Footer
 │   ├── sections/            # 홈 섹션들 + ProjectCard
-│   └── ui/                  # SkillIcon
-├── composables/             # useNetworkCanvas (히어로 배경)
+│   ├── project-detail/      # 상세 페이지 조각 — CaseSection(섹션 껍데기), ProjectArchitecture,
+│   │                        #   ProjectFlows(mermaid), ProjectDeepDive(이슈 탭)
+│   └── ui/                  # SkillIcon, ImageLightbox(사진·다이어그램 공용 라이트박스)
+├── composables/             # useScrollSpy (상세 페이지 고정 탭)
 ├── data/                    # 모든 콘텐츠 — 컴포넌트에 텍스트를 하드코딩하지 않는다
 ├── router/index.js
+├── utils/                   # text.js(splitHeadline), asset.js(publicAsset)
 └── views/                   # HomeView, ProjectDetail, ResumeView
 public/images/               # 프로젝트 다이어그램 등 (data에서 'images/...' 상대경로로 참조)
 scripts/generate-resume-pdf.js
@@ -64,8 +67,8 @@ scripts/generate-resume-pdf.js
   - `hidden: true` — 목록·상세 어디에도 노출하지 않음 (URL로 직접 들어와도 숨김)
 - **`"헤드라인 — 설명"` 규칙**: `responsibilities`/`result` 문장 앞부분(30자 이내)을 ` — `(em dash, 앞뒤 공백)로
   나누면 앞부분이 굵은 헤드라인/성과 카드 제목이 된다. 헤드라인이 없는 성과는 문장 속 수치(%, `A → B`, 기간·횟수)를
-  자동으로 뽑아 헤드라인으로 쓰고, 수치 성과가 카드 앞쪽으로 정렬된다. (`ProjectDetail.vue`의 `splitKeyword`,
-  `ResumeView.vue`의 `splitHeadline`이 같은 정규식을 쓴다 — 하나를 바꾸면 둘 다 바꿀 것)
+  자동으로 뽑아 헤드라인으로 쓰고, 수치 성과가 카드 앞쪽으로 정렬된다. (분리 규칙은 `src/utils/text.js`의
+  `splitHeadline` 하나를 상세 페이지와 이력서가 같이 쓴다)
 - `projectGroups.js` — 홈 PROJECTS 섹션의 그룹 구성과 순서. 상세 페이지의 이전/다음 순서도 이걸 따른다.
   어느 그룹에도 없는 프로젝트는 "Other Projects"로 내려간다.
 - `hero.js` — 히어로 KPI 카드. `projectSlug`로 프로젝트와 연결된다.
@@ -78,7 +81,7 @@ scripts/generate-resume-pdf.js
 ## 디자인
 
 - 토큰은 `src/assets/styles/main.css`의 `:root` 변수만 사용. 색을 하드코딩하지 않는다.
-- 무채색(흑백 명도 단계) 베이스 + 포인트 컬러 하나 `--color-accent: #ff5a3c`. 포인트는 강조 지점에만 아껴 쓴다.
+- 무채색(흑백 명도 단계) 베이스 + 포인트 컬러 하나 `--color-accent: #ec6446`(차분한 코랄). 포인트는 강조 지점에만 아껴 쓴다.
 - 폰트: 영문·숫자 Inter Tight, 한글 Pretendard, 라벨 JetBrains Mono (`index.html`에서 로드).
 - 기술 태그는 브랜드 컬러를 옅게 깐 light tint 스타일.
 - 디자인 작업 시 `.claude/skills/frontend-design` 스킬 참고.
@@ -95,7 +98,8 @@ scripts/generate-resume-pdf.js
 - **`body`에 `overflow-x`를 걸지 말 것.** body가 별도 스크롤 컨테이너가 되어 `window.scrollTo`가 먹히지 않는다.
   `html`에만 건다. (main.css 주석 참고)
 - `ProjectDetail`은 이전/다음 프로젝트로 이동할 때 컴포넌트가 재사용되어 `onMounted`가 다시 불리지 않는다.
-  slug별로 초기화할 상태는 `watch(() => route.params.slug)`에서 처리한다.
+  slug별로 초기화할 상태는 `watch(() => route.params.slug)`에서 처리하거나, 자식 컴포넌트에 `:key="project.slug"`를
+  줘서 새로 마운트한다(ProjectDeepDive가 이 방식).
 - 라우터는 `createWebHistory`인데 GitHub Pages는 SPA fallback이 없다. `public/404.html` 같은 처리가 없으면
   `/projects/...`, `/resume`을 직접 열거나 새로고침할 때 GitHub 404가 뜬다.
 - 이력서 PDF는 CI의 headless Chromium이 렌더링한다. 한글 폰트(`fonts-noto-cjk`)는 워크플로우에서 설치한다.

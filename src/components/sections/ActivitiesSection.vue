@@ -1,9 +1,11 @@
 <script setup>
-import { computed, onMounted, onUnmounted, ref } from 'vue'
+import { computed, ref } from 'vue'
 import { RouterLink } from 'vue-router'
-import { IconExternalLink, IconX } from '@tabler/icons-vue'
+import { IconExternalLink } from '@tabler/icons-vue'
 import activities from '@/data/activities'
 import projects from '@/data/projects'
+import ImageLightbox from '@/components/ui/ImageLightbox.vue'
+import { publicAsset } from '@/utils/asset'
 
 // 카테고리별 점 색상 — award는 사이트 전역에서 "성과"를 나타낼 때 쓰던 포인트 컬러를 그대로 이어받고,
 // 나머지 4개는 그 톤과 어울리는 범위 안에서 서로 뚜렷이 구분되도록 지정
@@ -43,27 +45,12 @@ function projectTitle(slug) {
   return projects.find((p) => p.slug === slug)?.title ?? slug
 }
 
-function publicAsset(path) {
-  return `${import.meta.env.BASE_URL}${path}`
-}
-
 // 활동 사진 클릭 시 원본 크기로 확인할 수 있는 라이트박스
 const lightboxImage = ref(null)
 
 function openLightbox(src, alt) {
   lightboxImage.value = { src, alt }
 }
-
-function closeLightbox() {
-  lightboxImage.value = null
-}
-
-function handleLightboxKeydown(e) {
-  if (e.key === 'Escape') closeLightbox()
-}
-
-onMounted(() => window.addEventListener('keydown', handleLightboxKeydown))
-onUnmounted(() => window.removeEventListener('keydown', handleLightboxKeydown))
 
 // 연도가 바뀌는 지점마다 연도 구분 행을 끼워 넣은 단일 타임라인 시퀀스를 만든다.
 // side는 연도 행을 제외한 활동 항목의 순번으로만 매겨서 좌우가 끊기지 않고 번갈아 이어지게 한다.
@@ -174,14 +161,7 @@ const timelineEntries = computed(() => {
     </ol>
 
     <!-- 활동 사진 라이트박스 -->
-    <Teleport to="body">
-      <div v-if="lightboxImage" class="lightbox-overlay" @click="closeLightbox">
-        <button class="lightbox-close" @click.stop="closeLightbox" aria-label="닫기">
-          <IconX :size="22" :stroke-width="2" />
-        </button>
-        <img :src="lightboxImage.src" :alt="lightboxImage.alt" class="lightbox-image" @click.stop />
-      </div>
-    </Teleport>
+    <ImageLightbox :image="lightboxImage" @close="lightboxImage = null" />
   </section>
 </template>
 
@@ -403,44 +383,6 @@ const timelineEntries = computed(() => {
 
 .item-link:hover {
   color: var(--color-accent);
-}
-
-/* 활동 사진 라이트박스 */
-.lightbox-overlay {
-  position: fixed;
-  inset: 0;
-  background: rgba(0, 0, 0, 0.85);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  padding: 48px;
-  z-index: 1000;
-}
-
-.lightbox-image {
-  max-width: 100%;
-  max-height: 100%;
-  border-radius: 8px;
-  cursor: default;
-}
-
-.lightbox-close {
-  position: fixed;
-  top: 24px;
-  right: 32px;
-  width: 40px;
-  height: 40px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  border-radius: 999px;
-  background: rgba(255, 255, 255, 0.1);
-  color: var(--color-white);
-  transition: background-color 0.2s ease;
-}
-
-.lightbox-close:hover {
-  background: rgba(255, 255, 255, 0.2);
 }
 
 /* 화면이 좁아지면 좌우 교차 배치 대신 선을 왼쪽으로 옮기고 카드를 한 줄로 통일한다 */
