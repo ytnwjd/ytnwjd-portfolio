@@ -166,7 +166,8 @@ const RESULT_VALUE_PATTERNS = [
 const resultCards = computed(() => {
     const cards = (project.value?.result ?? []).map((text) => {
         const { keyword, rest } = splitKeyword(text)
-        if (keyword) return { headline: keyword, text: rest, numeric: false }
+        // 직접 적은 헤드라인이라도 숫자로 시작하면("3~4만 원") 수치 성과로 보고 앞쪽에 둔다
+        if (keyword) return { headline: keyword, text: rest, numeric: /^\d/.test(keyword) }
         for (const pattern of RESULT_VALUE_PATTERNS) {
             const match = text.match(pattern)
             if (match) return { headline: match[0].trim(), text, numeric: true }
