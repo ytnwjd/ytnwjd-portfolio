@@ -2,7 +2,6 @@
 <script setup>
 import { computed, nextTick, onBeforeUnmount, onMounted, ref } from 'vue'
 import { RouterLink } from 'vue-router'
-import { getTechTintStyle } from '@/data/techColors'
 
 const props = defineProps({
   project: { type: Object, required: true },
@@ -68,11 +67,6 @@ onMounted(async () => {
 })
 
 onBeforeUnmount(() => resizeObserver?.disconnect())
-
-// 숙련도 구분 없이 모든 태그를 SKILLS 섹션과 같은 브랜드 컬러로 채운다
-function tagStyle(tech) {
-  return getTechTintStyle(tech)
-}
 </script>
 
 <template>
@@ -92,7 +86,7 @@ function tagStyle(tech) {
       <div class="card-footer">
         <div v-if="allTags.length" class="tech-tags-box">
           <ul ref="tagsBox" class="tech-tags">
-            <li v-for="tech in visibleTags" :key="tech" class="tech-tag" :style="tagStyle(tech)">
+            <li v-for="tech in visibleTags" :key="tech" class="tech-tag">
               {{ tech }}
             </li>
             <li v-if="hiddenTagCount" class="tech-tag more">+{{ hiddenTagCount }}</li>
@@ -123,7 +117,8 @@ function tagStyle(tech) {
   padding: 26px 26px 22px;
   /* 페이지 배경(#f8f8f8) 위에서 카드 면이 분명히 떠 보이도록 흰 바탕 + 2단 그림자 */
   background: var(--color-surface);
-  border: 1px solid var(--color-accent);
+  /* 테두리는 중립 회색 — 포인트 컬러는 성과 수치와 hover에만 남겨 시선이 흩어지지 않게 한다 */
+  border: 1px solid var(--color-border-strong);
   border-radius: 16px;
   box-shadow:
     0 1px 3px rgba(0, 0, 0, 0.06),
@@ -135,6 +130,7 @@ function tagStyle(tech) {
 }
 
 .project-card:hover {
+  border-color: var(--color-accent);
   box-shadow:
     0 2px 6px rgba(0, 0, 0, 0.06),
     0 16px 36px rgba(0, 0, 0, 0.14);
@@ -169,9 +165,10 @@ function tagStyle(tech) {
   color: var(--color-accent);
 }
 
-/* 대표(인턴) 그룹만 포인트 컬러를 쓰고, 나머지는 차분한 남색으로 위계를 한 단계 낮춘다 */
+/* 대표(인턴) 그룹만 포인트 컬러를 쓰고, 나머지는 검정으로 위계를 한 단계 낮춘다
+   (별도 보조색을 두면 화면에 색이 하나 더 늘어나 시선이 분산된다) */
 .tone-navy .metric-value {
-  color: #2b4c7e;
+  color: var(--color-ink);
 }
 
 .metric-label {
@@ -250,6 +247,7 @@ function tagStyle(tech) {
   overflow: visible;
 }
 
+/* 카드 목록에서는 브랜드 컬러 없이 회색 태그 — 카드가 여러 장 모이면 색이 너무 많아진다 */
 .tech-tag {
   font-family: var(--font-mono);
   font-size: 11.5px;
