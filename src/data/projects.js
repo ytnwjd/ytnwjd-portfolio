@@ -158,7 +158,7 @@ export default [
   },
   {
     slug: 'gpu-job-management-dashboard',
-    title: 'k8s 기반의 GPU Job Management Dashboard',
+    title: 'GPU Job Management Dashboard',
     metrics: [{ value: '인기상', label: 'Ajou Softcon 2025' }],
     hook: '가용 GPU 자동 할당·대기열 스케줄링 + 사용자별 격리 디렉토리 File Tree로 CLI 없이 Job 등록',
     period: '2025.08 ~ 2025.12',
@@ -226,8 +226,8 @@ export default [
     slug: 'ajouchong',
     title: '총학생회 홈페이지 개편·운영',
     metrics: [
-      { value: '90%', label: 'AWS 비용 월 60만 → 4만 원' },
-      { value: '16%', label: '방문자 평균 CTR 향상' },
+      { value: '3~4만 원', label: '월 AWS 비용 (기존 60만 원)' },
+      { value: '18.6%', label: '방문자 평균 CTR' },
     ],
     hook: 'Django → Spring Boot 전면 재설계 후, 2년간 단독 운영하며 인프라 이관까지 주도',
     period: '2024.01 ~ 2026.03',
@@ -281,15 +281,15 @@ export default [
         cause:
           '비전문 인력이 운영하는 클라우드 환경 특성상 안정성이 보장되지 않는 구조가 근본 원인이었습니다.',
         solution:
-          '서비스 안정성을 확보하기 위해 백엔드와 DB만 AWS EC2로 다시 이관하고, 비용 절감을 위해 프론트엔드는 Vercel로 분리 배포했습니다. 그 결과 안정성을 확보하면서도 운영비를 월 4만 원대로 최소화했습니다.',
+          '서비스 안정성을 확보하기 위해 백엔드와 DB만 AWS EC2로 다시 이관하고, 비용 절감을 위해 프론트엔드는 Vercel로 분리 배포했습니다. 그 결과 안정성을 확보하면서도 운영비를 월 3~4만 원대로 최소화했습니다.',
       },
     ],
     result: [
       '기한 내 런칭 — Spring Boot + React 기반 신규 홈페이지를 기한 내 성공적으로 런칭',
       '협업 생산성 향상 — 개발환경·CI/CD 표준화로 팀 전체의 협업 생산성 향상에 기여',
       '2년간 단독 운영하며 실사용자 대상 서비스 지속 제공',
-      'AWS 운영 비용 월 60만 원 → 4만 원대로 90% 이상 절감',
-      '방문자 평균 CTR 16% 향상',
+      '3~4만 원 — AWS 인프라 재구축·이전으로 월 운영 비용 60만 원 → 3~4만 원대로 절감',
+      '방문자 평균 CTR 18.6% 달성 (Google Search Console 기준 2025.06~12)',
     ],
   },
   {

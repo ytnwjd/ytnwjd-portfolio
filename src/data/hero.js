@@ -1,16 +1,16 @@
 export const kpiCards = [
   {
     id: 'ajouchong-ctr',
-    value: '16% 향상',
+    value: '18.6%',
     label: '총학생회 공식 홈페이지',
-    description: '런칭 및 유지보수,\n평균 CTR 16% 향상',
+    description: '평균 CTR 18.6% 달성,\nGoogle Search Console 기준 2025.06~12',
     projectSlug: 'ajouchong',
   },
   {
     id: 'ajouchong-aws-cost',
-    value: '80% 절감',
+    value: '3~4만 원',
     label: '총학생회 공식 홈페이지',
-    description: 'AWS 인프라 마이그레이션,\n운영 비용 80% 이상 절감',
+    description: 'AWS 인프라 재구축·이전,\n월 운영 비용 60만 → 3~4만 원',
     projectSlug: 'ajouchong',
   },
   {
