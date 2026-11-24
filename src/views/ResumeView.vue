@@ -9,11 +9,14 @@ import { skillCategories } from '@/data/skills'
 import projects from '@/data/projects'
 import activities from '@/data/activities'
 import { certifications } from '@/data/certifications'
+// 성과 문장이 "헤드라인 — 설명" 형식이면 헤드라인만 굵게 (상세 페이지 성과 카드와 같은 규칙)
+import { splitHeadline } from '@/utils/text'
+import { publicAsset } from '@/utils/asset'
 
 const INTRO =
   '기획부터 개발, 배포, 운영까지 서비스의 전체 생명주기를 스스로 책임지는 Full-cycle Developer 유수정입니다.'
 
-const photoSrc = `${import.meta.env.BASE_URL}images/ytnwjd.jpg`
+const photoSrc = publicAsset('images/ytnwjd.jpg')
 
 const LEVEL_LABEL = {
   high: '다수 사용',
@@ -41,12 +44,6 @@ const featuredActivities = computed(() => {
     .filter((a) => a.featured)
     .sort((a, b) => a.date.localeCompare(b.date))
 })
-
-// 성과 문장이 "헤드라인 — 설명" 형식이면 헤드라인만 굵게 (상세 페이지 성과 카드와 같은 데이터)
-function splitHeadline(text) {
-  const match = text.match(/^(.{1,30}?)\s+—\s+(.+)$/)
-  return match ? { headline: match[1], rest: match[2] } : { headline: null, rest: text }
-}
 
 function formatDate(dateStr) {
   return dateStr.replaceAll('-', '.')
