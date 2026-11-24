@@ -207,9 +207,11 @@ const activeLegend = computed(() => levelLegend.filter((item) => usedLevels.has(
   margin-top: 72px;
 }
 
+/* 칸 사이 1px 선은 grid 배경색으로 그리므로, 자격증 개수(3개)와 열 수가 안 맞으면
+   빈 칸이 회색 덩어리로 보인다 — 자격증 수를 바꾸면 열 수도 같이 맞출 것 */
 .certifications-grid {
   display: grid;
-  grid-template-columns: repeat(4, 1fr);
+  grid-template-columns: repeat(3, 1fr);
   gap: 1px;
   margin-top: 24px;
   background: var(--color-border);
@@ -255,13 +257,8 @@ const activeLegend = computed(() => levelLegend.filter((item) => usedLevels.has(
   line-height: 1.5;
 }
 
-@media (max-width: 900px) {
-  .certifications-grid {
-    grid-template-columns: repeat(2, 1fr);
-  }
-}
-
-@media (max-width: 520px) {
+/* 2열로 줄이면 3개 중 한 칸이 비므로, 좁아지면 바로 1열로 쌓는다 */
+@media (max-width: 640px) {
   .certifications-grid {
     grid-template-columns: 1fr;
   }
