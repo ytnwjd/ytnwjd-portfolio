@@ -240,6 +240,8 @@ export default [
       'Java',
       'Spring Boot',
       'PostgreSQL',
+      'Docker',
+      'Docker Compose',
       'AWS EC2',
       'AWS S3',
       'Cloudflare',
@@ -252,7 +254,7 @@ export default [
       '프론트엔드 개발자 2명 영입 및 팀 빌딩, 프로젝트 개발 표준 정립',
       'Django → Java/Spring Boot 아키텍처 전면 재설계 주도',
       'docker-compose 기반 팀 로컬 개발환경 통일 및 OAuth·JWT 인증 파이프라인 Spring Security 모듈화',
-      'GitHub Actions+Vercel CI/CD 파이프라인 구축',
+      'GitHub Actions 기반 Docker 이미지 빌드·GHCR 배포 자동화, 프론트엔드 Vercel 배포',
       '자체 도메인(ajouchong.com)을 연결한 실서비스를 2년간 단독 운영',
       '관리자(Admin) 페이지 기획 및 구현',
       '비용·안정성 문제 해결을 위한 인프라 재설계 및 이관(AWS → AOLDA → AWS EC2+Vercel) 단독 주도',
@@ -270,18 +272,17 @@ export default [
       {
         title: 'AWS 운영비 월 60만 원 급증',
         problem: '기존 AWS 인프라의 운영비가 월 60만 원까지 급증했습니다.',
-        cause: '비효율적인 리소스 설정과 인프라 구조 전반의 문제가 누적된 결과였습니다.',
+        cause:
+          'RDS 지출이 급증한 것까지는 확인했지만, EC2·RDS·Docker 네트워크 설정이 얽혀 있어 정확한 원인을 특정하지 못했습니다.',
         solution:
-          '단기 설정 수정에 그치지 않고 근본 원인을 분석해 시스템 전면 개편을 결정했습니다. 학교에서 무상으로 제공하는 AOLDA 클라우드로 인프라를 이관해 운영비를 0원으로 만들었습니다.',
+          '원인 하나를 붙잡고 있기보다, 구조를 직접 파악할 수 있는 환경으로 시스템을 전면 재설계하기로 결정했습니다. 학교에서 무상으로 제공하는 AOLDA 클라우드로 인프라를 이관해 운영비를 0원으로 만들었습니다.',
       },
       {
-        title: 'AOLDA 클라우드 장애 반복',
-        problem:
-          'AOLDA는 학생들이 직접 관리하는 클라우드 환경이라, 운영 중간중간 DB가 유실되거나 서비스가 중단되는 장애가 반복적으로 발생했습니다.',
-        cause:
-          '비전문 인력이 운영하는 클라우드 환경 특성상 안정성이 보장되지 않는 구조가 근본 원인이었습니다.',
+        title: 'AOLDA 클라우드 DB 유실',
+        problem: 'AOLDA 클라우드 운영자의 내부 작업 중에 서비스 DB가 유실되었습니다.',
+        cause: '백업 없이 외부 클라우드 환경에 전적으로 의존한 구조가 원인이었습니다.',
         solution:
-          '서비스 안정성을 확보하기 위해 백엔드와 DB만 AWS EC2로 다시 이관하고, 비용 절감을 위해 프론트엔드는 Vercel로 분리 배포했습니다. 그 결과 안정성을 확보하면서도 운영비를 월 3~4만 원대로 최소화했습니다.',
+          '서비스 안정성을 확보하기 위해 백엔드와 DB만 Docker Compose 기반으로 AWS EC2에 다시 이관하고, 비용 절감을 위해 프론트엔드는 Vercel로 분리 배포했습니다. 그 결과 안정성을 확보하면서도 운영비를 월 3~4만 원대로 최소화했습니다.',
       },
     ],
     result: [
