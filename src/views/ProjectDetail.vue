@@ -1,6 +1,6 @@
 <!-- src/views/ProjectDetail.vue -->
 <!-- 프로젝트 상세 — "면접관이 읽는 엔지니어링 케이스 스터디" 구성.
-     히어로(한 줄 소개·메타) → TL;DR(문제·만든 것) → 고정 탭 →
+     히어로(한 줄 소개·메타) → TL;DR(문제·프로젝트 개요) → 고정 탭 →
      배경 → 담당 역할 → 아키텍처·설계 결정 → 동작 흐름 → Deep dive(트러블슈팅) → 회고 → 이전/다음.
      데이터가 없는 섹션·칸은 렌더링하지 않으므로, 프로젝트마다 채운 만큼만 노출된다. -->
 <script setup>
@@ -59,15 +59,15 @@ function pad2(n) {
     return String(n).padStart(2, '0')
 }
 
-// ── TL;DR — 문제 · 만든 것 (성과는 별도 성과 섹션에서 보여준다) ──────
-// 문제 · 만든 것 · 성과 — 전용 필드(tldr)가 없으면 기존 필드로 채운다
+// ── TL;DR — 문제 · 프로젝트 개요 (성과는 별도 성과 섹션에서 보여준다) ──────
+// 문제 · 프로젝트 개요 · 성과 — 전용 필드(tldr)가 없으면 기존 필드로 채운다
 
 const tldrCells = computed(() => {
     const p = project.value
     if (!p) return []
     return [
-        { key: 'problem', label: 'Problem', text: p.tldr?.problem || p.background?.problem },
-        { key: 'built', label: 'What I built', text: p.tldr?.built || p.summary },
+        { key: 'problem', label: '문제', text: p.tldr?.problem || p.background?.problem },
+        { key: 'built', label: '프로젝트 개요', text: p.tldr?.built || p.summary },
     ].filter((c) => c.text)
 })
 
@@ -179,8 +179,10 @@ const resultCards = computed(() => {
 })
 
 // scroll-spy — 고정 탭 아래 기준선을 통과한 마지막 섹션을 현재 위치로 본다
+// 기준선 = 상단 내비(64px) + 고정 탭(52px) + scroll-margin 여백(32px) = 148px 보다 조금 아래.
+// 탭으로 이동한 섹션의 머리가 이 선을 넘어서야 바로 활성으로 잡힌다. (CSS --cs-tabs-height와 맞출 것)
 const activeSectionId = ref(null)
-const ACTIVE_LINE_OFFSET = 180
+const ACTIVE_LINE_OFFSET = 168
 
 function updateActiveSection() {
     const ids = sections.value.map((s) => s.id)
@@ -306,31 +308,31 @@ onUnmounted(() => window.removeEventListener('keydown', handleLightboxKeydown))
             <!-- 상단 — 목록으로 · 몇 번째 프로젝트인지 -->
             <div class="cs-topbar">
                 <RouterLink :to="{ path: '/', hash: '#projects' }" replace class="back-link">
-                    <IconArrowLeft :size="14" :stroke-width="2.5" />
+                    <IconArrowLeft :size="16" :stroke-width="2.2" />
                     프로젝트 목록
                 </RouterLink>
                 <span v-if="currentIndex >= 0" class="cs-counter">
-                    {{ pad2(currentIndex + 1) }} / {{ pad2(orderedProjects.length) }}
+                    {{ currentIndex + 1 }} / {{ orderedProjects.length }}
                 </span>
             </div>
 
             <!-- 히어로 — 소속 · 제목 · 한 줄 소개 · 메타 · 기술 -->
             <header class="cs-hero">
-                <span v-if="project.organization" class="cs-eyebrow">{{ project.organization }}</span>
+                <span v-if="project.organization" class="cs-org">{{ project.organization }}</span>
                 <h1 class="cs-title">{{ project.title }}</h1>
                 <p v-if="project.pitch" class="cs-pitch">{{ project.pitch }}</p>
 
                 <dl class="cs-meta">
                     <div class="cs-meta-item">
-                        <dt>Period</dt>
+                        <dt>기간</dt>
                         <dd>{{ project.period }}</dd>
                     </div>
                     <div v-if="project.role" class="cs-meta-item">
-                        <dt>Role</dt>
+                        <dt>역할</dt>
                         <dd>{{ project.role }}</dd>
                     </div>
                     <div v-if="project.type" class="cs-meta-item">
-                        <dt>Type</dt>
+                        <dt>유형</dt>
                         <dd>{{ project.type }}</dd>
                     </div>
                 </dl>
@@ -352,7 +354,7 @@ onUnmounted(() => window.removeEventListener('keydown', handleLightboxKeydown))
             </section>
         </div>
 
-        <!-- 고정 탭 — 섹션이 2개 이상일 때만 -->
+        <!-- 고정 탭 — 섹션이 2개 이상일 때만. 굵은 글자 + 포인트 밑줄 탭 -->
         <nav v-if="sections.length > 1" class="cs-tabs" aria-label="페이지 목차">
             <div class="cs-tabs-inner">
                 <button v-for="s in sections" :key="s.id" type="button" class="cs-tab"
@@ -362,71 +364,63 @@ onUnmounted(() => window.removeEventListener('keydown', handleLightboxKeydown))
             </div>
         </nav>
 
-        <div class="cs-column">
+        <div class="cs-column cs-sections">
+            <!-- 섹션 공통 구조: 제목(+ 한 줄 요약) → 흰 면 본문. 한 단으로 위에서 아래로 읽힌다 -->
             <!-- 배경 -->
-            <!-- 섹션 공통 구조: 왼쪽 열(번호·제목·한 줄 요약) + 오른쪽 열(흰 카드 본문) -->
             <section v-if="sectionOf('background')" id="section-background" class="cs-section">
-                <header class="cs-side">
-                    <span class="cs-num">{{ sectionOf('background').number }}</span>
+                <header class="cs-head">
                     <h2 class="cs-h2">배경</h2>
-                    <p v-if="sectionNote('background')" class="cs-side-note">{{ sectionNote('background') }}</p>
+                    <p v-if="sectionNote('background')" class="cs-head-note">{{ sectionNote('background') }}</p>
                 </header>
-                <div class="cs-body">
-                    <div class="cs-card">
-                        <p class="cs-text">{{ project.background.problem }}</p>
-                        <p v-if="project.background.goal" class="cs-text cs-goal">
-                            <strong>목표</strong> {{ project.background.goal }}
-                        </p>
+                <div class="cs-card">
+                    <p class="cs-text">{{ project.background.problem }}</p>
+                    <div v-if="project.background.goal" class="cs-goal">
+                        <strong class="cs-goal-label">목표</strong>
+                        <p class="cs-goal-text">{{ project.background.goal }}</p>
                     </div>
                 </div>
             </section>
 
-            <!-- 담당 역할 — 흰 카드 안에서 한 줄씩 구분선으로 끊는다 -->
+            <!-- 담당 역할 — 흰 면 안에서 한 줄씩, 안쪽으로 들인 구분선으로 끊는다 -->
             <section v-if="sectionOf('role')" id="section-role" class="cs-section">
-                <header class="cs-side">
-                    <span class="cs-num">{{ sectionOf('role').number }}</span>
+                <header class="cs-head">
                     <h2 class="cs-h2">담당 역할</h2>
-                    <p v-if="sectionNote('role')" class="cs-side-note">{{ sectionNote('role') }}</p>
+                    <p v-if="sectionNote('role')" class="cs-head-note">{{ sectionNote('role') }}</p>
                 </header>
-                <div class="cs-body">
-                    <ul class="cs-rows">
-                        <li v-for="(item, idx) in project.responsibilities" :key="idx" class="cs-row">
-                            <IconCheck class="cs-row-icon" :size="17" :stroke-width="2" />
-                            <span>
-                                <strong v-if="splitKeyword(item).keyword" class="cs-keyword">{{ splitKeyword(item).keyword }}</strong>
-                                <template v-if="splitKeyword(item).keyword"> — </template>{{ splitKeyword(item).rest }}
-                            </span>
-                        </li>
-                    </ul>
-                </div>
+                <ul class="cs-rows">
+                    <li v-for="(item, idx) in project.responsibilities" :key="idx" class="cs-row">
+                        <span class="cs-row-icon" aria-hidden="true">
+                            <IconCheck :size="14" :stroke-width="2.6" />
+                        </span>
+                        <span class="cs-row-body">
+                            <strong v-if="splitKeyword(item).keyword" class="cs-keyword">{{ splitKeyword(item).keyword }}</strong>
+                            <span class="cs-row-text" :class="{ 'is-sub': splitKeyword(item).keyword }">{{ splitKeyword(item).rest }}</span>
+                        </span>
+                    </li>
+                </ul>
             </section>
 
             <!-- 성과 — 문장마다 대표 수치를 뽑아 카드로. 수치가 없는 성과는 문장만 -->
             <section v-if="sectionOf('results')" id="section-results" class="cs-section">
-                <header class="cs-side">
-                    <span class="cs-num">{{ sectionOf('results').number }}</span>
+                <header class="cs-head">
                     <h2 class="cs-h2">성과</h2>
-                    <p v-if="sectionNote('results')" class="cs-side-note">{{ sectionNote('results') }}</p>
+                    <p v-if="sectionNote('results')" class="cs-head-note">{{ sectionNote('results') }}</p>
                 </header>
-                <div class="cs-body">
-                    <ul class="cs-results">
-                        <li v-for="(card, idx) in resultCards" :key="idx" class="cs-result">
-                            <span v-if="card.headline" class="cs-result-value"
-                                :class="{ 'is-text': !card.numeric }">{{ card.headline }}</span>
-                            <span class="cs-result-text">{{ card.text }}</span>
-                        </li>
-                    </ul>
-                </div>
+                <ul class="cs-results">
+                    <li v-for="(card, idx) in resultCards" :key="idx" class="cs-result">
+                        <span v-if="card.headline" class="cs-result-value"
+                            :class="{ 'is-text': !card.numeric }">{{ card.headline }}</span>
+                        <span class="cs-result-text" :class="{ 'is-solo': !card.headline }">{{ card.text }}</span>
+                    </li>
+                </ul>
             </section>
 
             <!-- 아키텍처 · 설계 결정 — 다이어그램은 본문 폭 안에서 높이를 제한하고, 원본은 라이트박스로 -->
             <section v-if="sectionOf('architecture')" id="section-architecture" class="cs-section">
-                <header class="cs-side">
-                    <span class="cs-num">{{ sectionOf('architecture').number }}</span>
+                <header class="cs-head">
                     <h2 class="cs-h2">{{ sectionOf('architecture').label }}</h2>
-                    <p v-if="sectionNote('architecture')" class="cs-side-note">{{ sectionNote('architecture') }}</p>
+                    <p v-if="sectionNote('architecture')" class="cs-head-note">{{ sectionNote('architecture') }}</p>
                 </header>
-                <div class="cs-body">
 
                 <div v-if="project.diagrams?.length" class="cs-diagrams"
                     :style="{ '--diagram-count': project.diagrams.length }">
@@ -441,7 +435,8 @@ onUnmounted(() => window.removeEventListener('keydown', handleLightboxKeydown))
                 <!-- 설계 결정 — 왜 / 대안 / 대가 -->
                 <div v-if="project.decisions?.length" class="cs-decisions">
                     <div v-for="(d, idx) in project.decisions" :key="idx" class="cs-card decision">
-                        <h3 class="decision-title">결정 {{ idx + 1 }} · {{ d.title }}</h3>
+                        <span class="decision-index">결정 {{ idx + 1 }}</span>
+                        <h3 class="decision-title">{{ d.title }}</h3>
                         <dl class="decision-grid">
                             <template v-if="d.why">
                                 <dt>왜</dt>
@@ -458,17 +453,14 @@ onUnmounted(() => window.removeEventListener('keydown', handleLightboxKeydown))
                         </dl>
                     </div>
                 </div>
-                </div>
             </section>
 
             <!-- 동작 흐름 — Mermaid 시퀀스 다이어그램 -->
             <section v-if="sectionOf('flow')" id="section-flow" class="cs-section">
-                <header class="cs-side">
-                    <span class="cs-num">{{ sectionOf('flow').number }}</span>
+                <header class="cs-head">
                     <h2 class="cs-h2">동작 흐름</h2>
-                    <p v-if="sectionNote('flow')" class="cs-side-note">{{ sectionNote('flow') }}</p>
+                    <p v-if="sectionNote('flow')" class="cs-head-note">{{ sectionNote('flow') }}</p>
                 </header>
-                <div class="cs-body">
                 <div v-for="(flow, idx) in project.flows" :key="idx" class="cs-flow">
                     <h3 v-if="flow.title" class="cs-h3">{{ flow.title }}</h3>
                     <div class="cs-flow-box">
@@ -476,20 +468,17 @@ onUnmounted(() => window.removeEventListener('keydown', handleLightboxKeydown))
                         <p v-else-if="flowSvgs[idx] === ''" class="cs-hint">다이어그램을 그리지 못했습니다.</p>
                         <p v-else class="cs-hint">다이어그램을 불러오는 중…</p>
                     </div>
-                    <p v-if="flow.description" class="cs-text">{{ flow.description }}</p>
-                </div>
+                    <p v-if="flow.description" class="cs-flow-desc">{{ flow.description }}</p>
                 </div>
             </section>
 
-            <!-- Deep dive — 이슈가 여러 개면 가로 탭으로 하나씩 넘겨 본다.
-                 각 이슈는 증상 → 원인 → 해결 → 결과 타임라인 -->
+            <!-- Deep dive — 이슈가 여러 개면 칩으로 하나씩 넘겨 본다.
+                 각 이슈는 증상 → 원인 → 해결 → 결과 세로 목록 -->
             <section v-if="sectionOf('deepdive')" id="section-deepdive" class="cs-section">
-                <header class="cs-side">
-                    <span class="cs-num">{{ sectionOf('deepdive').number }}</span>
+                <header class="cs-head">
                     <h2 class="cs-h2">Deep dive</h2>
-                    <p v-if="sectionNote('deepdive')" class="cs-side-note">{{ sectionNote('deepdive') }}</p>
+                    <p v-if="sectionNote('deepdive')" class="cs-head-note">{{ sectionNote('deepdive') }}</p>
                 </header>
-                <div class="cs-body">
 
                 <div class="cs-issue">
                     <div v-if="issues.length > 1" class="cs-issue-tabs" role="tablist" aria-label="트러블슈팅 이슈"
@@ -516,24 +505,24 @@ onUnmounted(() => window.removeEventListener('keydown', handleLightboxKeydown))
                                         <span class="cs-step-dot">1</span>
                                         <div class="cs-step-body">
                                             <h4 class="cs-step-title">증상</h4>
-                                            <p class="cs-text">{{ currentIssue.problem }}</p>
+                                            <p class="cs-step-text">{{ currentIssue.problem }}</p>
                                         </div>
                                     </li>
                                     <li v-if="currentIssue.cause || currentIssue.concept" class="cs-step">
                                         <span class="cs-step-dot">2</span>
                                         <div class="cs-step-body">
                                             <h4 class="cs-step-title">원인</h4>
-                                            <p v-if="currentIssue.cause" class="cs-text">{{ currentIssue.cause }}</p>
+                                            <p v-if="currentIssue.cause" class="cs-step-text">{{ currentIssue.cause }}</p>
                                             <p v-if="currentIssue.concept" class="cs-concept">
                                                 <strong>개념 메모</strong> {{ currentIssue.concept }}
                                             </p>
                                         </div>
                                     </li>
-                                    <li class="cs-step">
+                                    <li class="cs-step cs-step-solution">
                                         <span class="cs-step-dot">{{ currentIssue.cause || currentIssue.concept ? 3 : 2 }}</span>
                                         <div class="cs-step-body">
                                             <h4 class="cs-step-title">{{ currentIssue.outcome ? '해결' : '해결 및 결과' }}</h4>
-                                            <p class="cs-text">{{ currentIssue.solution }}</p>
+                                            <p class="cs-step-text">{{ currentIssue.solution }}</p>
                                             <pre v-if="currentIssue.code?.snippet" class="cs-code"><code>{{ currentIssue.code.snippet }}</code></pre>
                                         </div>
                                     </li>
@@ -551,56 +540,52 @@ onUnmounted(() => window.removeEventListener('keydown', handleLightboxKeydown))
 
                     <!-- 이전 / 다음 이슈 -->
                     <div v-if="issues.length > 1" class="cs-issue-nav">
-                        <button type="button" class="cs-issue-nav-btn" :disabled="activeIssue === 0"
+                        <button type="button" class="btn btn--ghost cs-issue-nav-btn" :disabled="activeIssue === 0"
                             @click="selectIssue(activeIssue - 1)">
-                            <IconArrowLeft :size="14" :stroke-width="2.5" /> 이전 이슈
+                            <IconArrowLeft :size="16" :stroke-width="2.2" /> 이전 이슈
                         </button>
                         <span class="cs-issue-count">{{ activeIssue + 1 }} / {{ issues.length }}</span>
-                        <button type="button" class="cs-issue-nav-btn" :disabled="activeIssue === issues.length - 1"
-                            @click="selectIssue(activeIssue + 1)">
-                            다음 이슈 <IconArrowRight :size="14" :stroke-width="2.5" />
+                        <button type="button" class="btn btn--ghost cs-issue-nav-btn"
+                            :disabled="activeIssue === issues.length - 1" @click="selectIssue(activeIssue + 1)">
+                            다음 이슈 <IconArrowRight :size="16" :stroke-width="2.2" />
                         </button>
                     </div>
-                </div>
                 </div>
             </section>
 
             <!-- 회고 — 아쉬운 점 / 다시 한다면 -->
             <section v-if="sectionOf('retrospective')" id="section-retrospective" class="cs-section">
-                <header class="cs-side">
-                    <span class="cs-num">{{ sectionOf('retrospective').number }}</span>
+                <header class="cs-head">
                     <h2 class="cs-h2">회고</h2>
-                    <p v-if="sectionNote('retrospective')" class="cs-side-note">{{ sectionNote('retrospective') }}</p>
+                    <p v-if="sectionNote('retrospective')" class="cs-head-note">{{ sectionNote('retrospective') }}</p>
                 </header>
-                <div class="cs-body">
                 <div class="cs-retro">
                     <div v-if="retro.regret.length" class="cs-card">
-                        <span class="tldr-label">아쉬운 점</span>
+                        <h3 class="cs-retro-label">아쉬운 점</h3>
                         <ul class="cs-retro-list">
                             <li v-for="(r, idx) in retro.regret" :key="idx">{{ r }}</li>
                         </ul>
                     </div>
                     <div v-if="retro.next.length" class="cs-card">
-                        <span class="tldr-label">다시 한다면</span>
+                        <h3 class="cs-retro-label">다시 한다면</h3>
                         <ul class="cs-retro-list">
                             <li v-for="(r, idx) in retro.next" :key="idx">{{ r }}</li>
                         </ul>
                     </div>
-                </div>
                 </div>
             </section>
 
             <!-- 이전 / 다음 프로젝트 -->
             <nav v-if="prevProject || nextProject" class="cs-pager" aria-label="다른 프로젝트">
                 <RouterLink v-if="prevProject" :to="{ name: 'project-detail', params: { slug: prevProject.slug } }"
-                    class="cs-card cs-pager-link">
-                    <span class="tldr-label"><IconArrowLeft :size="12" :stroke-width="2.5" /> 이전</span>
+                    class="cs-pager-link">
+                    <span class="cs-pager-label"><IconArrowLeft :size="14" :stroke-width="2.2" /> 이전 프로젝트</span>
                     <span class="cs-pager-title">{{ prevProject.title }}</span>
                 </RouterLink>
-                <span v-else></span>
+                <span v-else class="cs-pager-empty"></span>
                 <RouterLink v-if="nextProject" :to="{ name: 'project-detail', params: { slug: nextProject.slug } }"
-                    class="cs-card cs-pager-link cs-pager-next">
-                    <span class="tldr-label">다음 <IconArrowRight :size="12" :stroke-width="2.5" /></span>
+                    class="cs-pager-link cs-pager-next">
+                    <span class="cs-pager-label">다음 프로젝트 <IconArrowRight :size="14" :stroke-width="2.2" /></span>
                     <span class="cs-pager-title">{{ nextProject.title }}</span>
                 </RouterLink>
             </nav>
@@ -610,7 +595,8 @@ onUnmounted(() => window.removeEventListener('keydown', handleLightboxKeydown))
     <section v-else class="section empty-state">
         <p class="empty-text">해당 프로젝트 정보를 찾을 수 없습니다.</p>
         <RouterLink :to="{ path: '/', hash: '#projects' }" replace class="back-link">
-            ← 프로젝트 목록으로 돌아가기
+            <IconArrowLeft :size="16" :stroke-width="2.2" />
+            프로젝트 목록으로 돌아가기
         </RouterLink>
     </section>
 
@@ -627,13 +613,25 @@ onUnmounted(() => window.removeEventListener('keydown', handleLightboxKeydown))
 
 <style scoped>
 /* ── 레이아웃 ───────────────────────────────────────────── */
+/* 회색 바탕 위에 흰 면들을 한 단으로 쌓는다.
+   --cs-width: 케이스 스터디 본문 폭 — 한 줄이 너무 길지 않게 (content-width 안쪽)
+   --cs-tabs-height: 고정 탭 높이 — scroll-spy 기준선·scroll-margin 계산에 같이 쓴다 */
 .project-detail {
-    padding-block: 56px 96px;
+    --cs-width: 800px;
+    --cs-tabs-height: 52px;
+    --cs-hover-bg: color-mix(in srgb, var(--color-surface), var(--color-bg-alt) 55%);
+    /* 전역 .section(홈 섹션용 넓은 좌우 여백·하단 구분선)을 이 페이지에서는 덮어쓴다 —
+       고정 탭이 --gutter만큼 좌우로 늘어나므로 여백도 --gutter로 맞춘다 */
+    max-width: none;
+    padding-block: var(--space-8) 120px;
+    padding-inline: var(--gutter);
+    border-bottom: none;
+    /* 한글이 단어 중간에서 끊기지 않게 ("전/면" → "전면") */
+    word-break: keep-all;
 }
 
-/* 본문은 가운데 단 — 다이어그램·카드가 답답하지 않으면서 한 줄이 너무 길어지지 않는 폭 */
 .cs-column {
-    max-width: 1040px;
+    max-width: var(--cs-width);
     margin: 0 auto;
 }
 
@@ -641,80 +639,94 @@ onUnmounted(() => window.removeEventListener('keydown', handleLightboxKeydown))
     display: flex;
     align-items: center;
     justify-content: space-between;
-    margin-bottom: 40px;
+    margin-bottom: var(--space-8);
 }
 
+/* 뒤로가기 — 테두리 없는 텍스트 버튼. 글자 시작선을 본문과 맞추려고 왼쪽 패딩만큼 당긴다 */
 .back-link {
     display: inline-flex;
     align-items: center;
-    gap: 5px;
-    padding: 8px 16px;
-    border: 1.5px solid var(--color-border-strong);
-    border-radius: 999px;
-    font-size: 13.5px;
-    font-weight: 500;
-    color: var(--color-text);
+    gap: 6px;
+    min-height: 40px;
+    margin-left: calc(var(--space-3) * -1);
+    padding: 0 var(--space-3);
+    border-radius: var(--radius-sm);
+    font-size: var(--t6);
+    line-height: var(--t6-lh);
+    font-weight: 600;
+    color: var(--color-text-muted);
     transition:
-        border-color 0.2s ease,
-        color 0.2s ease;
+        background-color 0.15s var(--ease),
+        color 0.15s var(--ease),
+        transform 0.15s var(--ease);
 }
 
 .back-link:hover {
-    border-color: var(--color-accent);
-    color: var(--color-accent);
+    background: var(--color-bg-alt);
+    color: var(--color-text);
+}
+
+.back-link:active {
+    transform: scale(var(--press-scale));
 }
 
 .cs-counter {
-    font-family: var(--font-mono);
-    font-size: 12px;
+    font-size: var(--t7);
+    line-height: var(--t7-lh);
+    font-weight: 600;
+    font-variant-numeric: tabular-nums;
     color: var(--color-text-faint);
 }
 
 /* ── 히어로 ─────────────────────────────────────────────── */
-.cs-eyebrow {
+.cs-org {
     display: block;
-    margin-bottom: 10px;
-    font-family: var(--font-mono);
-    font-size: 12.5px;
+    margin-bottom: var(--space-2);
+    font-size: var(--t6);
+    line-height: var(--t6-lh);
+    font-weight: 600;
     color: var(--color-text-muted);
 }
 
 .cs-title {
-    font-size: clamp(30px, 3.2vw, 44px);
+    font-size: var(--t-display);
     font-weight: 700;
-    line-height: 1.25;
-    letter-spacing: -0.01em;
-    color: var(--color-ink);
-    word-break: keep-all;
+    line-height: 1.27;
+    letter-spacing: -0.02em;
+    color: var(--color-text);
 }
 
 .cs-pitch {
-    margin-top: 14px;
-    font-size: 18px;
-    line-height: 1.7;
-    color: var(--color-text);
-    word-break: keep-all;
+    margin-top: var(--space-3);
+    font-size: var(--t4);
+    line-height: var(--t4-lh);
+    color: var(--color-text-muted);
 }
 
 .cs-meta {
     display: flex;
     flex-wrap: wrap;
-    gap: 12px 40px;
-    margin-top: 28px;
+    gap: var(--space-2) var(--space-6);
+    margin-top: var(--space-6);
+}
+
+.cs-meta-item {
+    display: flex;
+    align-items: baseline;
+    gap: var(--space-2);
 }
 
 .cs-meta dt {
-    margin-bottom: 4px;
-    font-family: var(--font-mono);
-    font-size: 11px;
-    font-weight: 600;
-    letter-spacing: 0.06em;
-    text-transform: uppercase;
+    font-size: var(--t6);
+    line-height: var(--t6-lh);
+    font-weight: 400;
     color: var(--color-text-faint);
 }
 
 .cs-meta dd {
-    font-size: 15px;
+    font-size: var(--t6);
+    line-height: var(--t6-lh);
+    font-weight: 600;
     color: var(--color-text);
 }
 
@@ -722,53 +734,47 @@ onUnmounted(() => window.removeEventListener('keydown', handleLightboxKeydown))
     display: flex;
     flex-wrap: wrap;
     gap: 6px;
-    margin-top: 20px;
+    margin-top: var(--space-5);
 }
 
+/* 기술 태그 — 브랜드 색을 옅게 깐 작은 칩 */
 .tech-tag {
-    padding: 4px 11px;
-    border: 1px solid transparent;
-    border-radius: 999px;
-    font-family: var(--font-mono);
-    font-size: 12px;
-    font-weight: 500;
+    padding: 3px var(--space-2);
+    border-radius: var(--radius-xs);
+    font-size: var(--t7);
+    line-height: var(--t7-lh);
+    font-weight: 600;
     white-space: nowrap;
 }
 
 /* ── TL;DR ──────────────────────────────────────────────── */
 .cs-tldr {
     display: grid;
-    grid-template-columns: repeat(var(--tldr-count, 3), minmax(0, 1fr));
-    gap: 12px;
-    margin-top: 36px;
+    grid-template-columns: repeat(var(--tldr-count, 2), minmax(0, 1fr));
+    gap: var(--space-3);
+    margin-top: var(--space-10);
 }
 
-.tldr-card,
-.cs-card {
-    padding: 18px 20px;
+.tldr-card {
+    padding: var(--space-6);
     background: var(--color-surface);
-    border: 1px solid var(--color-border);
-    border-radius: 12px;
+    box-shadow: var(--card-shadow);
+    border-radius: var(--radius-lg);
 }
 
 .tldr-label {
-    display: inline-flex;
-    align-items: center;
-    gap: 4px;
-    margin-bottom: 8px;
-    font-family: var(--font-mono);
-    font-size: 11px;
+    display: block;
+    margin-bottom: var(--space-2);
+    font-size: var(--t6);
+    line-height: var(--t6-lh);
     font-weight: 600;
-    letter-spacing: 0.06em;
-    text-transform: uppercase;
-    color: var(--color-text-faint);
+    color: var(--color-accent);
 }
 
 .tldr-text {
-    font-size: 15px;
-    line-height: 1.65;
+    font-size: var(--t5);
+    line-height: var(--t5-lh);
     color: var(--color-text);
-    word-break: keep-all;
 }
 
 @media (max-width: 760px) {
@@ -777,24 +783,30 @@ onUnmounted(() => window.removeEventListener('keydown', handleLightboxKeydown))
     }
 }
 
-/* ── 고정 탭 ────────────────────────────────────────────── */
+/* ── 고정 탭 — 굵은 글자 + 포인트 밑줄 ─────────────────────── */
+/* .section의 좌우 여백(gutter)까지 바탕색으로 덮어, 스크롤되는 본문이 탭 옆으로 비치지 않게 한다 */
 .cs-tabs {
     position: sticky;
     top: var(--nav-height);
     z-index: 20;
-    margin: 48px 0 8px;
+    margin: var(--space-12) calc(var(--gutter) * -1) 0;
     background: var(--color-bg);
-    border-block: 1px solid var(--color-border);
 }
 
 .cs-tabs-inner {
     display: flex;
-    gap: 4px;
-    max-width: 1040px;
+    gap: var(--space-6);
+    max-width: calc(var(--cs-width) + var(--gutter) * 2);
+    height: var(--cs-tabs-height);
     margin: 0 auto;
-    padding: 16px 0;
+    padding: 0 var(--gutter);
     overflow-x: auto;
+    overscroll-behavior-x: contain;
     scrollbar-width: none;
+    /* 탭 줄 아래 얇은 바닥선 — 활성 밑줄이 이 선 위에 얹힌다 */
+    background:
+        linear-gradient(var(--color-border), var(--color-border)) var(--gutter) 100% /
+        calc(100% - var(--gutter) * 2) 1px no-repeat;
 }
 
 .cs-tabs-inner::-webkit-scrollbar {
@@ -802,233 +814,273 @@ onUnmounted(() => window.removeEventListener('keydown', handleLightboxKeydown))
 }
 
 .cs-tab {
-    flex-shrink: 0;
-    padding: 9px 18px;
-    border-radius: 999px;
-    font-size: 14.5px;
-    font-weight: 500;
-    color: var(--color-text-muted);
-    transition:
-        background-color 0.2s ease,
-        color 0.2s ease;
-}
-
-/* 탭 사이 세로 구분선 — 탭 간격(gap 4px + margin 12px)의 한가운데에 놓는다 */
-.cs-tab + .cs-tab {
     position: relative;
-    margin-left: 12px;
+    flex-shrink: 0;
+    height: 100%;
+    padding: 0 2px;
+    font-size: var(--t5);
+    line-height: var(--t5-lh);
+    font-weight: 600;
+    white-space: nowrap;
+    color: var(--color-text-faint);
+    transition: color 0.15s var(--ease);
 }
 
-.cs-tab + .cs-tab::before {
+.cs-tab::after {
     content: '';
     position: absolute;
-    top: 50%;
-    left: -8px;
-    width: 1px;
-    height: 16px;
-    background: var(--color-border-strong);
-    transform: translateY(-50%);
+    left: 0;
+    right: 0;
+    bottom: 0;
+    height: 2px;
+    border-radius: 2px;
+    background: var(--color-accent);
+    transform: scaleX(0);
+    transition: transform 0.2s var(--ease);
 }
 
 .cs-tab:hover {
-    color: var(--color-ink);
+    color: var(--color-text-muted);
 }
 
 .cs-tab.active {
-    background: var(--color-ink);
-    color: var(--color-white);
+    color: var(--color-text);
 }
 
-/* ── 섹션 공통 — 왼쪽 열(번호·제목·요약) + 오른쪽 열(본문) ───── */
+.cs-tab.active::after {
+    transform: scaleX(1);
+}
+
+.cs-tab:focus-visible {
+    outline-offset: -2px;
+}
+
+/* ── 섹션 공통 — 제목 → 흰 면 본문, 섹션 사이는 넉넉히 ───────── */
+.cs-sections {
+    display: flex;
+    flex-direction: column;
+    gap: 80px;
+    padding-top: var(--space-12);
+}
+
 .cs-section {
-    display: grid;
-    grid-template-columns: 200px minmax(0, 1fr);
-    gap: 40px;
-    padding: 56px 0;
-    border-bottom: 1px solid var(--color-border);
+    min-width: 0;
     /* 탭 클릭으로 이동 시 상단 내비게이션 + 고정 탭에 제목이 가리지 않도록 */
-    scroll-margin-top: calc(var(--nav-height) + 96px);
+    scroll-margin-top: calc(var(--nav-height) + var(--cs-tabs-height) + var(--space-8));
 }
 
-/* 왼쪽 열은 본문을 읽는 동안 따라 내려온다 */
-.cs-side {
-    position: sticky;
-    top: calc(var(--nav-height) + 100px);
-    align-self: start;
-}
-
-.cs-num {
-    display: block;
-    margin-bottom: 6px;
-    font-family: var(--font-mono);
-    font-size: 13px;
-    font-weight: 600;
-    color: var(--color-accent);
+.cs-head {
+    margin-bottom: var(--space-5);
 }
 
 .cs-h2 {
-    font-size: 22px;
+    font-size: var(--t2);
+    line-height: var(--t2-lh);
     font-weight: 700;
-    line-height: 1.3;
-    color: var(--color-ink);
-    word-break: keep-all;
+    letter-spacing: -0.02em;
+    color: var(--color-text);
 }
 
-.cs-side-note {
-    margin-top: 10px;
-    font-size: 14px;
-    line-height: 1.6;
+.cs-head-note {
+    margin-top: var(--space-1);
+    font-size: var(--t5);
+    line-height: var(--t5-lh);
     color: var(--color-text-muted);
-    word-break: keep-all;
-}
-
-.cs-body {
-    min-width: 0;
-}
-
-@media (max-width: 860px) {
-    .cs-section {
-        grid-template-columns: minmax(0, 1fr);
-        gap: 20px;
-        padding: 44px 0;
-    }
-
-    .cs-side {
-        position: static;
-    }
 }
 
 .cs-h3 {
-    margin-bottom: 12px;
-    font-size: 16px;
-    font-weight: 600;
-    color: var(--color-ink);
+    margin-bottom: var(--space-3);
+    font-size: var(--t4);
+    line-height: var(--t4-lh);
+    font-weight: 700;
+    color: var(--color-text);
+}
+
+.cs-card {
+    padding: var(--space-8);
+    background: var(--color-surface);
+    box-shadow: var(--card-shadow);
+    border-radius: var(--radius-xl);
 }
 
 .cs-text {
-    font-size: 16px;
-    line-height: 1.8;
+    font-size: var(--t5);
+    line-height: 1.75;
     color: var(--color-text);
-    word-break: keep-all;
 }
 
-/* 카드(흰 바탕) 안의 목표 박스는 페이지 배경색으로 한 단계 들어가 보이게 */
+/* 흰 면 안의 목표 — 회색 면으로 한 단계 들어가 보이게 */
 .cs-goal {
-    margin-top: 16px;
-    padding: 14px 18px;
+    margin-top: var(--space-6);
+    padding: var(--space-4) var(--space-5);
     background: var(--color-bg);
-    border-left: 3px solid var(--color-accent);
+    border-radius: var(--radius-md);
 }
 
-.cs-goal strong {
-    margin-right: 8px;
+.cs-goal-label {
+    display: block;
+    margin-bottom: var(--space-1);
+    font-size: var(--t7);
+    line-height: var(--t7-lh);
     font-weight: 600;
-    color: var(--color-ink);
-}
-
-.cs-hint {
-    margin-top: 8px;
-    font-size: 13px;
-    color: var(--color-text-faint);
-}
-
-/* ── 담당 역할 — 흰 카드 안에서 한 줄씩 구분선 ─────────────── */
-.cs-rows {
-    overflow: hidden;
-    background: var(--color-surface);
-    border: 1px solid var(--color-border);
-    border-radius: 12px;
-}
-
-.cs-row {
-    display: flex;
-    align-items: flex-start;
-    gap: 12px;
-    padding: 14px 20px;
-    font-size: 15.5px;
-    line-height: 1.65;
-    color: var(--color-text);
-    word-break: keep-all;
-}
-
-.cs-row + .cs-row {
-    border-top: 1px solid var(--color-border);
-}
-
-.cs-row-icon {
-    flex-shrink: 0;
-    margin-top: 3px;
     color: var(--color-accent);
 }
 
-.cs-keyword {
-    font-weight: 600;
-    color: var(--color-ink);
+.cs-goal-text {
+    font-size: var(--t6);
+    line-height: var(--t6-lh);
+    color: var(--color-text);
 }
 
-/* ── 성과 — 수치 카드 격자 ─────────────────────────────────── */
-/* 카드 수와 상관없이 줄마다 역할 카드와 같은 폭을 꽉 채운다
+.cs-hint {
+    margin-top: var(--space-2);
+    font-size: var(--t7);
+    line-height: var(--t7-lh);
+    color: var(--color-text-faint);
+}
+
+/* ── 담당 역할 — 흰 면 안의 목록, 구분선은 좌우를 들여서 ────────── */
+.cs-rows {
+    padding: var(--space-2) 0;
+    background: var(--color-surface);
+    box-shadow: var(--card-shadow);
+    border-radius: var(--radius-xl);
+}
+
+.cs-row {
+    position: relative;
+    display: flex;
+    align-items: flex-start;
+    gap: var(--space-4);
+    padding: var(--space-5) var(--space-8);
+}
+
+.cs-row + .cs-row::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: var(--space-8);
+    right: var(--space-8);
+    height: 1px;
+    background: var(--color-bg-alt);
+}
+
+/* 체크 아이콘은 옅은 포인트 원 안에 — 첫 줄 글자 높이 가운데에 맞춘다 */
+.cs-row-icon {
+    display: flex;
+    flex-shrink: 0;
+    align-items: center;
+    justify-content: center;
+    width: 22px;
+    height: 22px;
+    margin-top: 2px;
+    border-radius: 50%;
+    background: var(--color-accent-soft);
+    color: var(--color-accent);
+}
+
+.cs-row-body {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+    min-width: 0;
+}
+
+.cs-keyword {
+    font-size: var(--t5);
+    line-height: var(--t5-lh);
+    font-weight: 700;
+    color: var(--color-text);
+}
+
+.cs-row-text {
+    font-size: var(--t5);
+    line-height: var(--t5-lh);
+    color: var(--color-text);
+}
+
+.cs-row-text.is-sub {
+    font-size: var(--t6);
+    line-height: var(--t6-lh);
+    color: var(--color-text-muted);
+}
+
+/* ── 성과 — 큰 수치 카드 ───────────────────────────────────── */
+/* 카드 수와 상관없이 줄마다 본문 폭을 꽉 채운다
    (grid auto-fill은 빈 칸이 남으므로 flex-wrap + grow로 나눠 가진다) */
 .cs-results {
     display: flex;
     flex-wrap: wrap;
-    gap: 12px;
+    gap: var(--space-3);
 }
 
 .cs-result {
-    flex: 1 1 220px;
+    flex: 1 1 240px;
     display: flex;
     flex-direction: column;
-    gap: 6px;
-    padding: 18px 20px;
+    gap: var(--space-2);
+    padding: var(--space-6);
     background: var(--color-surface);
-    border: 1px solid var(--color-border);
-    /* 모든 성과 카드가 같은 구성 — 상단 포인트 선 + 헤드라인 + 설명 */
-    border-top: 3px solid var(--color-accent);
-    border-radius: 12px;
+    box-shadow: var(--card-shadow);
+    border-radius: var(--radius-lg);
 }
 
 .cs-result-value {
-    font-size: 20px;
+    font-size: var(--t2);
+    line-height: var(--t2-lh);
     font-weight: 700;
-    line-height: 1.2;
-    letter-spacing: -0.01em;
+    letter-spacing: -0.02em;
+    font-variant-numeric: tabular-nums;
     color: var(--color-accent);
-    word-break: keep-all;
+}
+
+/* 수치가 아닌 헤드라인은 색 없이 한 단계 작게 — 포인트 색은 숫자에만 */
+.cs-result-value.is-text {
+    font-size: var(--t4);
+    line-height: var(--t4-lh);
+    color: var(--color-text);
 }
 
 .cs-result-text {
-    font-size: 14.5px;
-    line-height: 1.6;
+    font-size: var(--t6);
+    line-height: var(--t6-lh);
+    color: var(--color-text-muted);
+}
+
+.cs-result-text.is-solo {
+    font-size: var(--t5);
+    line-height: var(--t5-lh);
     color: var(--color-text);
-    word-break: keep-all;
 }
 
-.cs-result-value.is-text {
-    font-size: 17px;
-}
-
-/* ── 아키텍처 — 다이어그램은 작게(높이 340px 제한), 여러 장이면 세로선으로 구분 ── */
+/* ── 아키텍처 — 다이어그램은 높이 340px 제한, 여러 장이면 안쪽 구분선 ── */
 .cs-diagrams {
     display: grid;
     grid-template-columns: repeat(var(--diagram-count, 1), minmax(0, 1fr));
-    padding: 16px 0;
+    padding: var(--space-6) 0;
     background: var(--color-surface);
-    border: 1px solid var(--color-border);
-    border-radius: 12px;
+    box-shadow: var(--card-shadow);
+    border-radius: var(--radius-xl);
 }
 
 .cs-diagram {
+    position: relative;
     display: flex;
     align-items: center;
     justify-content: center;
     min-width: 0;
-    padding: 0 16px;
+    padding: 0 var(--space-6);
     cursor: zoom-in;
 }
 
-.cs-diagram + .cs-diagram {
-    border-left: 1px solid var(--color-border);
+.cs-diagram + .cs-diagram::before {
+    content: '';
+    position: absolute;
+    top: var(--space-2);
+    bottom: var(--space-2);
+    left: 0;
+    width: 1px;
+    background: var(--color-bg-alt);
 }
 
 .cs-diagram img {
@@ -1037,7 +1089,7 @@ onUnmounted(() => window.removeEventListener('keydown', handleLightboxKeydown))
     width: auto;
     height: auto;
     object-fit: contain;
-    transition: opacity 0.2s ease;
+    transition: opacity 0.15s var(--ease);
 }
 
 .cs-diagram:hover img {
@@ -1049,61 +1101,83 @@ onUnmounted(() => window.removeEventListener('keydown', handleLightboxKeydown))
         grid-template-columns: minmax(0, 1fr);
     }
 
+    .cs-diagram {
+        padding: 0 var(--space-5);
+    }
+
     .cs-diagram + .cs-diagram {
-        margin-top: 16px;
-        padding-top: 16px;
-        border-left: none;
-        border-top: 1px solid var(--color-border);
+        margin-top: var(--space-5);
+        padding-top: var(--space-5);
+    }
+
+    .cs-diagram + .cs-diagram::before {
+        top: 0;
+        bottom: auto;
+        left: var(--space-5);
+        right: var(--space-5);
+        width: auto;
+        height: 1px;
     }
 }
 
 .cs-decisions {
     display: flex;
     flex-direction: column;
-    gap: 12px;
-    margin-top: 24px;
+    gap: var(--space-3);
+    margin-top: var(--space-6);
+}
+
+.decision {
+    padding: var(--space-6) var(--space-8);
+}
+
+.decision-index {
+    display: block;
+    margin-bottom: var(--space-1);
+    font-size: var(--t7);
+    line-height: var(--t7-lh);
+    font-weight: 600;
+    color: var(--color-accent);
 }
 
 .decision-title {
-    margin-bottom: 12px;
-    font-size: 16px;
-    font-weight: 600;
-    color: var(--color-ink);
-    word-break: keep-all;
+    margin-bottom: var(--space-4);
+    font-size: var(--t4);
+    line-height: var(--t4-lh);
+    font-weight: 700;
+    color: var(--color-text);
 }
 
 .decision-grid {
     display: grid;
-    grid-template-columns: 44px minmax(0, 1fr);
-    gap: 8px 12px;
-    font-size: 15px;
-    line-height: 1.7;
+    grid-template-columns: 40px minmax(0, 1fr);
+    gap: var(--space-3) var(--space-3);
 }
 
 .decision-grid dt {
-    padding-top: 2px;
-    font-size: 13px;
+    font-size: var(--t6);
+    line-height: var(--t6-lh);
     font-weight: 600;
-    color: var(--color-text-muted);
+    color: var(--color-text-faint);
 }
 
 .decision-grid dd {
+    font-size: var(--t6);
+    line-height: var(--t6-lh);
     color: var(--color-text);
-    word-break: keep-all;
 }
 
 /* ── 동작 흐름 ──────────────────────────────────────────── */
 .cs-flow + .cs-flow {
-    margin-top: 32px;
+    margin-top: var(--space-10);
 }
 
 .cs-flow-box {
-    margin-bottom: 12px;
-    padding: 16px;
+    padding: var(--space-6);
     overflow-x: auto;
     background: var(--color-surface);
-    border: 1px solid var(--color-border);
-    border-radius: 12px;
+    box-shadow: var(--card-shadow);
+    border-radius: var(--radius-xl);
 }
 
 .cs-flow-svg :deep(svg) {
@@ -1114,19 +1188,28 @@ onUnmounted(() => window.removeEventListener('keydown', handleLightboxKeydown))
     margin: 0 auto;
 }
 
+.cs-flow-desc {
+    margin-top: var(--space-3);
+    font-size: var(--t6);
+    line-height: var(--t6-lh);
+    color: var(--color-text-muted);
+}
+
 /* ── Deep dive ──────────────────────────────────────────── */
 .cs-issue {
     overflow: hidden;
     background: var(--color-surface);
-    border: 1px solid var(--color-border);
-    border-radius: 12px;
+    box-shadow: var(--card-shadow);
+    border-radius: var(--radius-xl);
 }
 
-/* 이슈 탭 — 이슈가 많아도 한 줄, 넘치면 가로 스크롤 */
+/* 이슈 칩 — 이슈가 많아도 한 줄, 넘치면 칩 줄만 가로 스크롤 */
 .cs-issue-tabs {
     display: flex;
+    gap: var(--space-2);
+    padding: var(--space-6) var(--space-8) 0;
     overflow-x: auto;
-    border-bottom: 1px solid var(--color-border);
+    overscroll-behavior-x: contain;
     scrollbar-width: none;
 }
 
@@ -1136,74 +1219,69 @@ onUnmounted(() => window.removeEventListener('keydown', handleLightboxKeydown))
 
 .cs-issue-tab {
     display: flex;
-    /* 제목 길이만큼 폭을 차지하고 절대 줄어들지 않는다 — 넘치면 탭 줄만 가로 스크롤 */
-    flex: 1 0 auto;
+    /* 제목 길이만큼 폭을 차지하고 줄어들지 않는다 */
+    flex: 0 0 auto;
     align-items: center;
-    gap: 8px;
-    padding: 14px 16px;
+    gap: var(--space-2);
+    min-height: 40px;
+    padding: 0 var(--space-4);
+    border-radius: var(--radius-sm);
+    background: var(--color-bg);
     white-space: nowrap;
-    border-bottom: 2px solid transparent;
-    margin-bottom: -1px;
     text-align: left;
     color: var(--color-text-muted);
     transition:
-        color 0.2s ease,
-        border-color 0.2s ease,
-        background-color 0.2s ease;
-}
-
-.cs-issue-tab + .cs-issue-tab {
-    border-left: 1px solid var(--color-border);
+        background-color 0.15s var(--ease),
+        color 0.15s var(--ease),
+        transform 0.15s var(--ease);
 }
 
 .cs-issue-tab:hover {
-    background: var(--color-bg);
-    color: var(--color-ink);
+    background: var(--color-bg-alt);
+    color: var(--color-text);
+}
+
+.cs-issue-tab:active {
+    transform: scale(var(--press-scale));
 }
 
 .cs-issue-tab.active {
-    border-bottom-color: var(--color-accent);
-    color: var(--color-ink);
+    background: var(--color-accent-soft);
+    color: var(--color-accent-dark);
 }
 
 .cs-issue-tab:focus-visible {
-    outline: 2px solid var(--color-accent);
     outline-offset: -2px;
 }
 
 .cs-issue-index {
     flex-shrink: 0;
-    padding: 3px 10px;
-    border: 1px solid var(--color-border-strong);
-    border-radius: 999px;
-    color: var(--color-text-muted);
-    font-family: var(--font-mono);
-    font-size: 11.5px;
+    font-size: var(--t7);
+    line-height: var(--t7-lh);
     font-weight: 600;
+    color: var(--color-text-faint);
 }
 
 .cs-issue-tab.active .cs-issue-index,
 .cs-issue-index.is-active {
-    border-color: var(--color-accent);
-    background: var(--color-accent-soft);
     color: var(--color-accent);
 }
 
 .cs-issue-tab-title {
-    font-size: 14.5px;
+    font-size: var(--t6);
+    line-height: var(--t6-lh);
     font-weight: 600;
 }
 
 .cs-issue-single-title {
     display: flex;
-    align-items: center;
-    gap: 10px;
-    padding: 18px 20px 4px;
-    font-size: 16px;
-    font-weight: 600;
-    line-height: 1.5;
-    color: var(--color-ink);
-    word-break: keep-all;
+    flex-direction: column;
+    gap: 2px;
+    padding: var(--space-8) var(--space-8) 0;
+    font-size: var(--t4);
+    line-height: var(--t4-lh);
+    font-weight: 700;
+    color: var(--color-text);
 }
 
 /* 패널 슬라이드 — 다음 이슈는 오른쪽에서, 이전 이슈는 왼쪽에서 들어온다.
@@ -1218,8 +1296,8 @@ onUnmounted(() => window.removeEventListener('keydown', handleLightboxKeydown))
 .issue-prev-enter-active,
 .issue-prev-leave-active {
     transition:
-        transform 0.32s ease,
-        opacity 0.32s ease;
+        transform 0.32s var(--ease),
+        opacity 0.32s var(--ease);
 }
 
 .issue-next-leave-active,
@@ -1240,177 +1318,235 @@ onUnmounted(() => window.removeEventListener('keydown', handleLightboxKeydown))
     opacity: 0;
 }
 
-.cs-issue-nav {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    padding: 12px 18px;
-    border-top: 1px solid var(--color-border);
-}
-
-.cs-issue-nav-btn {
-    display: inline-flex;
-    align-items: center;
-    gap: 6px;
-    padding: 6px 12px;
-    border-radius: 999px;
-    font-size: 13.5px;
-    font-weight: 500;
-    color: var(--color-text);
-    transition:
-        background-color 0.2s ease,
-        color 0.2s ease;
-}
-
-.cs-issue-nav-btn:hover:not(:disabled) {
-    background: var(--color-bg);
-    color: var(--color-accent);
-}
-
-.cs-issue-nav-btn:disabled {
-    color: var(--color-text-faint);
-    cursor: default;
-}
-
-.cs-issue-count {
-    font-family: var(--font-mono);
-    font-size: 12px;
-    color: var(--color-text-faint);
-}
-
+/* 단계 — 작은 번호 표식 + 세로 연결선. 문제·원인은 회색, 해결은 옅은 포인트, 결과는 포인트 */
 .cs-steps {
-    padding: 22px 20px;
+    padding: var(--space-8);
 }
 
 .cs-step {
     position: relative;
     display: grid;
-    grid-template-columns: 26px minmax(0, 1fr);
-    gap: 14px;
-    padding-bottom: 22px;
+    grid-template-columns: 24px minmax(0, 1fr);
+    gap: var(--space-4);
+    padding-bottom: var(--space-6);
 }
 
 .cs-step:last-child {
     padding-bottom: 0;
 }
 
-/* 단계 사이를 잇는 세로선 */
 .cs-step:not(:last-child)::before {
     content: '';
     position: absolute;
-    left: 12.5px;
-    top: 30px;
-    bottom: 4px;
-    width: 1px;
-    background: var(--color-border);
+    left: 11px;
+    top: 32px;
+    bottom: var(--space-2);
+    width: 2px;
+    border-radius: 1px;
+    background: var(--color-bg-alt);
 }
 
 .cs-step-dot {
     display: flex;
     align-items: center;
     justify-content: center;
-    width: 26px;
-    height: 26px;
-    border: 1px solid var(--color-border-strong);
+    width: 24px;
+    height: 24px;
     border-radius: 50%;
-    background: var(--color-bg);
-    font-family: var(--font-mono);
-    font-size: 12px;
+    background: var(--color-bg-alt);
+    font-size: var(--t7);
+    line-height: 1;
+    font-weight: 700;
+    font-variant-numeric: tabular-nums;
     color: var(--color-text-muted);
 }
 
+.cs-step-solution .cs-step-dot {
+    background: var(--color-accent-soft);
+    color: var(--color-accent);
+}
+
 .cs-step-result .cs-step-dot {
-    border-color: var(--color-accent);
     background: var(--color-accent);
     color: var(--color-white);
 }
 
 .cs-step-body {
     min-width: 0;
-    padding-top: 2px;
 }
 
 .cs-step-title {
-    margin-bottom: 6px;
-    font-size: 15px;
-    font-weight: 600;
-    color: var(--color-ink);
+    margin-bottom: var(--space-1);
+    font-size: var(--t6);
+    line-height: 24px;
+    font-weight: 700;
+    color: var(--color-text);
+}
+
+.cs-step-text {
+    font-size: var(--t6);
+    line-height: 1.7;
+    color: var(--color-text);
 }
 
 .cs-concept {
-    margin-top: 10px;
-    padding: 12px 14px;
-    border-radius: 8px;
+    margin-top: var(--space-3);
+    padding: var(--space-3) var(--space-4);
+    border-radius: var(--radius-md);
     background: var(--color-bg);
-    font-size: 14.5px;
-    line-height: 1.7;
-    color: var(--color-text);
-    word-break: keep-all;
+    font-size: var(--t6);
+    line-height: var(--t6-lh);
+    color: var(--color-text-muted);
 }
 
 .cs-concept strong {
     margin-right: 6px;
     font-weight: 600;
-    color: var(--color-ink);
+    color: var(--color-text);
 }
 
+/* 코드 조각만은 정렬이 깨지지 않도록 고정폭 글꼴을 쓴다 */
 .cs-code {
-    margin: 10px 0 0;
-    padding: 14px 16px;
+    margin: var(--space-3) 0 0;
+    padding: var(--space-4);
     overflow-x: auto;
-    border-radius: 8px;
+    border-radius: var(--radius-md);
     background: #1e1e1e;
     color: #e6e6e6;
-    font-family: var(--font-mono);
-    font-size: 13px;
+    font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+    font-size: var(--t7);
     line-height: 1.6;
+    letter-spacing: 0;
     white-space: pre;
 }
 
 .cs-outcome {
-    font-size: 17px;
-    font-weight: 600;
-    line-height: 1.6;
+    font-size: var(--t5);
+    line-height: var(--t5-lh);
+    font-weight: 700;
     color: var(--color-accent);
-    word-break: keep-all;
+}
+
+/* 이전 / 다음 이슈 — 회색 버튼(.btn--ghost) 한 쌍, 사이에 위치 표시 */
+.cs-issue-nav {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--space-3);
+    padding: 0 var(--space-8) var(--space-6);
+}
+
+/* 전역 .btn--ghost(테두리 알약)와 달리 이 페이지는 회색 채움 + 작은 둥근 모서리 */
+.cs-issue-nav-btn.btn--ghost {
+    min-height: 40px;
+    padding: 0 var(--space-4);
+    border: none;
+    border-radius: var(--radius-sm);
+    background: var(--color-bg-alt);
+    color: var(--color-text);
+    font-size: var(--t6);
+    font-weight: 600;
+    transition:
+        transform 0.15s var(--ease),
+        background-color 0.15s var(--ease);
+}
+
+.cs-issue-nav-btn.btn--ghost:hover {
+    background: #dcdcdc;
+    color: var(--color-text);
+}
+
+.cs-issue-nav-btn.btn--ghost:active {
+    transform: scale(var(--press-scale));
+}
+
+.cs-issue-nav-btn:disabled {
+    opacity: 0.4;
+    cursor: default;
+    pointer-events: none;
+}
+
+.cs-issue-count {
+    font-size: var(--t7);
+    line-height: var(--t7-lh);
+    font-weight: 600;
+    font-variant-numeric: tabular-nums;
+    color: var(--color-text-faint);
 }
 
 /* ── 회고 ───────────────────────────────────────────────── */
 .cs-retro {
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
-    gap: 12px;
+    grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+    gap: var(--space-3);
+}
+
+.cs-retro .cs-card {
+    padding: var(--space-6);
+    border-radius: var(--radius-lg);
+}
+
+.cs-retro-label {
+    margin-bottom: var(--space-3);
+    font-size: var(--t5);
+    line-height: var(--t5-lh);
+    font-weight: 700;
+    color: var(--color-text);
 }
 
 .cs-retro-list {
     display: flex;
     flex-direction: column;
-    gap: 8px;
-    font-size: 15px;
-    line-height: 1.7;
-    color: var(--color-text);
-    word-break: keep-all;
+    gap: var(--space-2);
 }
 
-/* ── 이전 / 다음 ────────────────────────────────────────── */
+.cs-retro-list li {
+    position: relative;
+    padding-left: var(--space-4);
+    font-size: var(--t6);
+    line-height: var(--t6-lh);
+    color: var(--color-text);
+}
+
+.cs-retro-list li::before {
+    content: '';
+    position: absolute;
+    left: 2px;
+    top: 10px;
+    width: 4px;
+    height: 4px;
+    border-radius: 50%;
+    background: var(--color-text-faint);
+}
+
+/* ── 이전 / 다음 프로젝트 — 흰 카드 두 장 ─────────────────── */
 .cs-pager {
     display: grid;
     grid-template-columns: repeat(2, minmax(0, 1fr));
-    gap: 12px;
-    margin-top: 48px;
+    gap: var(--space-3);
 }
 
 .cs-pager-link {
     display: flex;
     flex-direction: column;
+    gap: var(--space-1);
+    min-width: 0;
+    padding: var(--space-5) var(--space-6);
+    background: var(--color-surface);
+    box-shadow: var(--card-shadow);
+    border-radius: var(--radius-lg);
     transition:
-        border-color 0.2s ease,
-        transform 0.2s ease;
+        background-color 0.15s var(--ease),
+        transform 0.15s var(--ease);
 }
 
 .cs-pager-link:hover {
-    border-color: var(--color-accent);
-    transform: translateY(-2px);
+    box-shadow: var(--card-shadow-hover);
+    background: var(--cs-hover-bg);
+}
+
+.cs-pager-link:active {
+    transform: scale(var(--press-scale));
 }
 
 .cs-pager-next {
@@ -1418,16 +1554,120 @@ onUnmounted(() => window.removeEventListener('keydown', handleLightboxKeydown))
     text-align: right;
 }
 
-.cs-pager-title {
-    font-size: 15px;
+.cs-pager-label {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--space-1);
+    font-size: var(--t7);
+    line-height: var(--t7-lh);
     font-weight: 600;
-    color: var(--color-ink);
-    word-break: keep-all;
+    color: var(--color-text-faint);
 }
 
+.cs-pager-title {
+    font-size: var(--t5);
+    line-height: var(--t5-lh);
+    font-weight: 700;
+    color: var(--color-text);
+}
+
+/* ── 모바일 — 흰 면 안쪽 여백을 한 단계 줄이고, 섹션 간격도 좁힌다 ── */
 @media (max-width: 600px) {
+    .project-detail {
+        padding-block: var(--space-4) 72px;
+    }
+
+    .cs-topbar {
+        margin-bottom: var(--space-6);
+    }
+
+    .cs-pitch {
+        font-size: var(--t5);
+        line-height: var(--t5-lh);
+    }
+
+    .cs-tabs {
+        margin-top: var(--space-10);
+    }
+
+    .cs-tabs-inner {
+        gap: var(--space-5);
+    }
+
+    .cs-tab {
+        font-size: var(--t6);
+    }
+
+    .cs-sections {
+        gap: 56px;
+        padding-top: var(--space-10);
+    }
+
+    .cs-h2 {
+        font-size: var(--t3);
+        line-height: var(--t3-lh);
+    }
+
+    .cs-card,
+    .tldr-card,
+    .cs-result,
+    .cs-retro .cs-card,
+    .decision {
+        padding: var(--space-5);
+    }
+
+    .cs-card,
+    .cs-rows,
+    .cs-diagrams,
+    .cs-flow-box,
+    .cs-issue {
+        border-radius: var(--radius-lg);
+    }
+
+    .cs-row {
+        gap: var(--space-3);
+        padding: var(--space-4) var(--space-5);
+    }
+
+    .cs-row + .cs-row::before {
+        left: var(--space-5);
+        right: var(--space-5);
+    }
+
+    .cs-text {
+        font-size: var(--t6);
+    }
+
+    .cs-flow-box {
+        padding: var(--space-4);
+    }
+
+    .cs-issue-tabs {
+        padding: var(--space-5) var(--space-5) 0;
+    }
+
+    .cs-issue-single-title {
+        padding: var(--space-6) var(--space-5) 0;
+    }
+
+    .cs-steps {
+        padding: var(--space-6) var(--space-5);
+    }
+
+    .cs-issue-nav {
+        padding: 0 var(--space-5) var(--space-5);
+    }
+
+    .cs-issue-nav-btn {
+        padding: 0 var(--space-3);
+    }
+
     .cs-pager {
         grid-template-columns: minmax(0, 1fr);
+    }
+
+    .cs-pager-empty {
+        display: none;
     }
 }
 
@@ -1439,49 +1679,72 @@ onUnmounted(() => window.removeEventListener('keydown', handleLightboxKeydown))
     display: flex;
     align-items: center;
     justify-content: center;
-    padding: 48px;
+    padding: var(--space-12);
     background: rgba(0, 0, 0, 0.85);
 }
 
 .lightbox-image {
     max-width: 100%;
     max-height: 100%;
-    border-radius: 8px;
+    border-radius: var(--radius-md);
     cursor: default;
 }
 
 .lightbox-close {
     position: fixed;
-    top: 24px;
-    right: 32px;
+    top: var(--space-6);
+    right: var(--space-6);
     display: flex;
     align-items: center;
     justify-content: center;
-    width: 40px;
-    height: 40px;
-    border-radius: 999px;
-    background: rgba(255, 255, 255, 0.1);
+    width: 44px;
+    height: 44px;
+    border-radius: 50%;
+    background: rgba(255, 255, 255, 0.12);
     color: var(--color-white);
-    transition: background-color 0.2s ease;
+    transition:
+        background-color 0.15s var(--ease),
+        transform 0.15s var(--ease);
 }
 
 .lightbox-close:hover {
-    background: rgba(255, 255, 255, 0.2);
+    background: rgba(255, 255, 255, 0.22);
+}
+
+.lightbox-close:active {
+    transform: scale(var(--press-scale));
+}
+
+@media (max-width: 600px) {
+    .lightbox-overlay {
+        padding: var(--space-4);
+    }
+
+    .lightbox-close {
+        top: var(--space-4);
+        right: var(--space-4);
+    }
 }
 
 /* ── 빈 상태 ────────────────────────────────────────────── */
 .empty-state {
-    padding: 120px 20px;
+    padding: 120px var(--gutter);
     text-align: center;
 }
 
+.empty-state .back-link {
+    margin-left: 0;
+}
+
 .empty-text {
-    margin-bottom: 16px;
-    font-size: 16px;
+    margin-bottom: var(--space-4);
+    font-size: var(--t5);
+    line-height: var(--t5-lh);
     color: var(--color-text-muted);
 }
 
 @media (prefers-reduced-motion: reduce) {
+    .cs-tab::after,
     .cs-issue-tab,
     .cs-pager-link,
     .cs-diagram img,
