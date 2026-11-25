@@ -254,7 +254,7 @@ export default [
       '프론트엔드 개발자 2명 영입 및 팀 빌딩, 프로젝트 개발 표준 정립',
       'Django → Java/Spring Boot 아키텍처 전면 재설계 주도',
       'docker-compose 기반 팀 로컬 개발환경 통일 및 OAuth·JWT 인증 파이프라인 Spring Security 모듈화',
-      'GitHub Actions 기반 Docker 이미지 빌드·GHCR 배포 자동화, 프론트엔드 Vercel 배포',
+      'GitHub Actions 기반 Docker 이미지 빌드·레지스트리 배포 자동화, 프론트엔드 Vercel 배포 연동',
       '자체 도메인(ajouchong.com)을 연결한 실서비스를 2년간 단독 운영',
       '관리자(Admin) 페이지 기획 및 구현',
       '비용·안정성 문제 해결을 위한 인프라 재설계 및 이관(AWS → AOLDA → AWS EC2+Vercel) 단독 주도',
@@ -273,7 +273,7 @@ export default [
         title: 'AWS 운영비 월 60만 원 급증',
         problem: '기존 AWS 인프라의 운영비가 월 60만 원까지 급증했습니다.',
         cause:
-          'RDS 지출이 급증한 것까지는 확인했지만, EC2·RDS·Docker 네트워크 설정이 얽혀 있어 정확한 원인을 특정하지 못했습니다.',
+          'EC2·Docker 네트워크 설정이 복합적으로 얽혀 있어 어느 설정이 비용을 키웠는지 정확히 특정하기 어려웠습니다.',
         solution:
           '원인 하나를 붙잡고 있기보다, 구조를 직접 파악할 수 있는 환경으로 시스템을 전면 재설계하기로 결정했습니다. 학교에서 무상으로 제공하는 AOLDA 클라우드로 인프라를 이관해 운영비를 0원으로 만들었습니다.',
       },
